@@ -1,2 +1,3 @@
 # SOCharts
-New project, more information is coming up!
+This library is a wrapper around the [echarts](https://echarts.apache.org) JavaScript
+library for using it with [Vaadin Flow](https://vaadin.com). 
