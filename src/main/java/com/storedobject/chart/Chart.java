@@ -1,9 +1,8 @@
 package com.storedobject.chart;
 
-public class Chart implements Component {
+public class Chart extends AbstractPart implements Component {
 
     private Type type = Type.Line;
-    private int serial;
     private String name;
     CoordinateSystem coordinateSystem;
     private AbstractData<?>[] data;
@@ -36,8 +35,7 @@ public class Chart implements Component {
 
     @Override
     public void encodeJSON(StringBuilder sb) {
-        ComponentPart.encode(sb,"name", getName());
-        sb.append(',');
+        super.encodeJSON(sb);
         ComponentPart.encode(sb, "type", type());
         sb.append(",\"encode\":{");
         String[] axes = type.getAxes();
@@ -113,20 +111,10 @@ public class Chart implements Component {
 
     @Override
     public String getName() {
-        return name == null || name.isEmpty() ? ("Chart " + (serial + 1)) : name;
+        return name == null || name.isEmpty() ? ("Chart " + (getSerial() + 1)) : name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public int getSerial() {
-        return serial;
-    }
-
-    @Override
-    public void setSerial(int serial) {
-        this.serial = serial;
     }
 }

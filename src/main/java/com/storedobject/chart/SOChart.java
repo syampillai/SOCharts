@@ -16,6 +16,7 @@
 
 package com.storedobject.chart;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
@@ -45,7 +46,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * <pre>
  *     SOChart soChart = new SOChart();
  *     soChart.setSize("600px", "400px");
- *     CategoryData labels = new CategoryData("Banana", "Apple", "Orange", Grapes");
+ *     CategoryData labels = new CategoryData("Banana", "Apple", "Orange", "Grapes");
  *     Data data = new Data(25, 40, 20, 30);
  *     soChart.add(new PieChart(labels, data));
  *     myLayout.add(soChart);
@@ -84,12 +85,33 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
         getElement().setProperty("idChart", "sochart" + id.incrementAndGet());
     }
 
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        try {
+            clear();
+            update();
+        } catch (Exception ignored) {
+        }
+    }
+
     /**
      * Legends will be shown by default. However, you can either disable it using this method or
      * you can create your own customized legends and add it using {@link #add(Component...)}.
      */
     public void disableDefaultLegend() {
         legend = null;
+    }
+
+    /**
+     * Set the size.
+     *
+     * @param width Width.
+     * @param height Height.
+     */
+    public void setSize(String width, String height) {
+        setWidth(width);
+        setHeight(height);
     }
 
     @Override
@@ -269,8 +291,10 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
      *
      * @param json JSON string constructed by the {@link #update()} method.
      * @return Customized JSON string.
+     * @throws Exception If any custom error to be notified so that rendering will not happen.
      */
-    protected String customizeJSON(String json) {
+    @SuppressWarnings("RedundantThrows")
+    protected String customizeJSON(String json) throws Exception {
         return json;
     }
 

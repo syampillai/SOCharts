@@ -3,10 +3,9 @@ package com.storedobject.chart;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CoordinateSystem implements Component {
+public abstract class CoordinateSystem extends AbstractDisplayablePart implements Component {
 
     private final List<Chart> charts = new ArrayList<>();
-    private int serial;
 
     public void add(Chart... charts) {
         if(charts != null) {
@@ -32,15 +31,5 @@ public abstract class CoordinateSystem implements Component {
             soChart.addParts(chart);
             soChart.addParts(chart.getData());
         }
-    }
-
-    @Override
-    public int getSerial() {
-        return serial;
-    }
-
-    @Override
-    public void setSerial(int serial) {
-        this.serial = serial;
     }
 }

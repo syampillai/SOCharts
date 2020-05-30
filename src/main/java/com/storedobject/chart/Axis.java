@@ -6,7 +6,7 @@ package com.storedobject.chart;
  * @param <T> Data type of the axis.
  * @author Syam
  */
-public abstract class Axis<T> implements ComponentPart {
+public abstract class Axis<T> extends AbstractDisplayablePart implements ComponentPart {
 
     CoordinateSystem coordinateSystem;
     private final Class<T> dataType;
@@ -36,6 +36,7 @@ public abstract class Axis<T> implements ComponentPart {
 
     @Override
     public void encodeJSON(StringBuilder sb) {
+        super.encodeJSON(sb);
         sb.append("\"type\":\"").append(getType()).append('"');
         if(coordinateSystem != null) {
             sb.append(",\"").append(SOChart.encoderLabel(coordinateSystem));

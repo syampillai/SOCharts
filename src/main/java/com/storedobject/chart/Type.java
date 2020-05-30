@@ -7,6 +7,7 @@ public enum Type {
     Pie(new String[] { "itemName", "value" }, false),
     Scatter,
     EffectScatter,
+    Funnel(new String[] { "itemName", "value" }, false),
     ;
 
     private final String[] axes;

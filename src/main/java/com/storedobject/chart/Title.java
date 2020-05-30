@@ -1,6 +1,6 @@
 package com.storedobject.chart;
 
-public class Title extends AbstractComponentPart implements Component {
+public class Title extends AbstractDisplayablePart implements Component {
 
     private String text, subtext;
     private Position position;

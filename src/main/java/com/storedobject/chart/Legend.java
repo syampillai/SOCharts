@@ -1,6 +1,6 @@
 package com.storedobject.chart;
 
-public class Legend extends AbstractComponentPart implements Component {
+public class Legend extends AbstractDisplayablePart implements Component {
 
     private Position position;
 
