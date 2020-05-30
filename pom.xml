@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.storedobject.vaadin</groupId>
-    <artifactId>so-components</artifactId>
-    <version>7.0.0</version>
-    <name>SO Components</name>
-    <description>A set of Vaadin Flow Components and Abstractions</description>
+    <groupId>com.storedobject.chart</groupId>
+    <artifactId>so-charts</artifactId>
+    <version>0.0.1</version>
+    <name>SO Charts</name>
+    <description>Vaadin LitElement wrapper for ECharts</description>
 
     <properties>
         <vaadin.version>16.0.0.rc1</vaadin.version>
@@ -76,45 +76,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <!-- Vaadin add-on for text input formatting -->
-        <dependency>
-            <groupId>org.vaadin</groupId>
-            <artifactId>textfieldformatter</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-
-        <!-- Vaadin add-on for Multiselect Combo -->
-        <dependency>
-            <groupId>org.vaadin.gatanaso</groupId>
-            <artifactId>multiselect-combo-box-flow</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-
-        <!-- Servlet -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Batik library for SVG image support -->
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-svggen</artifactId>
-            <version>1.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-dom</artifactId>
-            <version>1.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-codec</artifactId>
-            <version>1.11</version>
         </dependency>
 
     </dependencies>
