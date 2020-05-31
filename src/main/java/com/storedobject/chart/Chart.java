@@ -1,5 +1,31 @@
+/*
+ *  Copyright 2019-2020 Syam Pillai
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package com.storedobject.chart;
 
+/**
+ * Chart. Since this is a concrete class, this may be directly used for creating a chart of a particular {@link Type}.
+ * It has got the flexibility that the {@link Type} can be changed at any time using {@link #setType(Type)} method.
+ * However, there are concrete derivatives of this class such as {@link PieChart}, {@link NightingaleChart} etc.
+ * where more chart-specific methods are available and data for the chart is checked more accurately for errors. If
+ * the data set for the chart is of invalid type, system tries to do its best to adapt that data but the chart may not
+ * appear if the data conversion fails.
+ *
+ * @author Syam
+ */
 public class Chart extends AbstractPart implements Component {
 
     private Type type = Type.Line;
@@ -7,23 +33,47 @@ public class Chart extends AbstractPart implements Component {
     CoordinateSystem coordinateSystem;
     private AbstractData<?>[] data;
 
+    /**
+     * Create a {@link Type#Line} chart.
+     */
     public Chart() {
         this(Type.Line);
     }
 
+    /**
+     * Create a {@link Type#Line} chart with the given data.
+     *
+     * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
+     */
     public Chart(AbstractData<?>... data) {
         this(null, data);
     }
 
+    /**
+     * Create a chart of a given type and data.
+     *
+     * @param type type of the chart.
+     * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
+     */
     public Chart(Type type, AbstractData<?>... data) {
         setType(type);
         this.data = data;
     }
 
+    /**
+     * Set data for the chart.
+     *
+     * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
+     */
     public void setData(AbstractData<?>... data) {
         this.data = data;
     }
 
+    /**
+     * Get the current set of data.
+     *
+     * @return Data.
+     */
     public AbstractData<?>[] getData() {
         return data;
     }
@@ -90,14 +140,33 @@ public class Chart extends AbstractPart implements Component {
         }
     }
 
+    /**
+     * Get the type of this chart.
+     *
+     * @return Type.
+     */
     public Type getType() {
         return type;
     }
 
+    /**
+     * Set the type of this chart.
+     *
+     * @param type Type to be set.
+     */
     public void setType(Type type) {
         this.type = type == null ? Type.Line : type;
     }
 
+    /**
+     * Plot the chart on a given coordinate system. (Certain chart types such as {@link Type#Pie},
+     * do not have a coordinate system and thus, this call is not required. Also, instead of using this
+     * method, you can use the {@link CoordinateSystem#add(Chart...)} method.
+     *
+     * @param coordinateSystem Coordinate system on which the chart will be plotted. (If it was plotted on
+     *                         another coordinate system, it will be removed from it).
+     * @return Self reference.
+     */
     public Chart plotOn(CoordinateSystem coordinateSystem) {
         if(coordinateSystem == null) {
             if(this.coordinateSystem != null) {
@@ -109,11 +178,22 @@ public class Chart extends AbstractPart implements Component {
         return this;
     }
 
+    /**
+     * Set the name of the chart. (This will be used in displaying the legend if legend is enabled in the
+     * {@link SOChart} or added separately).
+     *
+     * @return Name.
+     */
     @Override
     public String getName() {
         return name == null || name.isEmpty() ? ("Chart " + (getSerial() + 1)) : name;
     }
 
+    /**
+     * Set name for this chart.
+     *
+     * @param name Name.
+     */
     public void setName(String name) {
         this.name = name;
     }

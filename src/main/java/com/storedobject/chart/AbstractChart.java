@@ -1,7 +1,34 @@
+/*
+ *  Copyright 2019-2020 Syam Pillai
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package com.storedobject.chart;
 
+/**
+ * Abstract base class for creating specific sub-types of charts.
+ *
+ * @author Syam
+ */
 public abstract class AbstractChart extends Chart {
 
+    /**
+     * Create a chart of a given type and data.
+     *
+     * @param type type of the chart.
+     * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
+     */
     public AbstractChart(Type type, AbstractData<?>... data) {
         super(type);
         super.setType(type);
@@ -17,6 +44,11 @@ public abstract class AbstractChart extends Chart {
         }
     }
 
+    /**
+     * Calling this method does not have any effect. On specific charts, the {@link Type} can not be changed.
+     *
+     * @param type Type to be set.
+     */
     @Override
     public final void setType(Type type) {
     }
@@ -32,12 +64,24 @@ public abstract class AbstractChart extends Chart {
         }
     }
 
+    /**
+     * This method if invoked will raise a {@link RuntimeException}. However, you can use
+     * {@link #setData(AbstractData, int)} to set data at a particular index.
+     *
+     * @param data Data to be used.
+     */
     @Override
     public final void setData(AbstractData<?>... data) {
         throw new RuntimeException();
     }
 
-    protected void setData(AbstractData<?> data, int index) {
+    /**
+     * Use this method to set data at a specific index in derived classes.
+     *
+     * @param data Data to be set.
+     * @param index Index position in the data array.
+     */
+    protected final void setData(AbstractData<?> data, int index) {
         AbstractData<?>[] d = getData();
         if(index >= 0 && index < d.length) {
             d[index] = data;

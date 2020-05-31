@@ -18,6 +18,7 @@ package com.storedobject.chart;
 
 /**
  * Donut chart.
+ * (Future versions will provide more chart-specific methods).
  *
  * @author Syam
  */

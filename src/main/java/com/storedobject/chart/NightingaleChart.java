@@ -18,6 +18,7 @@ package com.storedobject.chart;
 
 /**
  * Nightingale chart.
+ * (Future versions will provide more chart-specific methods).
  *
  * @author Syam
  */
