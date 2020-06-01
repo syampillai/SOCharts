@@ -18,7 +18,7 @@ package com.storedobject.chart;
 
 /**
  * Chart type. Please note that there are certain types of charts that are derivative of the types mentioned here.
- * Examples: {@link DonutChart}, {@link NightingaleChart}.
+ * Examples: {@link DonutChart}, {@link NightingaleRoseChart}.
  *
  * @author Syam
  */

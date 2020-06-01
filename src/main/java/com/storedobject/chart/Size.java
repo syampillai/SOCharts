@@ -94,6 +94,10 @@ public class Size {
         return "" + size;
     }
 
+    static String code(int size) {
+        return new Size(size).encode();
+    }
+
     /**
      * Create a "size" value in pixels.
      *

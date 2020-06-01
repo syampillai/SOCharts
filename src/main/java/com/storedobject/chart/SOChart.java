@@ -59,9 +59,11 @@ import java.util.concurrent.atomic.AtomicLong;
 @JsModule("./so/chart/chart.js")
 public class SOChart extends com.vaadin.flow.component.Component implements HasSize {
 
+    private static final String SKIP_DATA = "Skipping data but new data found: ";
     private final static ComponentEncoder[] encoders = {
             new ComponentEncoder(Title.class),
             new ComponentEncoder(Legend.class),
+            new ComponentEncoder(Toolbox.class),
             new ComponentEncoder("dataset", AbstractData.class),
             new ComponentEncoder(AngleAxis.class),
             new ComponentEncoder(RadiusAxis.class),
@@ -77,6 +79,7 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
     private final List<Component> components = new ArrayList<>();
     private final List<ComponentPart> parts = new ArrayList<>();
     private Legend legend = new Legend();
+    private boolean neverUpdated = true;
 
     /**
      * Constructor.
@@ -89,8 +92,9 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
         try {
-            clear();
-            update();
+            if(neverUpdated) {
+                update();
+            }
         } catch (Exception ignored) {
         }
     }
@@ -199,6 +203,9 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
      * rendered again by invoking {@link #update()} as long as {@link #removeAll()} is not called.
      */
     public void clear() {
+        if(neverUpdated) {
+            return;
+        }
         js("clearChart");
     }
 
@@ -236,17 +243,52 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
     /**
      * Update the chart display with current set of components. {@link Component#validate()} method of each component
      * will be invoked before updating the chart display. The chart display may be already there and only the changes
-     * and additions will be updated. If a completely new chart is required, {@link #clear()} should be invoked before
-     * this.
+     * and additions will be updated. If a completely new display is required, {@link #clear()} should be invoked before
+     * this. (Please note that an "update" will automatically happen when a {@link SOChart} is added to its parent
+     * layout for the first time).
      *
      * @throws Exception When any of the component is not valid.
      */
     public void update() throws Exception {
+        update(false);
+    }
+
+    /**
+     * <p>
+     * This method is same as {@link #update()} but based on the parameter passed, no data may be passed to the
+     * client-side. So, it is useful only if it is a partial update. Old set of data passed will be used for the
+     * display changes if parameter is <code>true</code>.
+     * </p>
+     * <p>
+     * Why this method is required? If the data set is really big, it will be accountable for the majority of the
+     * communication overhead and it will be useful if we can update the display with other changes if no data is
+     * changed.
+     * </p>
+     * <p>
+     * Even after eliminating the overhead of data, we can eliminate other components that are not changed
+     * via the method {@link #remove(Component...)}.
+     * </p>
+     *
+     * @param skipData Skip data or not. This parameter will be ignored if this is the first-time update.
+     * @throws Exception When any of the component is not valid or new data found while skipping data.
+     */
+    public void update(boolean skipData) throws Exception {
+        if(neverUpdated && skipData) {
+            skipData = false;
+        }
         if(components.isEmpty()) {
             clear();
             return;
         }
         for(Component c: components) {
+            if(skipData) {
+                if (c instanceof AbstractData) {
+                    if (c.getSerial() < 0) {
+                        throw new Exception(SKIP_DATA + c.className());
+                    }
+                    continue;
+                }
+            }
             c.validate();
             c.setSerial(-2);
         }
@@ -255,11 +297,19 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
             c.addParts(this);
         }
         for(ComponentPart c: parts) {
+            if(skipData) {
+                if (c instanceof AbstractData) {
+                    if (c.getSerial() < 0) {
+                        throw new Exception(SKIP_DATA + c.className());
+                    }
+                    continue;
+                }
+            }
             c.validate();
             c.setSerial(-2);
         }
         parts.addAll(components);
-        if(legend != null && parts.stream().noneMatch(cp -> cp instanceof Legend)) {
+        if(!skipData && legend != null && parts.stream().noneMatch(cp -> cp instanceof Legend)) {
             parts.add(legend);
         }
         for(ComponentEncoder ce: encoders) {
@@ -272,14 +322,19 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
                 }
             }
         }
+        parts.sort(Comparator.comparing(ComponentPart::getSerial));
         StringBuilder sb = new StringBuilder();
         sb.append('{');
         for(ComponentEncoder ce: encoders) {
+            if(skipData && "dataset".equals(ce.label)) {
+                continue;
+            }
             ce.encode(sb, parts);
         }
         sb.append('}');
         js("updateChart", customizeJSON(sb.toString()));
         parts.clear();
+        neverUpdated = false;
     }
 
     /**
@@ -336,6 +391,9 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
                     if(c.getSerial() < serial) {
                         break;
                     }
+                    if(c.getSerial() == serial) {
+                        continue;
+                    }
                     serial = c.getSerial();
                     if(first) {
                         first = false;
@@ -355,9 +413,7 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
                         sb.append('{');
                     }
                     c.encodeJSON(sb);
-                    while(sb.charAt(sb.length() - 1) == ',') {
-                        sb.setCharAt(sb.length() - 1, ' ');
-                    }
+                    ComponentPart.removeComma(sb);
                     if(!data) {
                         sb.append('}');
                     }

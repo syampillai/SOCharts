@@ -1,3 +1,19 @@
+/*
+ *  Copyright 2019-2020 Syam Pillai
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package com.storedobject.chart;
 
 /**
@@ -6,6 +22,14 @@ package com.storedobject.chart;
  * @author Syam
  */
 public interface ComponentPart {
+
+    /**
+     * Each part should have a unique Id. (It can be a final variable and can be set by
+     * incrementing {@link SOChart#id}).
+     *
+     * @return Unique Id.
+     */
+    long getId();
 
     /**
      * Set a serial number (Serial number used internal purposes only).
@@ -89,7 +113,7 @@ public interface ComponentPart {
      */
     static String className(Class<?> anyClass) {
         String cName = anyClass.getName();
-        return Chart.name(cName.substring(cName.lastIndexOf('.') + 1));
+        return Chart.name(cName.substring(cName.lastIndexOf('.') + 1)).replace('$', '/');
     }
 
     /**

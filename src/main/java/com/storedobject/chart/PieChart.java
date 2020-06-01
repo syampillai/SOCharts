@@ -24,9 +24,8 @@ import java.util.Objects;
  *
  * @author Syam
  */
-public class PieChart extends AbstractChart {
+public class PieChart extends SelfPositioningChart {
 
-    private Position position;
     int holeRadius = 0, radius = -75;
 
     /**
@@ -62,25 +61,6 @@ public class PieChart extends AbstractChart {
      */
     public void setData(Data data) {
         setData(data, 1);
-    }
-
-    /**
-     * Get position of this chart within the chart display area.
-     *
-     * @return Position.
-     */
-    @Override
-    public Position getPosition() {
-        return position;
-    }
-
-    /**
-     * Set position of this chart within the chart display area.
-     *
-     * @param position Position.
-     */
-    public void setPosition(Position position) {
-        this.position = position;
     }
 
     /**

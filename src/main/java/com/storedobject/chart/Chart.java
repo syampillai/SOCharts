@@ -17,12 +17,21 @@
 package com.storedobject.chart;
 
 /**
+ * <p>
  * Chart. Since this is a concrete class, this may be directly used for creating a chart of a particular {@link Type}.
  * It has got the flexibility that the {@link Type} can be changed at any time using {@link #setType(Type)} method.
- * However, there are concrete derivatives of this class such as {@link PieChart}, {@link NightingaleChart} etc.
+ * However, there are concrete derivatives of this class such as {@link PieChart}, {@link NightingaleRoseChart} etc.
  * where more chart-specific methods are available and data for the chart is checked more accurately for errors. If
  * the data set for the chart is of invalid type, system tries to do its best to adapt that data but the chart may not
  * appear if the data conversion fails.
+ * </p>
+ * <p>
+ * Positioning of charts within the display area of {@link SOChart}: Most charts need a {@link CoordinateSystem} to
+ * plot on and all {@link CoordinateSystem}s support positioning (Please see
+ * {@link CoordinateSystem#setPosition(Position)}). Those which do not require a {@link CoordinateSystem} are called
+ * {@link SelfPositioningChart} and supports its own positioning mechanism (Please see
+ * {@link SelfPositioningChart#setPosition(Position)}).
+ * </p>
  *
  * @author Syam
  */
@@ -134,6 +143,7 @@ public class Chart extends AbstractPart implements Component {
     @Override
     public void addParts(SOChart soChart) {
         if(coordinateSystem != null) {
+            soChart.addParts(coordinateSystem);
             coordinateSystem.addParts(soChart);
         } else {
             soChart.addParts(data);

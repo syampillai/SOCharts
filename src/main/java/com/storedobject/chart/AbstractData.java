@@ -29,7 +29,7 @@ import java.util.Arrays;
  */
 public class AbstractData<T> extends ArrayList<T> implements ComponentPart {
 
-    private int index;
+    private int index = -1;
     private final Class<T> dataType;
     private String name;
 
@@ -47,17 +47,22 @@ public class AbstractData<T> extends ArrayList<T> implements ComponentPart {
         }
     }
 
+    @Override
+    public long getId() {
+        return -1L;
+    }
+
     public final Class<T> getDataType() {
         return dataType;
     }
 
     @Override
-    public int getSerial() {
+    public final int getSerial() {
         return index;
     }
 
     @Override
-    public void setSerial(int serial) {
+    public final void setSerial(int serial) {
         this.index = serial;
     }
 

@@ -17,19 +17,19 @@
 package com.storedobject.chart;
 
 /**
- * Nightingale chart.
+ * Nightingale Rose chart.
  * (Future versions will provide more chart-specific methods).
  *
  * @author Syam
  */
-public class NightingaleChart extends DonutChart {
+public class NightingaleRoseChart extends DonutChart {
 
     private boolean percentage = true;
 
     /**
      * Constructor.
      */
-    public NightingaleChart() {
+    public NightingaleRoseChart() {
         holeRadius = -10;
     }
 
@@ -39,7 +39,7 @@ public class NightingaleChart extends DonutChart {
      * @param itemNames Item names of the slices.
      * @param values Values of the slices.
      */
-    public NightingaleChart(AbstractData<?> itemNames, Data values) {
+    public NightingaleRoseChart(AbstractData<?> itemNames, Data values) {
         super(itemNames, values);
         holeRadius = -10;
     }
