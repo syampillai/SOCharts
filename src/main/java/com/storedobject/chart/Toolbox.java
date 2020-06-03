@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author Syam
  */
-public class Toolbox extends AbstractDisplayablePart implements Component {
+public class Toolbox extends AbstractDisplayablePart implements Component, HasPosition {
 
     private final List<ToolboxButton> buttons = new ArrayList<>();
     private Position position;
@@ -68,22 +68,16 @@ public class Toolbox extends AbstractDisplayablePart implements Component {
     public void validate() {
     }
 
-    /**
-     * Get the position of this in the display area.
-     *
-     * @return Position.
-     */
     @Override
-    public Position getPosition() {
+    public final Position getPosition(boolean create) {
+        if(position == null && create) {
+            position = new Position();
+        }
         return position;
     }
 
-    /**
-     * Set the position of this in the display area.
-     *
-     * @param position Position.
-     */
-    public void setPosition(Position position) {
+    @Override
+    public final void setPosition(Position position) {
         this.position = position;
     }
 

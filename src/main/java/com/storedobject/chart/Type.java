@@ -30,6 +30,10 @@ public enum Type {
     Scatter,
     EffectScatter,
     Funnel(new String[] { "itemName", "value" }, false),
+    Radar(new String[] {}),
+    Gauge(new String[] {}, false),
+    Tree(new String[] {}, false),
+    Treemap(new String[] {}, false),
     ;
 
     private final String[] axes;

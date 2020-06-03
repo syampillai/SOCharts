@@ -30,7 +30,7 @@ public class NightingaleRoseChart extends DonutChart {
      * Constructor.
      */
     public NightingaleRoseChart() {
-        holeRadius = -10;
+        setHoleRadius(Size.percentage(10));
     }
 
     /**
@@ -39,9 +39,9 @@ public class NightingaleRoseChart extends DonutChart {
      * @param itemNames Item names of the slices.
      * @param values Values of the slices.
      */
-    public NightingaleRoseChart(AbstractData<?> itemNames, Data values) {
+    public NightingaleRoseChart(AbstractDataProvider<?> itemNames, Data values) {
         super(itemNames, values);
-        holeRadius = -10;
+        setHoleRadius(Size.percentage(10));
     }
 
     /**

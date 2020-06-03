@@ -30,7 +30,7 @@ public abstract class XYChart extends AbstractChart {
      * @param xData Data for X axis.
      * @param yData Data for Y axis.
      */
-    public XYChart(Type type, AbstractData<?> xData, Data yData) {
+    public XYChart(Type type, AbstractDataProvider<?> xData, DataProvider yData) {
         super(type, xData, yData);
     }
 
@@ -39,7 +39,7 @@ public abstract class XYChart extends AbstractChart {
      *
      * @param xData Data for X axis.
      */
-    public void setXData(AbstractData<?> xData) {
+    public void setXData(AbstractDataProvider<?> xData) {
         setData(xData, 0);
     }
 
@@ -48,7 +48,7 @@ public abstract class XYChart extends AbstractChart {
      *
      * @param yData Data for Y axis.
      */
-    public void setYData(Data yData) {
+    public void setYData(DataProvider yData) {
         setData(yData, 1);
     }
 }

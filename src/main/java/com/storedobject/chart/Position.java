@@ -28,7 +28,7 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public class Position implements ComponentPart {
+public class Position implements ComponentProperty {
 
     private final Size left = new Size();
     private final Size right = new Size();
@@ -36,49 +36,11 @@ public class Position implements ComponentPart {
     private final Size bottom = new Size();
     private final Size width = new Size();
     private final Size height = new Size();
-    private int paddingTop = 5, paddingRight = 5, getPaddingBottom = 5, getPaddingLeft = 5;
 
     /**
      * Constructor.
      */
     public Position() {
-    }
-
-    @Override
-    public long getId() {
-        return -1L;
-    }
-
-    public int getPaddingTop() {
-        return paddingTop;
-    }
-
-    public void setPaddingTop(int paddingTop) {
-        this.paddingTop = Math.max(0, paddingTop);
-    }
-
-    public int getPaddingRight() {
-        return paddingRight;
-    }
-
-    public void setPaddingRight(int paddingRight) {
-        this.paddingRight = Math.max(0, paddingRight);
-    }
-
-    public int getGetPaddingBottom() {
-        return getPaddingBottom;
-    }
-
-    public void setGetPaddingBottom(int getPaddingBottom) {
-        this.getPaddingBottom = Math.max(0, getPaddingBottom);
-    }
-
-    public int getGetPaddingLeft() {
-        return getPaddingLeft;
-    }
-
-    public void setGetPaddingLeft(int getPaddingLeft) {
-        this.getPaddingLeft = Math.max(0, getPaddingLeft);
     }
 
     /**
@@ -193,23 +155,7 @@ public class Position implements ComponentPart {
         comma = stuff(sb, "width", width, comma);
         comma = stuff(sb, "top", top, comma);
         comma = stuff(sb, "bottom", bottom, comma);
-        comma = stuff(sb, "height", height, comma);
-        if(paddingTop != 5 || paddingRight != 5 || getPaddingBottom != 5 || getPaddingLeft != 5) {
-            if(comma) {
-                sb.append(',');
-            }
-            sb.append("\"padding\":");
-            if(paddingTop == getPaddingBottom && getPaddingLeft == paddingRight) {
-                if(paddingTop == getPaddingLeft) {
-                    sb.append(paddingTop);
-                } else {
-                    sb.append('[').append(paddingTop).append(',').append(getPaddingLeft).append(']');
-                }
-            } else {
-                sb.append('[').append(paddingTop).append(',').append(paddingRight).append(',').
-                        append(getPaddingBottom).append(',').append(getPaddingLeft).append(']');
-            }
-        }
+        stuff(sb, "height", height, comma);
     }
 
     private static boolean stuff(StringBuilder sb, String attribute, Size value, boolean comma) {
@@ -222,9 +168,5 @@ public class Position implements ComponentPart {
         }
         sb.append('"').append(attribute).append("\":").append(size);
         return true;
-    }
-
-    @Override
-    public void validate() {
     }
 }

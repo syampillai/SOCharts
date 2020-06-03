@@ -16,10 +16,7 @@
 
 package com.storedobject.chart;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.ClientCallable;
-import com.vaadin.flow.component.HasSize;
-import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 
@@ -64,12 +61,14 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
             new ComponentEncoder(Title.class),
             new ComponentEncoder(Legend.class),
             new ComponentEncoder(Toolbox.class),
+            new ComponentEncoder(Tooltip.class),
             new ComponentEncoder("dataset", AbstractData.class),
             new ComponentEncoder(AngleAxis.class),
             new ComponentEncoder(RadiusAxis.class),
             new ComponentEncoder(XAxis.class),
             new ComponentEncoder(YAxis.class),
             new ComponentEncoder("polar", PolarCoordinate.class),
+            new ComponentEncoder("radar", RadarCoordinate.class),
             new ComponentEncoder("grid", RectangularCoordinate.class),
             new ComponentEncoder("series", Chart.class),
     };
@@ -79,6 +78,7 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
     private final List<Component> components = new ArrayList<>();
     private final List<ComponentPart> parts = new ArrayList<>();
     private Legend legend = new Legend();
+    private Tooltip tooltip = new Tooltip();
     private boolean neverUpdated = true;
 
     /**
@@ -97,6 +97,20 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
             }
         } catch (Exception ignored) {
         }
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        parameters = new HashMap<>();
+        super.onDetach(detachEvent);
+    }
+
+    /**
+     * A tooltip will be shown by default. However, you can either disable it using this method or
+     * you can create your own customized tooltips and add it using {@link #add(Component...)}.
+     */
+    public void disableDefaultTooltip() {
+        tooltip = null;
     }
 
     /**
@@ -289,6 +303,7 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
                     continue;
                 }
             }
+            c.skippingData(skipData);
             c.validate();
             c.setSerial(-2);
         }
@@ -312,6 +327,9 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
         if(!skipData && legend != null && parts.stream().noneMatch(cp -> cp instanceof Legend)) {
             parts.add(legend);
         }
+        if(!skipData && tooltip != null && parts.stream().noneMatch(cp -> cp instanceof Tooltip)) {
+            parts.add(tooltip);
+        }
         for(ComponentEncoder ce: encoders) {
             int serial = 0;
             for (ComponentPart cp : parts) {
@@ -330,6 +348,9 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
                 continue;
             }
             ce.encode(sb, parts);
+            if(sb.length() > 1 && sb.charAt(sb.length() - 1) != '\n') {
+                sb.append('\n');
+            }
         }
         sb.append('}');
         js("updateChart", customizeJSON(sb.toString()));

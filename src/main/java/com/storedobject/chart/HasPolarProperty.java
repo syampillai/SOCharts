@@ -17,18 +17,25 @@
 package com.storedobject.chart;
 
 /**
- * Numeric data. (A list-based data provider).
+ * Interface to denote that a {@link ComponentPart} has {@link PolarProperty}.
  *
  * @author Syam
  */
-public class Data extends AbstractData<Number> implements DataProvider {
+public interface HasPolarProperty {
 
     /**
-     * Constructor.
+     * Get the polar property. (If <code>true</code> is passed as the parameter, a new polar
+     * property will be created if not already exists).
      *
-     * @param data Initial data to add
+     * @param create Whether to create it or not.
+     * @return Polar property.
      */
-    public Data(Number... data) {
-        super(Number.class, data);
-    }
+    PolarProperty getPolarProperty(boolean create);
+
+    /**
+     * Set the polar property.
+     *
+     * @param polarProperty Polar property to set. It could be <code>null</code>.
+     */
+    void setPolarProperty(PolarProperty polarProperty);
 }

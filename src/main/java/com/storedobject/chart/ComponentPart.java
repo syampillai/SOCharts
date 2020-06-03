@@ -21,7 +21,7 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public interface ComponentPart {
+public interface ComponentPart extends ComponentProperty {
 
     /**
      * Each part should have a unique Id. (It can be a final variable and can be set by
@@ -49,13 +49,6 @@ public interface ComponentPart {
     }
 
     /**
-     * Encode the JSON string for this part.
-     *
-     * @param sb Encoded JSON string to be appended to this.
-     */
-    void encodeJSON(StringBuilder sb);
-
-    /**
      * Helper method: Encode a (name, value) pair.
      *
      * @param sb Encoded JSON string to be appended to this.
@@ -64,6 +57,44 @@ public interface ComponentPart {
      */
     static void encode(StringBuilder sb, String name, Object value) {
         sb.append('"').append(name).append("\":").append(escape(value));
+    }
+
+    /**
+     * Helper method: Encode a {@link ComponentProperty}.
+     *
+     * @param sb Encoded JSON string to be appended to this.
+     * @param componentProperty Component property (could be <code>null</code>).
+     */
+    static void encodeProperty(StringBuilder sb, ComponentProperty componentProperty) {
+        if(componentProperty != null) {
+            addComma(sb);
+            componentProperty.encodeJSON(sb);
+        }
+    }
+
+    /**
+     * Helper method: Add a comma if required.
+     *
+     * @param sb Add a comma to this.
+     */
+    static void addComma(StringBuilder sb) {
+        int len = sb.length();
+        if(len == 0) {
+            return;
+        }
+        char c;
+        while(len > 0) {
+            --len;
+            c = sb.charAt(len);
+            if(c == ' ' || c == '\n') {
+                continue;
+            }
+            if(c == '{' || c == '[' || c == ',') {
+                break;
+            }
+            sb.append(',');
+            break;
+        }
     }
 
     /**
@@ -129,7 +160,7 @@ public interface ComponentPart {
         if(string == null) {
             string = "";
         }
-        if(any instanceof Number) {
+        if(any instanceof Number || any instanceof Boolean) {
             return any.toString();
         }
         if(string.contains("\"")) {

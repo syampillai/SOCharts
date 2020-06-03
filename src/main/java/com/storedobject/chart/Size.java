@@ -16,6 +16,8 @@
 
 package com.storedobject.chart;
 
+import java.util.Objects;
+
 /**
  * Representation of "size" value. It can represent size in pixels {@link #pixels(int)} or size in percentage
  * {@link #percentage(int)}.
@@ -42,6 +44,10 @@ public class Size {
         this.size = size.size;
     }
 
+    void set(int size) {
+        this.size = size;
+    }
+
     void left() {
         size = -101;
     }
@@ -66,12 +72,29 @@ public class Size {
         size = -113;
     }
 
-    String encode() {
-        return encode(Integer.MIN_VALUE);
+    boolean isNull() {
+        return size == Integer.MIN_VALUE;
     }
 
-    String encode(int defaultValue) {
-        if(size == defaultValue || size == Integer.MIN_VALUE) {
+    int plus(int add) {
+        if(size == Integer.MIN_VALUE) {
+            return add;
+        }
+        if(size >= 0) {
+            return size + add;
+        }
+        if(size >= -100) {
+            add += -size;
+            if(add > 100) {
+                add = 100;
+            }
+            return -add;
+        }
+        return size;
+    }
+
+    String encode() {
+        if(size == Integer.MIN_VALUE) {
             return null;
         }
         switch (size) {
@@ -125,5 +148,23 @@ public class Size {
      */
     public static Size none() {
         return new Size(Integer.MIN_VALUE);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Size size1 = (Size) o;
+        return size == size1.size;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(size);
+    }
+
+    @Override
+    public String toString() {
+        return encode();
     }
 }

@@ -1,15 +1,34 @@
+/*
+ *  Copyright 2019-2020 Syam Pillai
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package com.storedobject.chart;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Representation of rectangular (cartesian) coordinate system with X and Y axes.
+ * Representation of rectangular (cartesian) coordinate system with X and Y axes. There could be one or more
+ * X and Y axes.
  *
  * @author Syam
  */
 public class RectangularCoordinate extends CoordinateSystem {
 
-    private XAxis<?> xAxis;
-    private YAxis<?> yAxis;
-    private Position position;
+    private final List<XAxis<?>> xAxes = new ArrayList<>();
+    private final List<YAxis<?>> yAxes = new ArrayList<>();
 
     /**
      * Constructor.
@@ -20,90 +39,88 @@ public class RectangularCoordinate extends CoordinateSystem {
     /**
      * Constructor.
      *
-     * @param xAxis X axis.
-     * @param yAxis Y axis.
+     * @param xAxis X axis (primary).
+     * @param yAxis Y axis (primary).
      */
     public RectangularCoordinate(XAxis<?> xAxis, YAxis<?> yAxis) {
-        this.xAxis = xAxis;
-        this.yAxis = yAxis;
+        addXAxis(xAxis);
+        addYAxis(yAxis);
     }
 
     /**
-     * Get the X axis.
+     * Get the X axes.
      *
-     * @return X axis.
+     * @return X axis list.
      */
-    public XAxis<?> getXAxis() {
-        return xAxis;
+    public List<XAxis<?>> getXAxes() {
+        return xAxes;
     }
 
     /**
-     * Set the X axis.
+     * Add a new X axis.
      *
-     * @param xAxis X axis.
+     * @param xAxis X axis to add.
      */
-    public void setXAxis(XAxis<?> xAxis) {
-        this.xAxis = xAxis;
+    public void addXAxis(XAxis<?> xAxis) {
+        if(xAxis != null) {
+            this.xAxes.add(xAxis);
+        }
     }
 
     /**
-     * Get the Y axis.
+     * Get the Y axes.
      *
-     * @return Y axis.
+     * @return Y axis list.
      */
-    public YAxis<?> getYAxis() {
-        return yAxis;
+    public List<YAxis<?>> getYAxes() {
+        return yAxes;
     }
 
     /**
-     * Set the Y axis.
+     * Add a new Y axis.
      *
-     * @param yAxis Y axis.
+     * @param yAxis Y axis to add.
      */
-    public void setYAxis(YAxis<?> yAxis) {
-        this.yAxis = yAxis;
+    public void addYAxis(YAxis<?> yAxis) {
+        if(yAxis != null) {
+            this.yAxes.add(yAxis);
+        }
     }
 
     @Override
     public void validate() throws Exception {
-        if(xAxis == null) {
+        if(xAxes.isEmpty()) {
             throw new Exception("X Axis not set");
         }
-        if(yAxis == null) {
+        if(yAxes.isEmpty()) {
             throw new Exception("Y Axis not set");
         }
-        if(xAxis.coordinateSystem != null && xAxis.coordinateSystem != this) {
-            throw new Exception("X Axis is used by some other coordinate system");
+        for(XAxis<?> xAxis: xAxes) {
+            if (xAxis.coordinateSystem != null && xAxis.coordinateSystem != this) {
+                throw new Exception("X Axis is used by some other coordinate system");
+            }
+            xAxis.coordinateSystem = this;
+            xAxis.validate();
         }
-        xAxis.coordinateSystem = this;
-        if(yAxis.coordinateSystem != null && yAxis.coordinateSystem != this) {
-            throw new Exception("Y Axis is used by some other coordinate system");
+        for(YAxis<?> yAxis: yAxes) {
+            if (yAxis.coordinateSystem != null && yAxis.coordinateSystem != this) {
+                throw new Exception("Y Axis is used by some other coordinate system");
+            }
+            yAxis.coordinateSystem = this;
+            yAxis.validate();
         }
-        yAxis.coordinateSystem = this;
-        xAxis.validate();
-        yAxis.validate();
     }
 
     @Override
     public void addParts(SOChart soChart) {
-        xAxis.coordinateSystem = this;
-        yAxis.coordinateSystem = this;
-        soChart.addParts(xAxis, yAxis);
-        super.addParts(soChart);
-    }
-
-    @Override
-    public void encodeJSON(StringBuilder sb) {
-        if(position != null) {
-            position.encodeJSON(sb);
+        for(XAxis<?> xAxis: xAxes) {
+            xAxis.coordinateSystem = this;
+            soChart.addParts(xAxis);
         }
-    }
-
-    public Position getPosition() {
-        return position;
-    }
-
-    public void setPosition(Position position) {
-        this.position = position;
+        for(YAxis<?> yAxis: yAxes) {
+            yAxis.coordinateSystem = this;
+            soChart.addParts(yAxis);
+        }
+        super.addParts(soChart);
     }
 }

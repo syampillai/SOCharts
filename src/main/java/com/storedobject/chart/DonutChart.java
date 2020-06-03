@@ -28,7 +28,7 @@ public class DonutChart extends PieChart {
      * Constructor.
      */
     public DonutChart() {
-        holeRadius = -60;
+        setHoleRadius(Size.percentage(60));
     }
 
     /**
@@ -37,17 +37,8 @@ public class DonutChart extends PieChart {
      * @param itemNames Item names of the slices.
      * @param values Values of the slices.
      */
-    public DonutChart(AbstractData<?> itemNames, Data values) {
+    public DonutChart(AbstractDataProvider<?> itemNames, DataProvider values) {
         super(itemNames, values);
-        holeRadius = -60;
-    }
-
-    /**
-     * Set the radius of the hole.
-     *
-     * @param holeRadius Hole radius to set.
-     */
-    public void setHoleRadius(Size holeRadius) {
-        this.holeRadius = holeRadius.get();
+        setHoleRadius(Size.percentage(60));
     }
 }

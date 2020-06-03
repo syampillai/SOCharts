@@ -17,18 +17,14 @@
 package com.storedobject.chart;
 
 /**
- * Numeric data. (A list-based data provider).
+ * Base class for the representation of color.
  *
  * @author Syam
  */
-public class Data extends AbstractData<Number> implements DataProvider {
+public abstract class AbstractColor implements ComponentProperty {
 
-    /**
-     * Constructor.
-     *
-     * @param data Initial data to add
-     */
-    public Data(Number... data) {
-        super(Number.class, data);
+    @Override
+    public void encodeJSON(StringBuilder sb) {
+        sb.append("\"color\":").append(this);
     }
 }

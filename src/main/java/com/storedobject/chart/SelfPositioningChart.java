@@ -22,7 +22,7 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public abstract class SelfPositioningChart extends AbstractChart {
+public abstract class SelfPositioningChart extends AbstractChart implements HasPosition {
 
     private Position position;
 
@@ -32,26 +32,20 @@ public abstract class SelfPositioningChart extends AbstractChart {
      * @param type type of the chart.
      * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
-    public SelfPositioningChart(Type type, AbstractData<?>... data) {
+    public SelfPositioningChart(Type type, AbstractDataProvider<?>... data) {
         super(type, data);
     }
 
-    /**
-     * Get the position of this chart.
-     *
-     * @return Position.
-     */
     @Override
-    public Position getPosition() {
+    public final Position getPosition(boolean create) {
+        if(position == null && create) {
+            position = new Position();
+        }
         return position;
     }
 
-    /**
-     * Set the position of this chart.
-     *
-     * @param position Position to set.
-     */
-    public void setPosition(Position position) {
+    @Override
+    public final void setPosition(Position position) {
         this.position = position;
     }
 }

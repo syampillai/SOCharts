@@ -39,32 +39,26 @@ public abstract class AbstractPart implements ComponentPart {
     public void encodeJSON(StringBuilder sb) {
         String name = getName();
         if(name != null) {
+            ComponentPart.addComma(sb);
             ComponentPart.encode(sb, "name", name);
             sb.append(',');
         }
-        sb.append("\"id\":").append(id).append(',');
-        Position p = getPosition();
-        if(p != null) {
-            int len = sb.length();
-            p.encodeJSON(sb);
-            if(sb.length() != len) {
-                sb.append(',');
-            }
+        sb.append("\"id\":").append(id);
+        if(this instanceof HasPosition) {
+            ComponentPart.encodeProperty(sb, ((HasPosition)this).getPosition(false));
         }
-    }
-
-    /**
-     * Get the position of this part. It could be null if not set or not supported. (For some parts
-     * it is not logical to define a position or a entirely different positioning mechanism exist).
-     *
-     * @return Default is <code>null</code>.
-     */
-    public Position getPosition() {
-        return null;
+        if(this instanceof HasPadding) {
+            ComponentPart.encodeProperty(sb, ((HasPadding)this).getPadding(false));
+        }
+        if(this instanceof HasPolarProperty) {
+            ComponentPart.encodeProperty(sb, ((HasPolarProperty) this).getPolarProperty(false));
+        }
+        sb.append(',');
     }
 
     /**
      * Get the name of this part. It could be null if not set or not supported.
+     *
      * @return Default is <code>null</code>.
      */
     public String getName() {

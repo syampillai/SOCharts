@@ -29,10 +29,10 @@ public abstract class AbstractChart extends Chart {
      * @param type type of the chart.
      * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
-    public AbstractChart(Type type, AbstractData<?>... data) {
+    public AbstractChart(Type type, AbstractDataProvider<?>... data) {
         super(type);
         super.setType(type);
-        AbstractData<?>[] d = new AbstractData[type.getAxes().length];
+        AbstractDataProvider<?>[] d = new AbstractData[type.getAxes().length];
         super.setData(d);
         if(data != null) {
             for (int i = 0; i < data.length; i++) {
@@ -56,7 +56,7 @@ public abstract class AbstractChart extends Chart {
     @Override
     public void validate() throws Exception {
         super.validate();
-        AbstractData<?>[] d = getData();
+        AbstractDataProvider<?>[] d = getData();
         for(int i = 0; i < d.length; i++) {
             if(d[i] == null) {
                 throw new Exception("Data for " + axisName(i) + " not set for " + className());
@@ -66,12 +66,12 @@ public abstract class AbstractChart extends Chart {
 
     /**
      * This method if invoked will raise a {@link RuntimeException}. However, you can use
-     * {@link #setData(AbstractData, int)} to set data at a particular index.
+     * {@link #setData(AbstractDataProvider, int)} to set data at a particular index.
      *
      * @param data Data to be used.
      */
     @Override
-    public final void setData(AbstractData<?>... data) {
+    public final void setData(AbstractDataProvider<?>... data) {
         throw new RuntimeException();
     }
 
@@ -81,8 +81,8 @@ public abstract class AbstractChart extends Chart {
      * @param data Data to be set.
      * @param index Index position in the data array.
      */
-    protected final void setData(AbstractData<?> data, int index) {
-        AbstractData<?>[] d = getData();
+    protected final void setData(AbstractDataProvider<?> data, int index) {
+        AbstractDataProvider<?>[] d = getData();
         if(index >= 0 && index < d.length) {
             d[index] = data;
         }

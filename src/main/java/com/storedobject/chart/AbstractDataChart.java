@@ -17,18 +17,27 @@
 package com.storedobject.chart;
 
 /**
- * Numeric data. (A list-based data provider).
+ * Some charts can not encode chart data in a centralized way because its data require some special encoding. This
+ * is the base class for such charts.
  *
  * @author Syam
  */
-public class Data extends AbstractData<Number> implements DataProvider {
+public class AbstractDataChart extends AbstractChart {
+
+    boolean skippingData = false;
 
     /**
-     * Constructor.
+     * Create a chart of a given type and data.
      *
-     * @param data Initial data to add
+     * @param type type of the chart.
+     * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
-    public Data(Number... data) {
-        super(Number.class, data);
+    public AbstractDataChart(Type type, AbstractDataProvider<?>... data) {
+        super(type, data);
+    }
+
+    @Override
+    public final void skippingData(boolean skipping) {
+        this.skippingData = skipping;
     }
 }

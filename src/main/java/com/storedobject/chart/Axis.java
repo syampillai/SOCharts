@@ -42,7 +42,7 @@ public abstract class Axis<T> extends AbstractDisplayablePart implements Compone
      * @return value type.
      */
     public final String getType() {
-        return AbstractData.getType(dataType);
+        return AbstractDataProvider.getType(dataType);
     }
 
     @SuppressWarnings("RedundantThrows")

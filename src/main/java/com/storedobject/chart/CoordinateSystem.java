@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author Syam
  */
-public abstract class CoordinateSystem extends AbstractDisplayablePart implements Component {
+public abstract class CoordinateSystem extends AbstractDisplayablePart implements Component, HasPosition {
 
     private Position position;
     private final List<Chart> charts = new ArrayList<>();
@@ -67,22 +67,22 @@ public abstract class CoordinateSystem extends AbstractDisplayablePart implement
         }
     }
 
-    /**
-     * Get the position of this coordinate system.
-     *
-     * @return Position.
-     */
     @Override
-    public Position getPosition() {
+    public final Position getPosition(boolean create) {
+        if(this instanceof HasPolarProperty) {
+            return null;
+        }
+        if(position == null && create) {
+            position = new Position();
+        }
         return position;
     }
 
-    /**
-     * Set the position of this coordinate system.
-     *
-     * @param position Position to set.
-     */
-    public void setPosition(Position position) {
+    @Override
+    public final void setPosition(Position position) {
+        if(this instanceof HasPolarProperty) {
+            return;
+        }
         this.position = position;
     }
 }

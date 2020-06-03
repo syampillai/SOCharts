@@ -40,7 +40,7 @@ public class Chart extends AbstractPart implements Component {
     private Type type = Type.Line;
     private String name;
     CoordinateSystem coordinateSystem;
-    private AbstractData<?>[] data;
+    private AbstractDataProvider<?>[] data;
 
     /**
      * Create a {@link Type#Line} chart.
@@ -54,7 +54,7 @@ public class Chart extends AbstractPart implements Component {
      *
      * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
-    public Chart(AbstractData<?>... data) {
+    public Chart(AbstractDataProvider<?>... data) {
         this(null, data);
     }
 
@@ -64,7 +64,7 @@ public class Chart extends AbstractPart implements Component {
      * @param type type of the chart.
      * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
-    public Chart(Type type, AbstractData<?>... data) {
+    public Chart(Type type, AbstractDataProvider<?>... data) {
         setType(type);
         this.data = data;
     }
@@ -74,7 +74,7 @@ public class Chart extends AbstractPart implements Component {
      *
      * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
-    public void setData(AbstractData<?>... data) {
+    public void setData(AbstractDataProvider<?>... data) {
         this.data = data;
     }
 
@@ -83,7 +83,7 @@ public class Chart extends AbstractPart implements Component {
      *
      * @return Data.
      */
-    public AbstractData<?>[] getData() {
+    public AbstractDataProvider<?>[] getData() {
         return data;
     }
 
@@ -96,6 +96,9 @@ public class Chart extends AbstractPart implements Component {
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
         ComponentPart.encode(sb, "type", type());
+        if(this instanceof AbstractDataChart) {
+            return;
+        }
         sb.append(",\"encode\":{");
         String[] axes = type.getAxes();
         for(int i = 0; i < axes.length; i++) {
@@ -109,10 +112,10 @@ public class Chart extends AbstractPart implements Component {
 
     @Override
     public void validate() throws Exception {
-        if(data == null || data.length == 0) {
+        String[] axes = type.getAxes();
+        if(data == null) {
             throw new Exception("Data not set for " + className());
         }
-        String[] axes = type.getAxes();
         if(data.length < axes.length) {
             throw new Exception("Data for " + name(axes[data.length]) + " not set for " + className());
         }

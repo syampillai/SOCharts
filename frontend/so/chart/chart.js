@@ -31,12 +31,14 @@ export class SOChart extends LitElement {
         this.height = "33vh";
     }
 
-    firstUpdated() {
-        if(!this.chart) {
-            this.chart = echarts.init(this.shadowRoot.getElementById(this.idChart));
-            this.chart.setOption({ });
-            this.$server.ready();
-        }
+    connectedCallback() {
+        super.connectedCallback();
+        this.$server.ready();
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this.destoryChart();
     }
 
     updated(changedProps) {
@@ -62,7 +64,7 @@ export class SOChart extends LitElement {
 
     updateChart(options) {
         var json = JSON.parse(options);
-        if(this.chart == null) {
+        if(!this.chart || this.chart == null) {
             this.chart = echarts.init(this.shadowRoot.getElementById(this.idChart));
         }
         this.chart.setOption(json);

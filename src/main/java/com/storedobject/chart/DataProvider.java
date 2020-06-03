@@ -17,18 +17,9 @@
 package com.storedobject.chart;
 
 /**
- * Numeric data. (A list-based data provider).
+ * Provider of numeric data.
  *
  * @author Syam
  */
-public class Data extends AbstractData<Number> implements DataProvider {
-
-    /**
-     * Constructor.
-     *
-     * @param data Initial data to add
-     */
-    public Data(Number... data) {
-        super(Number.class, data);
-    }
+public interface DataProvider extends AbstractDataProvider<Number> {
 }

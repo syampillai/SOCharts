@@ -18,6 +18,8 @@ package com.storedobject.chart;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * <p>Representation of data as a {@link java.util.List}. The type of data can be anything that can be used
@@ -27,7 +29,7 @@ import java.util.Arrays;
  * @param <T> Data type.
  * @author Syam
  */
-public class AbstractData<T> extends ArrayList<T> implements ComponentPart {
+public class AbstractData<T> extends ArrayList<T> implements AbstractDataProvider<T>, ComponentPart {
 
     private int index = -1;
     private final Class<T> dataType;
@@ -84,49 +86,18 @@ public class AbstractData<T> extends ArrayList<T> implements ComponentPart {
         this.name = name;
     }
 
-    /**
-     * Get the type of the data.
-     *
-     * @return value type.
-     */
-    public final String getType() {
-        return getType(dataType);
-    }
-
-    static String getType(Class<?> dataType) {
-        if(Number.class.isAssignableFrom(dataType)) {
-            return "value";
-        }
-        return "category";
-    }
-
-    @Override
-    public void encodeJSON(StringBuilder sb) {
-        sb.append("\"d").append(index).append("\":");
-        append(sb);
-    }
-
-    void append(StringBuilder sb) {
-        boolean numeric = Number.class.isAssignableFrom(dataType);
-        sb.append("[");
-        boolean first = true;
-        for(T v: this) {
-            if(first) {
-                first = false;
-            } else {
-                sb.append(',');
-            }
-            if(numeric) {
-                sb.append(v);
-            } else {
-                sb.append(ComponentPart.escape(v));
-            }
-        }
-        sb.append("]");
-    }
-
     @SuppressWarnings("RedundantThrows")
     @Override
     public void validate() throws Exception {
+    }
+
+    @Override
+    public List<T> asList() {
+        return this;
+    }
+
+    @Override
+    public Stream<T> stream() {
+        return super.stream();
     }
 }

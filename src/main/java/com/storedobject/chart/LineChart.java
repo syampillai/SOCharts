@@ -24,6 +24,8 @@ package com.storedobject.chart;
  */
 public class LineChart extends XYChart {
 
+    private boolean smooth = false;
+
     /**
      * Constructor. (Data can be set later).
      */
@@ -37,7 +39,23 @@ public class LineChart extends XYChart {
      * @param xData Data for X axis.
      * @param yData Data for Y axis.
      */
-    public LineChart(AbstractData<?> xData, Data yData) {
+    public LineChart(AbstractDataProvider<?> xData, DataProvider yData) {
         super(Type.Line, xData, yData);
+    }
+
+    @Override
+    public void encodeJSON(StringBuilder sb) {
+        super.encodeJSON(sb);
+        if(isSmooth()) {
+            sb.append(",\"smooth\":true");
+        }
+    }
+
+    public boolean isSmooth() {
+        return smooth;
+    }
+
+    public void setSmooth(boolean smooth) {
+        this.smooth = smooth;
     }
 }

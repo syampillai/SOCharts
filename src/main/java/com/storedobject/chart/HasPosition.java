@@ -17,18 +17,25 @@
 package com.storedobject.chart;
 
 /**
- * Numeric data. (A list-based data provider).
+ * Interface to denote that a {@link ComponentPart} has {@link Position}.
  *
  * @author Syam
  */
-public class Data extends AbstractData<Number> implements DataProvider {
+public interface HasPosition {
 
     /**
-     * Constructor.
+     * Get the position of this on the chart display area. (If <code>true</code> is passed as the parameter,
+     * a new position will be created if not already exists).
      *
-     * @param data Initial data to add
+     * @param create Whether to create it or not.
+     * @return Position.
      */
-    public Data(Number... data) {
-        super(Number.class, data);
-    }
+    Position getPosition(boolean create);
+
+    /**
+     * Set the position of this.
+     *
+     * @param position Position to set.
+     */
+    void setPosition(Position position);
 }

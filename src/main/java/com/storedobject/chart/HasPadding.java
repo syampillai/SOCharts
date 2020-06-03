@@ -17,18 +17,25 @@
 package com.storedobject.chart;
 
 /**
- * Numeric data. (A list-based data provider).
+ * Interface to denote that a {@link ComponentPart} has {@link Padding}.
  *
  * @author Syam
  */
-public class Data extends AbstractData<Number> implements DataProvider {
+public interface HasPadding {
 
     /**
-     * Constructor.
+     * Get the padding of this on the chart display area. (If <code>true</code> is passed as the parameter,
+     * a new padding will be created if not already exists).
      *
-     * @param data Initial data to add
+     * @param create Whether to create it or not.
+     * @return Padding.
      */
-    public Data(Number... data) {
-        super(Number.class, data);
-    }
+    Padding getPadding(boolean create);
+
+    /**
+     * Set the padding of this.
+     *
+     * @param padding Padding to set.
+     */
+    void setPadding(Padding padding);
 }

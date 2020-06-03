@@ -42,7 +42,7 @@ public class FunnelChart extends SelfPositioningChart {
      * @param itemNames Item names of the slices.
      * @param values Values of the slices.
      */
-    public FunnelChart(AbstractData<?> itemNames, Data values) {
+    public FunnelChart(AbstractDataProvider<?> itemNames, DataProvider values) {
         super(Type.Funnel, itemNames, values);
     }
 
@@ -51,7 +51,7 @@ public class FunnelChart extends SelfPositioningChart {
      *
      * @param itemNames Item names of the slices.
      */
-    public void setItemNames(AbstractData<?> itemNames) {
+    public void setItemNames(AbstractDataProvider<?> itemNames) {
         setData(itemNames, 0);
     }
 
@@ -60,7 +60,7 @@ public class FunnelChart extends SelfPositioningChart {
      *
      * @param data Data.
      */
-    public void setData(Data data) {
+    public void setData(DataProvider data) {
         setData(data, 1);
     }
 

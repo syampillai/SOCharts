@@ -17,18 +17,14 @@
 package com.storedobject.chart;
 
 /**
- * Numeric data. (A list-based data provider).
+ * Tooltip to display.
+ * Basic support only. Future versions will provide more detailed features.
  *
  * @author Syam
  */
-public class Data extends AbstractData<Number> implements DataProvider {
+public class Tooltip extends AbstractDisplayablePart implements Component {
 
-    /**
-     * Constructor.
-     *
-     * @param data Initial data to add
-     */
-    public Data(Number... data) {
-        super(Number.class, data);
+    @Override
+    public void validate() {
     }
 }

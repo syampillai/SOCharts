@@ -44,4 +44,16 @@ public interface Component extends ComponentPart {
      */
     default void addParts(SOChart soChart) {
     }
+
+    /**
+     * This method is invoked whenever chart is getting updated and no data is passed to the client. The component's
+     * {@link #encodeJSON(StringBuilder)} method may not encode any data-specific part in this mode. (Most of the
+     * {@link Chart}s handle data in a centralized way and in that case, this method needs not take care of anything
+     * special. However, there are charts that handle data in a specific way - example: {@link GaugeChart},
+     * {@link RadarChart} etc.). This is invoked even before {@link #validate()} is invoked.
+     *
+     * @param skipping True if skipping data.
+     */
+    default void skippingData(boolean skipping) {
+    }
 }
