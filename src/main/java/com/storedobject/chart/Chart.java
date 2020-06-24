@@ -16,10 +16,12 @@
 
 package com.storedobject.chart;
 
+import java.util.*;
+
 /**
  * <p>
- * Chart. Since this is a concrete class, this may be directly used for creating a chart of a particular {@link Type}.
- * It has got the flexibility that the {@link Type} can be changed at any time using {@link #setType(Type)} method.
+ * Chart. Since this is a concrete class, this may be directly used for creating a chart of a particular {@link ChartType}.
+ * It has got the flexibility that the {@link ChartType} can be changed at any time using {@link #setType(ChartType)} method.
  * However, there are concrete derivatives of this class such as {@link PieChart}, {@link NightingaleRoseChart} etc.
  * where more chart-specific methods are available and data for the chart is checked more accurately for errors. If
  * the data set for the chart is of invalid type, system tries to do its best to adapt that data but the chart may not
@@ -37,20 +39,21 @@ package com.storedobject.chart;
  */
 public class Chart extends AbstractPart implements Component {
 
-    private Type type = Type.Line;
+    List<Axis> axes;
+    private ChartType type = ChartType.Line;
     private String name;
     CoordinateSystem coordinateSystem;
     private AbstractDataProvider<?>[] data;
 
     /**
-     * Create a {@link Type#Line} chart.
+     * Create a {@link ChartType#Line} chart.
      */
     public Chart() {
-        this(Type.Line);
+        this(ChartType.Line);
     }
 
     /**
-     * Create a {@link Type#Line} chart with the given data.
+     * Create a {@link ChartType#Line} chart with the given data.
      *
      * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
@@ -64,7 +67,7 @@ public class Chart extends AbstractPart implements Component {
      * @param type type of the chart.
      * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
-    public Chart(Type type, AbstractDataProvider<?>... data) {
+    public Chart(ChartType type, AbstractDataProvider<?>... data) {
         setType(type);
         this.data = data;
     }
@@ -96,11 +99,47 @@ public class Chart extends AbstractPart implements Component {
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
         ComponentPart.encode(sb, "type", type());
+        if(coordinateSystem != null) {
+            if(coordinateSystem.axes != axes) {
+                ComponentPart aw;
+                if(axes != null && !axes.isEmpty()) {
+                    for (Axis a : axes) {
+                        aw = a.wrap(coordinateSystem);
+                        if (aw.getSerial() > 0) {
+                            sb.append(",\"").append(a.axisName()).append("Index\":").append(aw.getSerial());
+                        }
+                    }
+                }
+            } else {
+                Set<Class<?>> axisClasses = new HashSet<>();
+                coordinateSystem.axes.forEach(a -> axisClasses.add(a.getClass()));
+                axisClasses.forEach(ac -> coordinateSystem.axes(ac).map(a -> a.wrap(coordinateSystem)).
+                        min(Comparator.comparing(ComponentPart::getSerial)).ifPresent(w -> {
+                            if(w.getSerial() > 0) {
+                                sb.append(",\"").append(((Axis.AxisWrapper)w).axis.axisName()).append("Index\":").
+                                        append(w.getSerial());
+                            }
+            }));
+            }
+        }
+        if(coordinateSystem != null) {
+            String name = coordinateSystem.systemName();
+            if(name != null) {
+                ComponentPart.addComma(sb);
+                ComponentPart.encode(sb, "coordinateSystem", name);
+            }
+        }
         if(this instanceof AbstractDataChart) {
             return;
         }
         sb.append(",\"encode\":{");
-        String[] axes = type.getAxes();
+        String[] axes = null;
+        if(coordinateSystem != null) {
+            axes = coordinateSystem.axesData();
+        }
+        if(axes == null) {
+            axes = type.getAxes();
+        }
         for(int i = 0; i < axes.length; i++) {
             if(i > 0) {
                 sb.append(',');
@@ -111,16 +150,45 @@ public class Chart extends AbstractPart implements Component {
     }
 
     @Override
-    public void validate() throws Exception {
+    public void validate() throws ChartException {
         String[] axes = type.getAxes();
         if(data == null) {
-            throw new Exception("Data not set for " + className());
+            throw new ChartException("Data not set for " + className());
         }
         if(data.length < axes.length) {
-            throw new Exception("Data for " + name(axes[data.length]) + " not set for " + className());
+            throw new ChartException("Data for " + name(axes[data.length]) + " not set for " + className());
         }
-        if(coordinateSystem == null && type.requireCoordinateSystem()) {
-            throw new Exception("Coordinate system not set for " + className());
+        if(type.requireCoordinateSystem()) {
+            if (coordinateSystem == null) {
+                throw new ChartException("Coordinate system not set for " + className());
+            }
+            if(this.axes == null || this.axes.isEmpty()) {
+                this.axes = coordinateSystem.axes;
+            }
+            if(coordinateSystem.axes != this.axes) {
+                for(Axis a: this.axes) {
+                    if(!coordinateSystem.axes.contains(a)) {
+                        String name = a.getName();
+                        if(name == null) {
+                            name = ComponentPart.className(a.getClass());
+                        }
+                        throw new ChartException("Axis " + name + " doesn't belong to the coordinate system of this chart - "
+                                + getName());
+                    }
+                }
+            }
+        }
+        if(coordinateSystem != null && coordinateSystem.axes != this.axes) {
+            for(Axis a: this.axes) {
+                if(this.axes.stream().filter(ax -> ax.getClass() == a.getClass()).count() > 1) {
+                    String name = a.getName();
+                    if(name == null) {
+                        name = ComponentPart.className(a.getClass());
+                    }
+                    throw new ChartException("Multiple axes of the same type found (" + name +
+                            ") for this chart - " + getName());
+                }
+            }
         }
     }
 
@@ -158,7 +226,7 @@ public class Chart extends AbstractPart implements Component {
      *
      * @return Type.
      */
-    public Type getType() {
+    public ChartType getType() {
         return type;
     }
 
@@ -167,26 +235,54 @@ public class Chart extends AbstractPart implements Component {
      *
      * @param type Type to be set.
      */
-    public void setType(Type type) {
-        this.type = type == null ? Type.Line : type;
+    public void setType(ChartType type) {
+        this.type = type == null ? ChartType.Line : type;
     }
 
     /**
-     * Plot the chart on a given coordinate system. (Certain chart types such as {@link Type#Pie},
+     * Plot the chart on a given coordinate system. (Certain chart types such as {@link ChartType#Pie},
      * do not have a coordinate system and thus, this call is not required. Also, instead of using this
-     * method, you can use the {@link CoordinateSystem#add(Chart...)} method.
+     * method, you can use the {@link CoordinateSystem#add(Chart...)} method if you want to plot on the default
+     * set of axes.
      *
      * @param coordinateSystem Coordinate system on which the chart will be plotted. (If it was plotted on
      *                         another coordinate system, it will be removed from it).
+     * @param axes Axes to be used by the chart. This needs to be specified if the coordinate system has
+     *             multiple axes of the required type.
      * @return Self reference.
      */
-    public Chart plotOn(CoordinateSystem coordinateSystem) {
+    public Chart plotOn(CoordinateSystem coordinateSystem, Axis... axes) {
         if(coordinateSystem == null) {
-            if(this.coordinateSystem != null) {
-                this.coordinateSystem.remove(this);
-            }
+            this.axes = null;
         } else if(type.requireCoordinateSystem()) {
             coordinateSystem.add(this);
+        }
+        if(this.coordinateSystem != null && axes != null && axes.length > 0) {
+            this.axes = new ArrayList<>();
+            for(Axis a: axes) {
+                if(a != null) {
+                    this.axes.add(a);
+                }
+            }
+            this.coordinateSystem.addAxis(axes);
+        }
+        return this;
+    }
+
+    /**
+     * Plot the chart on a given set of axes.
+     *
+     * @param axes Axes to be used by the chart.
+     * @return Self reference.
+     */
+    public Chart plotOn(Axis... axes) {
+        if(axes != null && axes.length > 0) {
+            this.axes = new ArrayList<>();
+            for(Axis a: axes) {
+                if(a != null) {
+                    this.axes.add(a);
+                }
+            }
         }
         return this;
     }

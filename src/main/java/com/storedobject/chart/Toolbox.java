@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author Syam
  */
-public class Toolbox extends AbstractDisplayablePart implements Component, HasPosition {
+public class Toolbox extends VisiblePart implements Component, HasPosition {
 
     private final List<ToolboxButton> buttons = new ArrayList<>();
     private Position position;

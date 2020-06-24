@@ -24,4 +24,9 @@ package com.storedobject.chart;
  * @author Syam
  */
 public interface CategoryDataProvider extends AbstractDataProvider<String> {
+
+    @Override
+    default DataType getDataType() {
+        return DataType.CATEGORY;
+    }
 }

@@ -30,7 +30,7 @@ public abstract class XYChart extends AbstractChart {
      * @param xData Data for X axis.
      * @param yData Data for Y axis.
      */
-    public XYChart(Type type, AbstractDataProvider<?> xData, DataProvider yData) {
+    public XYChart(ChartType type, AbstractDataProvider<?> xData, DataProvider yData) {
         super(type, xData, yData);
     }
 

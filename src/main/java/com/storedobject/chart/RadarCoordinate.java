@@ -16,8 +16,10 @@
 
 package com.storedobject.chart;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
- * Radar coordinate is used by {@link RadarChart}. Its each leg (axis) can be labelled (indicated)
+ * Radar coordinate is used by {@link RadarChart}. Its each leg (axis) can be labelled (indicators)
  * by {@link CategoryData}.
  *
  * @author Syam
@@ -25,7 +27,9 @@ package com.storedobject.chart;
 public class RadarCoordinate extends CoordinateSystem implements HasPolarProperty {
 
     private PolarProperty polarProperty;
-    private CategoryData axisIndicators;
+    private CategoryDataProvider axisIndicators;
+    private int startingAngle = 90;
+    private Color color;
 
     /**
      * Constructor. Axis indicators can be set later.
@@ -39,7 +43,7 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
      *
      * @param axisIndicators Axis indicators to set.
      */
-    public RadarCoordinate(CategoryData axisIndicators) {
+    public RadarCoordinate(CategoryDataProvider axisIndicators) {
         this.axisIndicators = axisIndicators;
     }
 
@@ -48,7 +52,7 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
      *
      * @param axisIndicators Axis indicators to set.
      */
-    public void setAxisIndicators(CategoryData axisIndicators) {
+    public void setAxisIndicators(CategoryDataProvider axisIndicators) {
         this.axisIndicators = axisIndicators;
     }
 
@@ -57,14 +61,14 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
      *
      * @return Axis indicators.
      */
-    public CategoryData getAxisIndicators() {
+    public CategoryDataProvider getAxisIndicators() {
         return axisIndicators;
     }
 
     @Override
-    public void validate() throws Exception {
-        if(axisIndicators == null || axisIndicators.isEmpty()) {
-            throw new Exception("No axis-indicators for " + className());
+    public void validate() throws ChartException {
+        if(axisIndicators == null || axisIndicators.stream().findAny().isEmpty()) {
+            throw new ChartException("No axis-indicators for " + className());
         }
     }
 
@@ -72,16 +76,17 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
         sb.append("\"indicator\":[");
-        boolean first = true;
-        for(String category: axisIndicators) {
-            if(first) {
-                first = false;
+        final AtomicBoolean first = new AtomicBoolean(true);
+        axisIndicators.stream().forEach(category -> {
+            if(first.get()) {
+                first.set(false);
             } else {
                 sb.append(',');
             }
             sb.append("{\"name\":").append(ComponentPart.escape(category)).append('}');
-        }
-        sb.append(']');
+        });
+        sb.append("],\"startAngle\":").append(startingAngle);
+        ComponentPart.encodeProperty(sb, color);
     }
 
     @Override
@@ -95,5 +100,41 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
     @Override
     public final void setPolarProperty(PolarProperty polarProperty) {
         this.polarProperty = polarProperty;
+    }
+
+    /**
+     * Get the starting angle.
+     *
+     * @return Angle in degrees.
+     */
+    public int getStartingAngle() {
+        return startingAngle;
+    }
+
+    /**
+     * Set the starting angle.
+     *
+     * @param startingAngle Angle in degrees.
+     */
+    public void setStartingAngle(int startingAngle) {
+        this.startingAngle = startingAngle;
+    }
+
+    /**
+     * Get the color of the indicator.
+     *
+     * @return Color.
+     */
+    public final Color getColor() {
+        return color;
+    }
+
+    /**
+     * Set color of the indicator.
+     *
+     * @param color Color.
+     */
+    public void setColor(Color color) {
+        this.color = color;
     }
 }

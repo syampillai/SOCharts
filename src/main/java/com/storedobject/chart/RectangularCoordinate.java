@@ -16,9 +16,6 @@
 
 package com.storedobject.chart;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Representation of rectangular (cartesian) coordinate system with X and Y axes. There could be one or more
  * X and Y axes.
@@ -27,100 +24,69 @@ import java.util.List;
  */
 public class RectangularCoordinate extends CoordinateSystem {
 
-    private final List<XAxis<?>> xAxes = new ArrayList<>();
-    private final List<YAxis<?>> yAxes = new ArrayList<>();
-
-    /**
-     * Constructor.
-     */
-    public RectangularCoordinate() {
-    }
+    private Border border;
+    private boolean sizeIncludeLabels = false;
 
     /**
      * Constructor.
      *
-     * @param xAxis X axis (primary).
-     * @param yAxis Y axis (primary).
+     * @param axes Axes of the coordinate
      */
-    public RectangularCoordinate(XAxis<?> xAxis, YAxis<?> yAxis) {
-        addXAxis(xAxis);
-        addYAxis(yAxis);
-    }
-
-    /**
-     * Get the X axes.
-     *
-     * @return X axis list.
-     */
-    public List<XAxis<?>> getXAxes() {
-        return xAxes;
-    }
-
-    /**
-     * Add a new X axis.
-     *
-     * @param xAxis X axis to add.
-     */
-    public void addXAxis(XAxis<?> xAxis) {
-        if(xAxis != null) {
-            this.xAxes.add(xAxis);
-        }
-    }
-
-    /**
-     * Get the Y axes.
-     *
-     * @return Y axis list.
-     */
-    public List<YAxis<?>> getYAxes() {
-        return yAxes;
-    }
-
-    /**
-     * Add a new Y axis.
-     *
-     * @param yAxis Y axis to add.
-     */
-    public void addYAxis(YAxis<?> yAxis) {
-        if(yAxis != null) {
-            this.yAxes.add(yAxis);
-        }
+    public RectangularCoordinate(XYAxis... axes) {
+        addAxis(axes);
     }
 
     @Override
-    public void validate() throws Exception {
-        if(xAxes.isEmpty()) {
-            throw new Exception("X Axis not set");
+    public void validate() throws ChartException {
+        if(noAxis(XAxis.class)) {
+            throw new ChartException("X Axis not set");
         }
-        if(yAxes.isEmpty()) {
-            throw new Exception("Y Axis not set");
+        if(noAxis(YAxis.class)) {
+            throw new ChartException("Y Axis not set");
         }
-        for(XAxis<?> xAxis: xAxes) {
-            if (xAxis.coordinateSystem != null && xAxis.coordinateSystem != this) {
-                throw new Exception("X Axis is used by some other coordinate system");
-            }
-            xAxis.coordinateSystem = this;
-            xAxis.validate();
+        super.validate();
+    }
+
+    /**
+     * Get the border.
+     * @param create Whether to create if not exists or not.
+     *
+     * @return Border.
+     */
+    public final Border getBorder(boolean create) {
+        if(border == null && create) {
+            border = new Border();
         }
-        for(YAxis<?> yAxis: yAxes) {
-            if (yAxis.coordinateSystem != null && yAxis.coordinateSystem != this) {
-                throw new Exception("Y Axis is used by some other coordinate system");
-            }
-            yAxis.coordinateSystem = this;
-            yAxis.validate();
-        }
+        return border;
+    }
+
+    /**
+     * Set the border.
+     *
+     * @param border Border.
+     */
+    public void setBorder(Border border) {
+        this.border = border;
     }
 
     @Override
-    public void addParts(SOChart soChart) {
-        for(XAxis<?> xAxis: xAxes) {
-            xAxis.coordinateSystem = this;
-            soChart.addParts(xAxis);
+    public void encodeJSON(StringBuilder sb) {
+        super.encodeJSON(sb);
+        ComponentPart.encodeProperty(sb, border);
+        if(sizeIncludeLabels) {
+            sb.append(",\"containLabel\":true");
         }
-        for(YAxis<?> yAxis: yAxes) {
-            yAxis.coordinateSystem = this;
-            soChart.addParts(yAxis);
-        }
-        super.addParts(soChart);
+    }
+
+    /**
+     * Set the size in such a way that the size of the coordinate system includes labels too.
+     */
+    public void sizeIncludesLabels() {
+        sizeIncludeLabels = true;
+    }
+
+    @Override
+    String systemName() {
+        return "cartesian2d";
     }
 }

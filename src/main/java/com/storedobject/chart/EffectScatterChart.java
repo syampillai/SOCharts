@@ -38,6 +38,6 @@ public class EffectScatterChart extends XYChart {
      * @param yData Data for Y axis.
      */
     public EffectScatterChart(AbstractDataProvider<?> xData, DataProvider yData) {
-        super(Type.EffectScatter, xData, yData);
+        super(ChartType.EffectScatter, xData, yData);
     }
 }

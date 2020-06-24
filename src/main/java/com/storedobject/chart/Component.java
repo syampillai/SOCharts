@@ -20,7 +20,7 @@ package com.storedobject.chart;
  * <p>
  * Chart component. Chart components can be added to the {@link SOChart} for rendering using
  * {@link SOChart#add(Component...)} method. Some chart components have other components as its parts. Thus, those
- * will be automatically added to the same chart when the component is added. For example: If a {@link Type#Line}
+ * will be automatically added to the same chart when the component is added. For example: If a {@link ChartType#Line}
  * chart, plotted on a {@link RectangularCoordinate}, is added, the {@link RectangularCoordinate} will be automatically
  * added. However, it is not an error if you add both of them separately.
  * </p>

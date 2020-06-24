@@ -16,6 +16,8 @@
 
 package com.storedobject.chart;
 
+import java.util.Objects;
+
 /**
  * Represents an abstract {@link ComponentPart} with some common base properties.
  *
@@ -73,5 +75,18 @@ public abstract class AbstractPart implements ComponentPart {
     @Override
     public final void setSerial(int serial) {
         this.serial = serial;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractPart that = (AbstractPart) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

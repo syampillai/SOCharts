@@ -16,32 +16,21 @@
 
 package com.storedobject.chart;
 
+import java.time.LocalDateTime;
+
 /**
- * Represents an abstract {@link ComponentPart} with some common base properties.
+ * Time data provider. (A list-based data provider).
  *
  * @author Syam
  */
-public abstract class AbstractDisplayablePart extends AbstractPart {
-
-    boolean show = true;
+public class TimeData extends AbstractData<LocalDateTime> implements TimeDataProvider {
 
     /**
-     * Show this part.
+     * Constructor.
+     *
+     * @param data Initial data to add
      */
-    public void show() {
-        show = true;
-    }
-
-    /**
-     * Hide this part.
-     */
-    public void hide() {
-        show = false;
-    }
-
-    @Override
-    public void encodeJSON(StringBuilder sb) {
-        super.encodeJSON(sb);
-        sb.append("\"show\":").append(show).append(',');
+    public TimeData(LocalDateTime... data) {
+        super(LocalDateTime.class, data);
     }
 }

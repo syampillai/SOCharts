@@ -29,10 +29,10 @@ public abstract class AbstractChart extends Chart {
      * @param type type of the chart.
      * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
-    public AbstractChart(Type type, AbstractDataProvider<?>... data) {
+    public AbstractChart(ChartType type, AbstractDataProvider<?>... data) {
         super(type);
         super.setType(type);
-        AbstractDataProvider<?>[] d = new AbstractData[type.getAxes().length];
+        AbstractDataProvider<?>[] d = new AbstractDataProvider[type.getAxes().length];
         super.setData(d);
         if(data != null) {
             for (int i = 0; i < data.length; i++) {
@@ -45,21 +45,21 @@ public abstract class AbstractChart extends Chart {
     }
 
     /**
-     * Calling this method does not have any effect. On specific charts, the {@link Type} can not be changed.
+     * Calling this method does not have any effect. On specific charts, the {@link ChartType} can not be changed.
      *
      * @param type Type to be set.
      */
     @Override
-    public final void setType(Type type) {
+    public final void setType(ChartType type) {
     }
 
     @Override
-    public void validate() throws Exception {
+    public void validate() throws ChartException {
         super.validate();
         AbstractDataProvider<?>[] d = getData();
         for(int i = 0; i < d.length; i++) {
             if(d[i] == null) {
-                throw new Exception("Data for " + axisName(i) + " not set for " + className());
+                throw new ChartException("Data for " + axisName(i) + " not set for " + className());
             }
         }
     }

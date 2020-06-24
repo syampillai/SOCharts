@@ -56,6 +56,21 @@ public interface ComponentPart extends ComponentProperty {
      * @param value Value to be encoded.
      */
     static void encode(StringBuilder sb, String name, Object value) {
+        encode(sb, name, value, false);
+    }
+
+    /**
+     * Helper method: Encode a (name, value) pair.
+     *
+     * @param sb Encoded JSON string to be appended to this.
+     * @param name Name to be encoded.
+     * @param value Value to be encoded.
+     * @param startingComma Whether to start with a comma or not.
+     */
+    static void encode(StringBuilder sb, String name, Object value, boolean startingComma) {
+        if(startingComma) {
+            addComma(sb);
+        }
         sb.append('"').append(name).append("\":").append(escape(value));
     }
 
@@ -113,9 +128,9 @@ public interface ComponentPart extends ComponentProperty {
     /**
      * This method is invoked by {@link SOChart} to check if the component or part is valid or not.
      *
-     * @throws Exception Raises exception if the component or part is not valid.
+     * @throws ChartException Raises exception if the component or part is not valid.
      */
-    void validate() throws Exception;
+    void validate() throws ChartException;
 
     /**
      * Helper method to return the class name of the component/part in a more human-friendly way.
@@ -162,6 +177,9 @@ public interface ComponentPart extends ComponentProperty {
         }
         if(any instanceof Number || any instanceof Boolean) {
             return any.toString();
+        }
+        if(string.startsWith("\"") && string.endsWith("\"")) {
+            return string; // Special case - already encoded.
         }
         if(string.contains("\"")) {
             string = string.replace("\"", "\\\"");

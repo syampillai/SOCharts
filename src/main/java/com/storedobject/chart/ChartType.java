@@ -22,7 +22,7 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public enum Type {
+public enum ChartType {
 
     Line,
     Bar,
@@ -42,7 +42,7 @@ public enum Type {
     /**
      * Constructor for default XY type.
      */
-    Type() {
+    ChartType() {
         this(new String[] { "x", "y"});
     }
 
@@ -51,7 +51,7 @@ public enum Type {
      *
      * @param axes Name of the axes.
      */
-    Type(String[] axes) {
+    ChartType(String[] axes) {
         this(axes, true );
     }
 
@@ -61,7 +61,7 @@ public enum Type {
      * @param axes Name of the axes.
      * @param coordinateSystem Whether a coordinate system is required for this type or not.
      */
-    Type(String[] axes, boolean coordinateSystem) {
+    ChartType(String[] axes, boolean coordinateSystem) {
         this.axes = axes;
         this.coordinateSystem = coordinateSystem;
     }

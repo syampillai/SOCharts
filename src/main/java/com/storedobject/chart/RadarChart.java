@@ -35,7 +35,7 @@ public class RadarChart extends AbstractDataChart {
      * @param data Data to be used.
      */
     public RadarChart(DataProvider... data) {
-        super(Type.Radar);
+        super(ChartType.Radar);
         addData(data);
     }
 
@@ -70,16 +70,16 @@ public class RadarChart extends AbstractDataChart {
     }
 
     @Override
-    public void validate() throws Exception {
+    public void validate() throws ChartException {
         super.validate();
         if(!(coordinateSystem instanceof RadarCoordinate)) {
-            throw new Exception("Radar chart can be plotted on a Radar Coordinate system only: " + className());
+            throw new ChartException("Radar chart can be plotted on a Radar Coordinate system only: " + className());
         }
         if(skippingData) {
             return;
         }
         if(dataList.isEmpty()) {
-            throw new Exception("No data set for " + className());
+            throw new ChartException("No data set for " + className());
         }
     }
 

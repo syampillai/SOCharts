@@ -22,7 +22,7 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public class Tooltip extends AbstractDisplayablePart implements Component {
+public class Tooltip extends VisiblePart implements Component {
 
     @Override
     public void validate() {

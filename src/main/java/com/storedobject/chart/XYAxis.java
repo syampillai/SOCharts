@@ -19,10 +19,9 @@ package com.storedobject.chart;
 /**
  * Representation of XY axis (base for both {@link XAxis} and {@link YAxis}).
  *
- * @param <T> Data type.
  * @author Syam
  */
-public abstract class XYAxis<T> extends Axis<T> {
+public abstract class XYAxis extends Axis {
 
     private boolean opposite = false;
     private int offset = 0;
@@ -32,11 +31,11 @@ public abstract class XYAxis<T> extends Axis<T> {
      *
      * @param dataType Data type.
      */
-    public XYAxis(Class<T> dataType) {
+    public XYAxis(DataType dataType) {
         super(dataType);
     }
 
-    protected abstract String positionString();
+    abstract String positionString();
 
     @Override
     public void encodeJSON(StringBuilder sb) {

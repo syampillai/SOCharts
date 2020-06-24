@@ -40,23 +40,33 @@ public class TreeChart extends AbstractDataChart implements HasPosition {
      * @param data Data to be used.
      */
     public TreeChart(TreeDataProvider data) {
-        super(Type.Tree);
+        super(ChartType.Tree);
         getOrientation(true).radial();
     }
 
+    /**
+     * Get the the data associated with this chart.
+     *
+     * @return Data provider.
+     */
     public TreeDataProvider getTreeData() {
         return data;
     }
 
+    /**
+     * Set data to the chart.
+     *
+     * @param data Data provider to set.
+     */
     public void setTreeData(TreeDataProvider data) {
         this.data = data;
     }
 
     @Override
-    public void validate() throws Exception {
+    public void validate() throws ChartException {
         super.validate();
         if(data == null) {
-            throw new Exception("No data provided for " + className());
+            throw new ChartException("No data provided for " + className());
         }
     }
 

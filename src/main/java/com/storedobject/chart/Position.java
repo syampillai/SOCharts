@@ -17,7 +17,8 @@
 package com.storedobject.chart;
 
 /**
- * Representation of a position within the chart. Chart always occupies a rectangular part of the screen and the size of
+ * Representation of a position within the chart display. Chart display always occupies a rectangular part
+ * of the screen and the size of
  * this rectangle is determined by the methods used from Vaadin's {@link com.vaadin.flow.component.HasSize} on the
  * chart ({@link SOChart} implements {@link com.vaadin.flow.component.HasSize} interface). Using the same
  * standard used by CSS for absolute positioning, a part that supports positioning can use this class to define its

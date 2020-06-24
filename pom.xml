@@ -21,7 +21,7 @@
 
     <groupId>com.storedobject.chart</groupId>
     <artifactId>so-charts</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
     <name>SO Charts</name>
     <description>Vaadin LitElement wrapper for ECharts</description>
 

@@ -40,7 +40,7 @@ public class PieChart extends SelfPositioningChart implements HasPolarProperty {
      * @param values Values of the slices.
      */
     public PieChart(AbstractDataProvider<?> itemNames, DataProvider values) {
-        super(Type.Pie, itemNames, values);
+        super(ChartType.Pie, itemNames, values);
     }
 
     /**

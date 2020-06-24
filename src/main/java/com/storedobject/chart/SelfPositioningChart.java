@@ -32,7 +32,7 @@ public abstract class SelfPositioningChart extends AbstractChart implements HasP
      * @param type type of the chart.
      * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
-    public SelfPositioningChart(Type type, AbstractDataProvider<?>... data) {
+    public SelfPositioningChart(ChartType type, AbstractDataProvider<?>... data) {
         super(type, data);
     }
 

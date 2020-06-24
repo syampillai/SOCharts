@@ -57,20 +57,21 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SOChart extends com.vaadin.flow.component.Component implements HasSize {
 
     private static final String SKIP_DATA = "Skipping data but new data found: ";
-    private final static ComponentEncoder[] encoders = {
+    final static ComponentEncoder[] encoders = {
             new ComponentEncoder(Title.class),
             new ComponentEncoder(Legend.class),
             new ComponentEncoder(Toolbox.class),
             new ComponentEncoder(Tooltip.class),
-            new ComponentEncoder("dataset", AbstractData.class),
-            new ComponentEncoder(AngleAxis.class),
-            new ComponentEncoder(RadiusAxis.class),
-            new ComponentEncoder(XAxis.class),
-            new ComponentEncoder(YAxis.class),
+            new ComponentEncoder("dataset", AbstractDataProvider.class),
+            new ComponentEncoder("angleAxis", AngleAxis.AngleAxisWrapper.class),
+            new ComponentEncoder("radiusAxis", RadiusAxis.RadiusAxisWrapper.class),
+            new ComponentEncoder("xAxis", XAxis.XAxisWrapper.class),
+            new ComponentEncoder("yAxis", YAxis.YAxisWrapper.class),
             new ComponentEncoder("polar", PolarCoordinate.class),
             new ComponentEncoder("radar", RadarCoordinate.class),
             new ComponentEncoder("grid", RectangularCoordinate.class),
             new ComponentEncoder("series", Chart.class),
+            new ComponentEncoder("dataZoom", DataZoom.class),
     };
     final static AtomicLong id = new AtomicLong(0);
     private final List<String> functions = new ArrayList<>();
@@ -176,7 +177,11 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
      */
     void addParts(ComponentPart... parts) {
         if(parts != null) {
-            this.parts.addAll(Arrays.asList(parts));
+            for(ComponentPart cp: parts) {
+                if(cp != null) {
+                    this.parts.add(cp);
+                }
+            }
         }
     }
 
@@ -187,7 +192,11 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
      */
     public void add(Component... components) {
         if(components != null) {
-            this.components.addAll(Arrays.asList(components));
+            for(Component c: components) {
+                if(c != null) {
+                    this.components.add(c);
+                }
+            }
         }
     }
 
@@ -199,7 +208,9 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
     public void remove(Component... components) {
         if(components != null) {
             for(Component c: components) {
-                this.components.remove(c);
+                if(c != null) {
+                    this.components.remove(c);
+                }
             }
         }
     }
@@ -261,9 +272,10 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
      * this. (Please note that an "update" will automatically happen when a {@link SOChart} is added to its parent
      * layout for the first time).
      *
-     * @throws Exception When any of the component is not valid.
+     * @throws ChartException When any of the component is not valid.
+     * @throws Exception If the JSON customizer raises any exception.
      */
-    public void update() throws Exception {
+    public void update() throws ChartException, Exception {
         update(false);
     }
 
@@ -284,9 +296,10 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
      * </p>
      *
      * @param skipData Skip data or not. This parameter will be ignored if this is the first-time update.
-     * @throws Exception When any of the component is not valid or new data found while skipping data.
+     * @throws ChartException When any of the component is not valid or new data found while skipping data.
+     * @throws Exception If the JSON customizer raises any exception.
      */
-    public void update(boolean skipData) throws Exception {
+    public void update(boolean skipData) throws ChartException, Exception {
         if(neverUpdated && skipData) {
             skipData = false;
         }
@@ -298,7 +311,7 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
             if(skipData) {
                 if (c instanceof AbstractData) {
                     if (c.getSerial() < 0) {
-                        throw new Exception(SKIP_DATA + c.className());
+                        throw new ChartException(SKIP_DATA + c.className());
                     }
                     continue;
                 }
@@ -315,7 +328,7 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
             if(skipData) {
                 if (c instanceof AbstractData) {
                     if (c.getSerial() < 0) {
-                        throw new Exception(SKIP_DATA + c.className());
+                        throw new ChartException(SKIP_DATA + c.className());
                     }
                     continue;
                 }
@@ -367,13 +380,14 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
      *
      * @param json JSON string constructed by the {@link #update()} method.
      * @return Customized JSON string.
-     * @throws Exception If any custom error to be notified so that rendering will not happen.
+     * @throws ChartException If any custom error to be notified so that rendering will not happen.
      */
     @SuppressWarnings("RedundantThrows")
     protected String customizeJSON(String json) throws Exception {
         return json;
     }
 
+    /*
     static String encoderLabel(ComponentPart part) {
         Class<? extends ComponentPart> cpClass = part.getClass();
         for(ComponentEncoder ce: encoders) {
@@ -384,10 +398,12 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
         return null;
     }
 
-    private static class ComponentEncoder {
+     */
 
-        private final String label;
-        private final Class<? extends ComponentPart> partType;
+    static class ComponentEncoder {
+
+        final String label;
+        final Class<? extends ComponentPart> partType;
 
         private ComponentEncoder(Class<? extends ComponentPart> partType) {
             this(null, partType);

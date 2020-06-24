@@ -56,7 +56,7 @@ public abstract class ToolboxButton implements ComponentPart {
 
     @SuppressWarnings("RedundantThrows")
     @Override
-    public void validate() throws Exception {
+    public void validate() throws ChartException {
     }
 
     @Override

@@ -25,9 +25,9 @@ import java.util.stream.Stream;
 /**
  * Abstract data provider interface. The type of data can be anything that can be used
  * for charting. In charting, we need to distinguish between "numeric", "date/time", "categories" and "logarithmic"
- * values types.
+ * values types. (See {@link DataType}).
  *
- * @param <T> Data type.
+ * @param <T> Data class type.
  * @author Syam
  */
 public interface AbstractDataProvider<T> extends ComponentPart {
@@ -59,7 +59,7 @@ public interface AbstractDataProvider<T> extends ComponentPart {
      *
      * @return value type.
      */
-    Class<T> getDataType();
+    DataType getDataType();
 
     @Override
     default void encodeJSON(StringBuilder sb) {
@@ -113,25 +113,12 @@ public interface AbstractDataProvider<T> extends ComponentPart {
         }
     }
 
-    /**
-     * Get the type of the data as a String for encoding purposes.
-     *
-     * @return Data type suitable for encoding.
-     */
-    default String getType() {
-        return getType(getDataType());
+    @Override
+    default long getId() {
+        return -1L;
     }
 
-    /**
-     * Helper method to determine the data type for encoding.
-     *
-     * @param dataType Value type.
-     * @return Data type that can be used for encoding.
-     */
-    static String getType(Class<?> dataType) {
-        if(Number.class.isAssignableFrom(dataType)) {
-            return "value";
-        }
-        return "category";
+    @Override
+    default void validate() throws ChartException {
     }
 }

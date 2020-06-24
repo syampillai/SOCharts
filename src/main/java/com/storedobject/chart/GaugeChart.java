@@ -51,7 +51,7 @@ public class GaugeChart extends AbstractDataChart implements HasPolarProperty {
      * @param needles Number of needles for the gauge.
      */
     public GaugeChart(int needles) {
-        super(Type.Gauge);
+        super(ChartType.Gauge);
         if(needles <= 0) {
             needles = 1;
         }

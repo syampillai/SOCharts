@@ -38,6 +38,6 @@ public class ScatterChart extends XYChart {
      * @param yData Data for Y axis.
      */
     public ScatterChart(AbstractDataProvider<?> xData, DataProvider yData) {
-        super(Type.Scatter, xData, yData);
+        super(ChartType.Scatter, xData, yData);
     }
 }

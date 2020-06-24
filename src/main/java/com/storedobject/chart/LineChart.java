@@ -40,7 +40,7 @@ public class LineChart extends XYChart {
      * @param yData Data for Y axis.
      */
     public LineChart(AbstractDataProvider<?> xData, DataProvider yData) {
-        super(Type.Line, xData, yData);
+        super(ChartType.Line, xData, yData);
     }
 
     @Override

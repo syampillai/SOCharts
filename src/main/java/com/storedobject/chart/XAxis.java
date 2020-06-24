@@ -19,22 +19,34 @@ package com.storedobject.chart;
 /**
  * Representation of X axis.
  *
- * @param <T> Data type.
  * @author Syam
  */
-public class XAxis<T> extends XYAxis<T> {
+public class XAxis extends XYAxis {
 
     /**
      * Constructor.
      *
      * @param dataType Data type.
      */
-    public XAxis(Class<T> dataType) {
+    public XAxis(DataType dataType) {
         super(dataType);
     }
 
     @Override
-    protected String positionString() {
+    ComponentPart wrap(CoordinateSystem coordinateSystem) {
+        AxisWrapper w = wrappers.get(coordinateSystem);
+        return w == null ? new XAxisWrapper(this, coordinateSystem) : w;
+    }
+
+    @Override
+    String positionString() {
         return "top";
+    }
+
+    static class XAxisWrapper extends AxisWrapper {
+
+        XAxisWrapper(Axis axis, CoordinateSystem coordinateSystem) {
+            super(axis, coordinateSystem);
+        }
     }
 }

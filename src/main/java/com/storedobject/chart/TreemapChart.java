@@ -36,20 +36,35 @@ public class TreemapChart extends AbstractDataChart implements HasPosition {
      * @param data Data to be used.
      */
     public TreemapChart(TreeDataProvider... data) {
-        super(Type.Treemap);
+        super(ChartType.Treemap);
         addData(data);
     }
 
+    /**
+     * Get the the list of data associated with this chart.
+     *
+     * @return List of data providers.
+     */
     public List<TreeDataProvider> getTreemapData() {
         return data;
     }
 
+    /**
+     * Add data to the chart.
+     *
+     * @param data List of data to add.
+     */
     public void addData(TreeDataProvider... data) {
         if(data != null) {
             this.data.addAll(Arrays.asList(data));
         }
     }
 
+    /**
+     * Remove data from the chart.
+     *
+     * @param data List of data to remove.
+     */
     public void removeData(TreeDataProvider... data) {
         if(data != null) {
             this.data.removeAll(Arrays.asList(data));
@@ -57,10 +72,10 @@ public class TreemapChart extends AbstractDataChart implements HasPosition {
     }
 
     @Override
-    public void validate() throws Exception {
+    public void validate() throws ChartException {
         super.validate();
         if(data.isEmpty()) {
-            throw new Exception("No data provided for " + className());
+            throw new ChartException("No data provided for " + className());
         }
     }
 

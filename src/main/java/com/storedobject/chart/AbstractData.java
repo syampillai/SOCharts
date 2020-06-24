@@ -24,48 +24,64 @@ import java.util.stream.Stream;
 /**
  * <p>Representation of data as a {@link java.util.List}. The type of data can be anything that can be used
  * for charting. In charting, we need to distinguish between "numeric", "date/time", "categories" and "logarithmic"
- * values types.
+ * values types (See {@link DataType}).
  *
  * @param <T> Data type.
  * @author Syam
  */
 public class AbstractData<T> extends ArrayList<T> implements AbstractDataProvider<T>, ComponentPart {
 
-    private int index = -1;
-    private final Class<T> dataType;
+    private int serial = -1;
+    private final DataType dataType;
     private String name;
 
     /**
      * Constructor.
      *
-     * @param dataType Data type.
+     * @param dataClass Data class.
      * @param data Initial data to add
      */
     @SafeVarargs
-    public AbstractData(Class<T> dataType, T... data) {
+    public AbstractData(Class<T> dataClass, T... data) {
+        this(dataType(dataClass), dataClass, data);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param dataType Data type.
+     * @param dataClass Data class.
+     * @param data Initial data to add
+     */
+    @SafeVarargs
+    public AbstractData(DataType dataType, Class<T> dataClass, T... data) {
         this.dataType = dataType;
-        if(data != null && data.length > 0) {
+        if(data != null) {
             addAll(Arrays.asList(data));
         }
     }
 
-    @Override
-    public long getId() {
-        return -1L;
+    private static DataType dataType(Class<?> dataClass) {
+        for(DataType dt: DataType.values()) {
+            if(dt.getType().isAssignableFrom(dataClass)) {
+                return dt;
+            }
+        }
+        return DataType.CATEGORY;
     }
 
-    public final Class<T> getDataType() {
+    public final DataType getDataType() {
         return dataType;
     }
 
     @Override
     public final int getSerial() {
-        return index;
+        return serial;
     }
 
     @Override
     public final void setSerial(int serial) {
-        this.index = serial;
+        this.serial = serial;
     }
 
     /**
@@ -84,11 +100,6 @@ public class AbstractData<T> extends ArrayList<T> implements AbstractDataProvide
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    @SuppressWarnings("RedundantThrows")
-    @Override
-    public void validate() throws Exception {
     }
 
     @Override

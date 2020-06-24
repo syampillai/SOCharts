@@ -32,7 +32,7 @@ public class AbstractDataChart extends AbstractChart {
      * @param type type of the chart.
      * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
-    public AbstractDataChart(Type type, AbstractDataProvider<?>... data) {
+    public AbstractDataChart(ChartType type, AbstractDataProvider<?>... data) {
         super(type, data);
     }
 

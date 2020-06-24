@@ -23,90 +23,32 @@ package com.storedobject.chart;
  */
 public class PolarCoordinate extends CoordinateSystem implements HasPolarProperty {
 
-    private AngleAxis<?> angleAxis;
-    private RadiusAxis<?> radiusAxis;
     private PolarProperty polarProperty;
 
     /**
      * Constructor.
      */
     public PolarCoordinate() {
-        this(null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param angleAxis Angle axis.
      * @param radiusAxis Radius axis.
+     * @param angleAxis Angle axis.
      */
-    public PolarCoordinate(AngleAxis<?> angleAxis, RadiusAxis<?> radiusAxis) {
-        this.angleAxis = angleAxis;
-        this.radiusAxis = radiusAxis;
-    }
-
-    /**
-     * Get the angle axis.
-     *
-     * @return Angle axis.
-     */
-    public AngleAxis<?> getAngleAxis() {
-        return angleAxis;
-    }
-
-    /**
-     * Set the angle axis.
-     *
-     * @param angleAxis Angle axis to set.
-     */
-    public void setAngleAxis(AngleAxis<?> angleAxis) {
-        this.angleAxis = angleAxis;
-    }
-
-    /**
-     * Get the radius axis.
-     *
-     * @return Radius axis.
-     */
-    public RadiusAxis<?> getRadiusAxis() {
-        return radiusAxis;
-    }
-
-    /**
-     * Set the radius axis.
-     *
-     * @param radiusAxis Radius axis to set.
-     */
-    public void setRadiusAxis(RadiusAxis<?> radiusAxis) {
-        this.radiusAxis = radiusAxis;
+    public PolarCoordinate(RadiusAxis radiusAxis, AngleAxis angleAxis) {
+        addAxis(radiusAxis, angleAxis);
     }
 
     @Override
-    public void validate() throws Exception {
-        if(radiusAxis == null) {
-            throw new Exception("Radius Axis is not set");
+    public void validate() throws ChartException {
+        if(noAxis(RadiusAxis.class)) {
+            throw new ChartException("Radius Axis is not set");
         }
-        if(angleAxis == null) {
-            throw new Exception("Angle Axis is not set");
+        if(noAxis(AngleAxis.class)) {
+            throw new ChartException("Angle Axis is not set");
         }
-        if(radiusAxis.coordinateSystem != null && radiusAxis.coordinateSystem != this) {
-            throw new Exception("Radius Axis is used by some other coordinate system");
-        }
-        radiusAxis.coordinateSystem = this;
-        if(angleAxis.coordinateSystem != null && angleAxis.coordinateSystem != this) {
-            throw new Exception("Polar Axis is used by some other coordinate system");
-        }
-        angleAxis.coordinateSystem = this;
-        radiusAxis.validate();
-        angleAxis.validate();
-    }
-
-    @Override
-    public void addParts(SOChart soChart) {
-        radiusAxis.coordinateSystem = this;
-        angleAxis.coordinateSystem = this;
-        soChart.addParts(radiusAxis, angleAxis);
-        super.addParts(soChart);
     }
 
     @Override
@@ -120,5 +62,15 @@ public class PolarCoordinate extends CoordinateSystem implements HasPolarPropert
     @Override
     public final void setPolarProperty(PolarProperty polarProperty) {
         this.polarProperty = polarProperty;
+    }
+
+    @Override
+    String systemName() {
+        return "polar";
+    }
+
+    @Override
+    String[] axesData() {
+        return new String[] { "radius", "angle" };
     }
 }

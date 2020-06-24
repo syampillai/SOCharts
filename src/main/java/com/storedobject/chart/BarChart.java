@@ -37,7 +37,7 @@ public class BarChart extends XYChart {
      * @param xData Data for X axis.
      * @param yData Data for Y axis.
      */
-    public BarChart(AbstractData<?> xData, Data yData) {
-        super(Type.Bar, xData, yData);
+    public BarChart(AbstractDataProvider<?> xData, DataProvider yData) {
+        super(ChartType.Bar, xData, yData);
     }
 }
