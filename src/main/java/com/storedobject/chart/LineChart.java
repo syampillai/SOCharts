@@ -24,7 +24,10 @@ package com.storedobject.chart;
  */
 public class LineChart extends XYChart {
 
-    private boolean smooth = false;
+    private Object smoothness;
+    private Object stepped;
+    private boolean connectNulls;
+    private PointSymbol pointSymbol;
 
     /**
      * Constructor. (Data can be set later).
@@ -46,16 +49,78 @@ public class LineChart extends XYChart {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        if(isSmooth()) {
-            sb.append(",\"smooth\":true");
+        if(smoothness != null) {
+            sb.append(",\"smooth\":");
+            if(smoothness instanceof Number) {
+                sb.append(((Number)smoothness).intValue() / 100.0);
+            } else {
+                sb.append(smoothness);
+            }
+            smoothness = null;
         }
+        if(stepped != null) {
+            sb.append(",\"step\":").append(stepped);
+            stepped = null;
+        }
+        if(pointSymbol != null) {
+            ComponentPart.encode(sb,"symbol", pointSymbol, true);
+            pointSymbol = null;
+        }
+        ComponentPart.encode(sb,"connectNulls", connectNulls, true);
     }
 
-    public boolean isSmooth() {
-        return smooth;
+    /**
+     * Set the smoothness of the line.
+     *
+     * @param smoothness True or false.
+     */
+    public void setSmoothness(boolean smoothness) {
+        this.smoothness = smoothness;
     }
 
-    public void setSmooth(boolean smooth) {
-        this.smooth = smooth;
+    /**
+     * Set the smoothness of the line as a percentage.
+     *
+     * @param percentage Percentage smoothness.
+     */
+    public void setSmoothness(int percentage) {
+        percentage = Math.max(0, Math.min(percentage, 100));
+        this.smoothness = percentage;
+    }
+
+    /**
+     * Set whether the points should connected as steps or not.
+     *
+     * @param stepped True or false.
+     */
+    public void setStepped(boolean stepped) {
+        this.stepped = stepped;
+    }
+
+    /**
+     * Set whether the points should connected as steps or not.
+     *
+     * @param location The turning point of the step.
+     */
+    public void setStepped(Location location) {
+        this.stepped = location == null ? null : Location.h(location);
+    }
+
+    /**
+     * Set whether to connect null points or not.
+     *
+     * @param connectNullPoints True or false.
+     */
+    public void setConnectNullPoints(boolean connectNullPoints) {
+        this.connectNulls = connectNullPoints;
+    }
+
+    /**
+     * Set the point symbol that decides how the points will be drawn.
+     *
+     * @param pointSymbol Point symbol.
+     */
+    public void setPointSymbol(PointSymbol pointSymbol) {
+        this.pointSymbol = pointSymbol;
     }
 }

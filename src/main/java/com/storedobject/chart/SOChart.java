@@ -20,7 +20,6 @@ import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -54,10 +53,12 @@ import java.util.concurrent.atomic.AtomicLong;
 @NpmPackage(value = "echarts", version = "4.8.0")
 @Tag("so-chart")
 @JsModule("./so/chart/chart.js")
-public class SOChart extends com.vaadin.flow.component.Component implements HasSize {
+public class SOChart extends LitComponent implements HasSize {
 
     private static final String SKIP_DATA = "Skipping data but new data found: ";
     final static ComponentEncoder[] encoders = {
+            new ComponentEncoder("color", DefaultColors.class),
+            new ComponentEncoder("textStyle", DefaultTextStyle.class),
             new ComponentEncoder(Title.class),
             new ComponentEncoder(Legend.class),
             new ComponentEncoder(Toolbox.class),
@@ -74,13 +75,14 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
             new ComponentEncoder("dataZoom", DataZoom.class),
     };
     final static AtomicLong id = new AtomicLong(0);
-    private final List<String> functions = new ArrayList<>();
-    private volatile Map<String, Serializable[]> parameters = new HashMap<>();
     private final List<Component> components = new ArrayList<>();
     private final List<ComponentPart> parts = new ArrayList<>();
     private Legend legend = new Legend();
     private Tooltip tooltip = new Tooltip();
     private boolean neverUpdated = true;
+    private DefaultColors defaultColors;
+    private Color defaultBackground;
+    private DefaultTextStyle defaultTextStyle;
 
     /**
      * Constructor.
@@ -100,10 +102,43 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
         }
     }
 
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        parameters = new HashMap<>();
-        super.onDetach(detachEvent);
+    /**
+     * Get the list of default colors. A list is returned and you may add any number of
+     * colors to that list. Those colors will be used sequentially and circularly. However, please note that
+     * if the list contains less than 11 colors, more colors will be added to it automatically from the
+     * following to make the count 11:<BR>
+     * ['#0000ff', '#c23531', '#2f4554', '#61a0a8', '#d48265', '#91c7ae',
+     * '#749f83', '#ca8622', '#bda29a', '#6e7074', '#546570', '#c4ccd3']
+     *
+     * @return List of default colors.
+     */
+    public List<Color> getDefaultColors() {
+        if(defaultColors == null) {
+            defaultColors = new DefaultColors();
+        }
+        return defaultColors;
+    }
+
+    /**
+     * Set the default background color.
+     *
+     * @param background Background color.
+     */
+    public void setDefaultBackground(Color background) {
+        this.defaultBackground = background;
+    }
+
+    /**
+     * Get the default text style. You may invoke this method and override default values if required. However,
+     * please note that setting padding, border (not text border) and alignment properties do not have any effect.
+     *
+     * @return Default text style.
+     */
+    public TextStyle getDefaultTextStyle() {
+        if(defaultTextStyle == null) {
+            defaultTextStyle = new DefaultTextStyle();
+        }
+        return defaultTextStyle.textStyle;
     }
 
     /**
@@ -231,38 +266,7 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
         if(neverUpdated) {
             return;
         }
-        js("clearChart");
-    }
-
-    @ClientCallable
-    private void ready() {
-        synchronized (functions) {
-            String function;
-            while (!functions.isEmpty()) {
-                function = functions.remove(0);
-                exec(function, parameters.get(function));
-            }
-            parameters = null;
-        }
-    }
-
-    private synchronized void js(String function, Serializable... parameters) {
-        if(this.parameters == null) {
-            exec(function, parameters);
-        } else {
-            synchronized (functions) {
-                if(this.parameters == null) {
-                    exec(function, parameters);
-                } else {
-                    functions.add(function);
-                    this.parameters.put(function, parameters);
-                }
-            }
-        }
-    }
-
-    private void exec(String function, Serializable... parameters) {
-        getElement().callJsFunction(function, parameters);
+        executeJS("clearChart");
     }
 
     /**
@@ -337,6 +341,12 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
             c.setSerial(-2);
         }
         parts.addAll(components);
+        if(defaultColors != null && !defaultColors.isEmpty()) {
+            parts.add(defaultColors);
+        }
+        if(defaultTextStyle != null) {
+            parts.add(defaultTextStyle);
+        }
         if(!skipData && legend != null && parts.stream().noneMatch(cp -> cp instanceof Legend)) {
             parts.add(legend);
         }
@@ -356,6 +366,9 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
         parts.sort(Comparator.comparing(ComponentPart::getSerial));
         StringBuilder sb = new StringBuilder();
         sb.append('{');
+        if(defaultBackground != null) {
+            sb.append("\"backgroundColor\":").append(defaultBackground);
+        }
         for(ComponentEncoder ce: encoders) {
             if(skipData && "dataset".equals(ce.label)) {
                 continue;
@@ -366,8 +379,11 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
             }
         }
         sb.append('}');
-        js("updateChart", customizeJSON(sb.toString()));
+        executeJS("updateChart", customizeJSON(sb.toString()));
         parts.clear();
+        defaultColors = null;
+        defaultBackground = null;
+        defaultTextStyle = null;
         neverUpdated = false;
     }
 
@@ -386,19 +402,6 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
     protected String customizeJSON(String json) throws Exception {
         return json;
     }
-
-    /*
-    static String encoderLabel(ComponentPart part) {
-        Class<? extends ComponentPart> cpClass = part.getClass();
-        for(ComponentEncoder ce: encoders) {
-            if(cpClass.isAssignableFrom(ce.partType)) {
-                return ce.label;
-            }
-        }
-        return null;
-    }
-
-     */
 
     static class ComponentEncoder {
 
@@ -463,6 +466,101 @@ public class SOChart extends com.vaadin.flow.component.Component implements HasS
                     sb.append(']');
                 }
             }
+        }
+    }
+
+    private static class DefaultColors extends ArrayList<Color> implements ComponentPart {
+
+        private static final String[] colors = new String[] {
+                "0000ff",
+                "c23531", "2f4554", "61a0a8", "d48265", "91c7ae", "749f83",
+                "ca8622", "bda29a", "6e7074", "546570", "c4ccd3"
+        };
+        private int serial;
+
+        @Override
+        public long getId() {
+            return 0;
+        }
+
+        @Override
+        public void validate() {
+        }
+
+        @Override
+        public void encodeJSON(StringBuilder sb) {
+            sb.append("\"color\":[");
+            int count = 0;
+            boolean first = true;
+            for(Color c: this) {
+                if(c == null) {
+                    continue;
+                }
+                if(first) {
+                    first = false;
+                } else {
+                    sb.append(',');
+                }
+                sb.append(c);
+                ++count;
+            }
+            Color c;
+            for(int i = 0; count < 11; i++) {
+                c = new Color(colors[i]);
+                if(this.contains(c)) {
+                    continue;
+                }
+                if(first) {
+                    first = false;
+                } else {
+                    sb.append(',');
+                }
+                sb.append(c);
+                ++count;
+            }
+            sb.append(']');
+        }
+
+        @Override
+        public final int getSerial() {
+            return serial;
+        }
+
+        @Override
+        public void setSerial(int serial) {
+            this.serial = serial;
+        }
+    }
+
+    private static class DefaultTextStyle implements ComponentPart {
+
+        private int serial;
+        private final TextStyle textStyle = new TextStyle();
+
+        @Override
+        public long getId() {
+            return 0;
+        }
+
+        @Override
+        public void validate() {
+        }
+
+        @Override
+        public void encodeJSON(StringBuilder sb) {
+            TextStyle.OuterProperties op = new TextStyle.OuterProperties();
+            textStyle.save(op);
+            ComponentPart.encodeProperty(sb, textStyle);
+        }
+
+        @Override
+        public final int getSerial() {
+            return serial;
+        }
+
+        @Override
+        public void setSerial(int serial) {
+            this.serial = serial;
         }
     }
 }

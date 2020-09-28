@@ -18,6 +18,11 @@ package com.storedobject.chart;
 
 import java.util.stream.Stream;
 
+/**
+ * Representation of tree-type data.
+ *
+ * @author Syam
+ */
 public interface TreeDataProvider extends ComponentPart {
 
     /**

@@ -16,6 +16,8 @@
 
 package com.storedobject.chart;
 
+import java.util.Objects;
+
 /**
  * Representation of color.
  *
@@ -139,6 +141,22 @@ public class Color extends AbstractColor {
         }
         sb.append(")\"");
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Color color = (Color) o;
+        return red == color.red &&
+                green == color.green &&
+                blue == color.blue &&
+                alpha == color.alpha;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(red, green, blue, alpha);
     }
 
     private static class SpecialColor extends Color {

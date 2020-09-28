@@ -17,35 +17,34 @@
 package com.storedobject.chart;
 
 /**
- * Representation of a location.
+ * Represents the symbol used to draw a point on the chart. (Example usage is in {@link LineChart}).
  *
  * @author Syam
  */
-public enum Location {
-    START,
-    TOP,
-    MIDDLE,
-    CENTER,
-    BOTTOM,
-    END;
+public enum PointSymbol {
 
-    static Location h(Location location) {
-        if(location == null) {
-            return END;
-        }
-        switch (location) {
-            case START:
-            case TOP:
-                return START;
-            case MIDDLE:
-            case CENTER:
-                return CENTER;
-        }
-        return END;
+    CIRCLE, RECTANGLE("rect"), ROUND_RECTANGLE("roundRect"), TRIANGLE, DIAMOND, PIN, ARROW, NONE;
+
+    private final String value;
+
+    /**
+     * Constructor.
+     */
+    PointSymbol() {
+        this(null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param value Value representation.
+     */
+    PointSymbol(String value) {
+        this.value = value;
     }
 
     @Override
     public String toString() {
-        return "\"" + super.toString().toLowerCase() + "\"";
+        return "\"" + (value == null ? super.toString().toLowerCase() : value) + "\"";
     }
 }

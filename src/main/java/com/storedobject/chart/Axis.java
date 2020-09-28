@@ -123,7 +123,7 @@ public abstract class Axis extends VisibleProperty {
         }
         sb.append(",\"name\":\"").append(name).append('"');
         if(nameLocation != null) {
-            sb.append(",\"nameLocation\":\"").append(nameLocation.toString().toLowerCase()).append('"');
+            sb.append(",\"nameLocation\":").append(nameLocation);
         }
         sb.append(",\"nameGap\":").append(nameGap);
         sb.append(",\"nameRotate\":").append(nameRotation);

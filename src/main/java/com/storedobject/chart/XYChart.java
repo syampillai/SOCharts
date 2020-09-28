@@ -23,6 +23,8 @@ package com.storedobject.chart;
  */
 public abstract class XYChart extends AbstractChart {
 
+    String stackName;
+
     /**
      * Constructor.
      *
@@ -50,5 +52,24 @@ public abstract class XYChart extends AbstractChart {
      */
     public void setYData(DataProvider yData) {
         setData(yData, 1);
+    }
+
+    @Override
+    public void encodeJSON(StringBuilder sb) {
+        super.encodeJSON(sb);
+        if(stackName != null) {
+            ComponentPart.encode(sb, "stack", stackName, true);
+        }
+    }
+
+    /**
+     * Certain charts (example: {@link LineChart}, {@link BarChart}) can stack multiples of them when drawn on the
+     * same coordinate system with shared axis. If sticking needs to be enables, those charts should have the same
+     * stock name.
+     *
+     * @param stackName Stack name.
+     */
+    public void setStackName(String stackName) {
+        this.stackName = stackName;
     }
 }
