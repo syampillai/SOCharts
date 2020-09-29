@@ -26,10 +26,25 @@ import java.time.LocalDateTime;
  */
 public enum DataType {
 
+    /**
+     * Numeric values.
+     */
     NUMBER("value", Number.class),
+    /**
+     * Category values.
+     */
     CATEGORY("category", String.class),
+    /**
+     * Date values.
+     */
     DATE("time", LocalDate.class),
+    /**
+     * Time values.
+     */
     TIME("time", LocalDateTime.class),
+    /**
+     * Logarithmic values.
+     */
     LOGARITHMIC("log", Number.class);
 
     private final String name;

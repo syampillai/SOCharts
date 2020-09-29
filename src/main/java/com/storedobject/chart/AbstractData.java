@@ -70,6 +70,11 @@ public class AbstractData<T> extends ArrayList<T> implements AbstractDataProvide
         return DataType.CATEGORY;
     }
 
+    /**
+     * Get the data type.
+     *
+     * @return Data type.
+     */
     public final DataType getDataType() {
         return dataType;
     }

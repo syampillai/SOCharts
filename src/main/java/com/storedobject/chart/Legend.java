@@ -52,6 +52,9 @@ public class Legend extends VisiblePart implements Component, HasPosition, HasPa
     public void validate() {
     }
 
+    /**
+     * Display it vertically.
+     */
     public void showVertically() {
         vertical = true;
     }

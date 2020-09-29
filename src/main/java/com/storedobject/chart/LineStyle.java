@@ -25,8 +25,23 @@ public class LineStyle implements ComponentProperty {
 
     /**
      * Line-type.
+     *
+     * @author Syam
      */
-    public enum Type { SOLID, DASHED, DOTTED }
+    public enum Type {
+        /**
+         * Solid.
+         */
+        SOLID,
+        /**
+         * Dashed.
+         */
+        DASHED,
+        /**
+         * Dotted.
+         */
+        DOTTED
+    }
     private Color color;
     private int width = Integer.MIN_VALUE;
     private Type type;

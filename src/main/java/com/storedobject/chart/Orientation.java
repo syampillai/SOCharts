@@ -25,22 +25,37 @@ public final class Orientation implements ComponentProperty {
 
     private String code = null;
 
+    /**
+     * Radial orientation.
+     */
     public void radial() {
         code = "R";
     }
 
+    /**
+     * Right-to-left orientation.
+     */
     public void rightToLeft() {
         code = "RL";
     }
 
+    /**
+     * Left-to-right orientation.
+     */
     public void leftToRight() {
         code = "LR";
     }
 
+    /**
+     * Top-to-bottom orientation.
+     */
     public void topToBottom() {
         code = "TB";
     }
 
+    /**
+     * Bottom-to-top orientation.
+     */
     public void bottomToTop() {
         code = "BT";
     }

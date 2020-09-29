@@ -29,7 +29,25 @@ import java.util.Objects;
  */
 public abstract class Axis extends VisibleProperty {
 
-    public enum PointerType { LINE, CROSS_HAIR, NONE }
+    /**
+     * Definition of pointer types.
+     *
+     * @author Syam
+     */
+    public enum PointerType {
+        /**
+         * Pointer as a line.
+         */
+        LINE,
+        /**
+         * Pointer as a cross-hair.
+         */
+        CROSS_HAIR,
+        /**
+         * No pointer.
+         */
+        NONE
+    }
     private final long id = SOChart.id.incrementAndGet();
     private DataType dataType;
     Map<CoordinateSystem, AxisWrapper> wrappers = new HashMap<>();
@@ -694,6 +712,11 @@ public abstract class Axis extends VisibleProperty {
         }
     }
 
+    /**
+     * Represents ticks on an axis line.
+     *
+     * @author Syam
+     */
     public static abstract class AbstractTicks extends com.storedobject.chart.Line {
 
         private int width = 0;

@@ -24,15 +24,45 @@ package com.storedobject.chart;
  */
 public enum ChartType {
 
+    /**
+     * Line.
+     */
     Line,
+    /**
+     * Bar.
+     */
     Bar,
+    /**
+     * Pie.
+     */
     Pie(new String[] { "itemName", "value" }, false),
+    /**
+     * Scatter.
+     */
     Scatter,
+    /**
+     * Effect-scatter.
+     */
     EffectScatter,
+    /**
+     * Funnel.
+     */
     Funnel(new String[] { "itemName", "value" }, false),
+    /**
+     * Radar.
+     */
     Radar(new String[] {}),
+    /**
+     * Guage.
+     */
     Gauge(new String[] {}, false),
+    /**
+     * Tree.
+     */
     Tree(new String[] {}, false),
+    /**
+     * Tree-map.
+     */
     Treemap(new String[] {}, false),
     ;
 

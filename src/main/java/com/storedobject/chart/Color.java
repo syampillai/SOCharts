@@ -19,28 +19,62 @@ package com.storedobject.chart;
 import java.util.Objects;
 
 /**
- * Representation of color.
+ * Representation of color. A color is represented using its RGBA values. RGB values should be between 0 and 255. Alpha
+ * values is a percentage value and must be in the range 0 to 100.
  *
  * @author Syam
  */
 public class Color extends AbstractColor {
 
+    /**
+     * Transparent color.
+     */
     public static final Color TRANSPARENT = new SpecialColor("transparent");
 
     private int red, green, blue, alpha = Integer.MAX_VALUE;
 
+    /**
+     * Constructor. (Alpha value will be set to 100).
+     *
+     * @param red Red value.
+     * @param green Green value.
+     * @param blue Blue value.
+     */
     public Color(int red, int green, int blue) {
         this(red, green, blue, Integer.MAX_VALUE);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param red Red value.
+     * @param green Green value.
+     * @param blue Blue value.
+     * @param alpha Alpha value.
+     */
     public Color(int red, int green, int blue, int alpha) {
         set(red, green, blue, alpha);
     }
 
+    /**
+     * Set RGB values. (Alpha value will be set to 100).
+     *
+     * @param red Red value.
+     * @param green Green value.
+     * @param blue Blue value.
+     */
     public void set(int red, int green, int blue) {
         set(red, green, blue, Integer.MAX_VALUE);
     }
 
+    /**
+     * Set RGBA values.
+     *
+     * @param red Red value.
+     * @param green Green value.
+     * @param blue Blue value.
+     * @param alpha Alpha value.
+     */
     public void set(int red, int green, int blue, int alpha) {
         this.red = red;
         this.green = green;
@@ -49,10 +83,20 @@ public class Color extends AbstractColor {
         validate();
     }
 
+    /**
+     * Construct from an hex value.
+     *
+     * @param hexValue Hex value of the color. (Example: FF0000 for red).
+     */
     public Color(String hexValue) {
         set(hexValue);
     }
 
+    /**
+     * Set the values from a given hex value.
+     *
+     * @param hexValue Hex value of the color. (Example: FF0000 for red).
+     */
     public void set(String hexValue) {
         if(hexValue == null) {
             return;
@@ -99,21 +143,41 @@ public class Color extends AbstractColor {
         return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
     }
 
+    /**
+     * Set the alpha value.
+     *
+     * @param alpha The alpha value.
+     */
     public void setAlpha(int alpha) {
         this.alpha = alpha;
         validate();
     }
 
+    /**
+     * Set the red value.
+     *
+     * @param red The red value.
+     */
     public void setRed(int red) {
         this.red = red;
         validate();
     }
 
+    /**
+     * Set the green value.
+     *
+     * @param green The green value.
+     */
     public void setGreen(int green) {
         this.green = green;
         validate();
     }
 
+    /**
+     * Set the blue value.
+     *
+     * @param blue The blue value.
+     */
     public void setBlue(int blue) {
         this.blue = blue;
         validate();

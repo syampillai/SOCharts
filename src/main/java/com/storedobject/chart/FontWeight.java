@@ -24,11 +24,20 @@ package com.storedobject.chart;
 public class FontWeight {
 
     /**
-     * Some static font-weight values.
+     * Normal font-weight.
      */
     public static final FontWeight NORMAL = new FontWeight(0);
+    /**
+     * Bold font-weight.
+     */
     public static final FontWeight BOLD = new FontWeight(-1);
+    /**
+     * Bolder font-weight.
+     */
     public static final FontWeight BOLDER = new FontWeight(-2);
+    /**
+     * Lighter font-weight.
+     */
     public static final FontWeight LIGHTER = new FontWeight(-3);
 
     private final int weight;

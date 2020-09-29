@@ -22,11 +22,30 @@ package com.storedobject.chart;
  * @author Syam
  */
 public enum Location {
+
+    /**
+     * Start (On Left-to-Right systems, it is the left-end).
+     */
     START,
+    /**
+     * Top.
+     */
     TOP,
+    /**
+     * Middle.
+     */
     MIDDLE,
+    /**
+     * Center.
+     */
     CENTER,
+    /**
+     * Bottom.
+     */
     BOTTOM,
+    /**
+     * Start (On Left-to-Right systems, it is the right-end).
+     */
     END;
 
     static Location h(Location location) {

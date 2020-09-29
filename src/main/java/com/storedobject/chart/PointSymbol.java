@@ -23,7 +23,38 @@ package com.storedobject.chart;
  */
 public enum PointSymbol {
 
-    CIRCLE, RECTANGLE("rect"), ROUND_RECTANGLE("roundRect"), TRIANGLE, DIAMOND, PIN, ARROW, NONE;
+    /**
+     * Circle.
+     */
+    CIRCLE,
+    /**
+     * Rectangle.
+     */
+    RECTANGLE("rect"),
+    /**
+     * Rounded rectangle.
+     */
+    ROUND_RECTANGLE("roundRect"),
+    /**
+     * Triangle.
+     */
+    TRIANGLE,
+    /**
+     * Diamond.
+     */
+    DIAMOND,
+    /**
+     * Pin.
+     */
+    PIN,
+    /**
+     * Arrow.
+     */
+    ARROW,
+    /**
+     * None.
+     */
+    NONE;
 
     private final String value;
 

@@ -22,7 +22,16 @@ package com.storedobject.chart;
  * @author Syam
  */
 public enum FontStyle {
+    /**
+     * Normal.
+     */
     NORMAL,
+    /**
+     * Italic.
+     */
     ITALIC,
+    /**
+     * Oblique.
+     */
     OBLIQUE
 }
