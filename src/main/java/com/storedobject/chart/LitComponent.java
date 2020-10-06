@@ -17,8 +17,8 @@
 package com.storedobject.chart;
 
 import com.vaadin.flow.component.ClientCallable;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import com.vaadin.flow.function.SerializableConsumer;
 import elemental.json.JsonValue;
@@ -27,15 +27,17 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * This is a simple base component to create a Vaadin component from a LitElement that supports execution of
+ * This is a simple base component to create a Vaadin component from a LitElement that supports easy execution of
  * Javascript. Normally, execution of Javascript is possible only when the front-end part of the component is in a
  * ready-state. This class caches all the commands till the front-end is ready to receive commands.
  * The LitElement (client-side) implementation should invoke the server-side {@link #ready()} method from the
  * connectedCallback() { super.connectedCallback(); this.$server.ready(); }
+ * <p>Since this extends Vaadin's {@link LitTemplate}, all features provided by templating mechanism are also
+ * available.</p>
  *
  * @author Syam
  */
-public abstract class LitComponent extends Component {
+public abstract class LitComponent extends LitTemplate {
 
     private final List<JSFunction> functions = new ArrayList<>();
     private volatile boolean ready = false;
