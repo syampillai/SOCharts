@@ -10,8 +10,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-core:17.0.6" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:flow-server:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-core:17.0.8" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:flow-server:4.0.4" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external.gwt:gwt-elemental:2.8.2.vaadin2" level="project" />
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.3.3" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.5" level="project" />
@@ -21,10 +21,10 @@
     <orderEntry type="library" name="Maven: net.bytebuddy:byte-buddy:1.10.9" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external:gentyref:1.2.0.vaadin1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-compress:1.19" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5.13" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.13" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
-    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.9" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.11" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:2.0.1.Final" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.10.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.10.2" level="project" />
@@ -81,40 +81,40 @@
     <orderEntry type="library" name="Maven: org.mozilla:rhino:1.7R4" level="project" />
     <orderEntry type="library" name="Maven: com.atlassian.commonmark:commonmark:0.9.0" level="project" />
     <orderEntry type="library" name="Maven: io.swagger.codegen.v3:swagger-codegen-generators:1.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:flow-push:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:flow-push:4.0.4" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin.external.atmosphere:atmosphere-runtime:2.4.30.slf4jvaadin1" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:flow-client:4.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:flow-html-components:4.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:flow-data:4.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:flow-dnd:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:flow-client:4.0.4" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:flow-html-components:4.0.4" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:flow-data:4.0.4" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:flow-dnd:4.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.webjars.npm:vaadin__vaadin-mobile-drag-drop:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.webjars.npm:mobile-drag-drop:2.3.0-rc.1" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-lumo-theme:4.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-material-theme:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-lumo-theme:4.0.4" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-material-theme:4.0.4" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-accordion-flow:4.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-button-flow:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-checkbox-flow:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-combo-box-flow:5.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-checkbox-flow:4.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-combo-box-flow:5.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-custom-field-flow:5.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-date-picker-flow:4.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-date-picker-flow:4.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-date-time-picker-flow:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-details-flow:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-time-picker-flow:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-select-flow:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-dialog-flow:4.0.3" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-time-picker-flow:4.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-select-flow:4.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-dialog-flow:4.0.4" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-form-layout-flow:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-grid-flow:6.0.4" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-grid-flow:6.0.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-icons-flow:4.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-iron-list-flow:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-list-box-flow:4.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-list-box-flow:4.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-login-flow:4.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-ordered-layout-flow:4.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-progress-bar-flow:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-radio-button-flow:4.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-radio-button-flow:4.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-split-layout-flow:4.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-tabs-flow:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.vaadin:vaadin-text-field-flow:4.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-text-field-flow:4.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-upload-flow:4.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-notification-flow:4.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-app-layout-flow:4.0.0" level="project" />

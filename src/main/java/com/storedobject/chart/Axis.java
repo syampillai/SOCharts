@@ -136,19 +136,18 @@ public abstract class Axis extends VisibleProperty {
             sb.append(",\"inverse\":true");
         }
         sb.append(",\"type\":").append(dataType);
-        if(this instanceof AngleAxis || name == null) {
-            return;
-        }
-        sb.append(",\"name\":\"").append(name).append('"');
-        if(nameLocation != null) {
-            sb.append(",\"nameLocation\":").append(nameLocation);
-        }
-        sb.append(",\"nameGap\":").append(nameGap);
-        sb.append(",\"nameRotate\":").append(nameRotation);
-        if(nameTextStyle != null) {
-            sb.append(",\"nameTextStyle\":{");
-            ComponentPart.encodeProperty(sb, nameTextStyle);
-            sb.append('}');
+        if(name != null) {
+            sb.append(",\"name\":\"").append(name).append('"');
+            if(nameLocation != null) {
+                sb.append(",\"nameLocation\":").append(nameLocation);
+            }
+            sb.append(",\"nameGap\":").append(nameGap);
+            sb.append(",\"nameRotate\":").append(nameRotation);
+            if(nameTextStyle != null) {
+                sb.append(",\"nameTextStyle\":{");
+                ComponentPart.encodeProperty(sb, nameTextStyle);
+                sb.append('}');
+            }
         }
         if(label != null) {
             sb.append(",\"axisLabel\":{");
