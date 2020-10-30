@@ -123,4 +123,44 @@ public class LineChart extends XYChart {
     public void setPointSymbol(PointSymbol pointSymbol) {
         this.pointSymbol = pointSymbol;
     }
+
+    /**
+     * Get the line-style. (If <code>true</code> is passed as the parameter, a new line-style
+     * will be created if not already exists).
+     *
+     * @param create Whether to create it or not.
+     * @return Line-style.
+     */
+    public LineStyle getLineStyle(boolean create) {
+        return getProperty(LineStyle.class, create);
+    }
+
+    /**
+     * Set the line-style.
+     *
+     * @param lineStyle Line-style to set.
+     */
+    public void setLineStyle(LineStyle lineStyle) {
+        setProperty(lineStyle);
+    }
+
+    /**
+     * Get the area-style. (If <code>true</code> is passed as the parameter, a new area-style
+     * will be created if not already exists).
+     *
+     * @param create Whether to create it or not.
+     * @return Area-style.
+     */
+    public AreaStyle getAreaStyle(boolean create) {
+        return getProperty(AreaStyle.class, create);
+    }
+
+    /**
+     * Set the area-style.
+     *
+     * @param areaStyle Area-style to set.
+     */
+    public void setAreaStyle(AreaStyle areaStyle) {
+        setProperty(areaStyle);
+    }
 }

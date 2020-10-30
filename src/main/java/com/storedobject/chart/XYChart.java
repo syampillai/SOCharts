@@ -64,8 +64,8 @@ public abstract class XYChart extends AbstractChart {
 
     /**
      * Certain charts (example: {@link LineChart}, {@link BarChart}) can stack multiples of them when drawn on the
-     * same coordinate system with shared axis. If sticking needs to be enables, those charts should have the same
-     * stock name.
+     * same coordinate system with shared axis. If stacking needs to be enabled, those charts should have the same
+     * stack name.
      *
      * @param stackName Stack name.
      */

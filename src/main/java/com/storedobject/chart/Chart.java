@@ -44,6 +44,9 @@ public class Chart extends AbstractPart implements Component {
     private String name;
     CoordinateSystem coordinateSystem;
     private AbstractDataProvider<?>[] data;
+    private Color[] colors;
+    private final Map<Class<? extends ComponentProperty>, ComponentProperty> propertyMap = new HashMap<>();
+    private final Map<Class<? extends ComponentProperty>, String> propertyNameMap = new HashMap<>();
 
     /**
      * Create a {@link ChartType#Line} chart.
@@ -98,6 +101,16 @@ public class Chart extends AbstractPart implements Component {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
+        if(colors != null) {
+            sb.append("\"color\":[");
+            for(int i = 0; i < colors.length; i++) {
+                if(i > 0) {
+                    sb.append(',');
+                }
+                sb.append(colors[i]);
+            }
+            sb.append("],");
+        }
         ComponentPart.encode(sb, "type", type());
         if(coordinateSystem != null) {
             if(coordinateSystem.axes != axes) {
@@ -129,6 +142,12 @@ public class Chart extends AbstractPart implements Component {
                 ComponentPart.encode(sb, "coordinateSystem", name);
             }
         }
+        propertyMap.values().forEach(p -> {
+            ComponentPart.addComma(sb);
+            sb.append('\"').append(getPropertyName(p)).append("\":{");
+            ComponentPart.encodeProperty(sb, p);
+            sb.append("}");
+        });
         if(this instanceof AbstractDataChart) {
             return;
         }
@@ -190,6 +209,38 @@ public class Chart extends AbstractPart implements Component {
                 }
             }
         }
+    }
+
+    private String getPropertyName(ComponentProperty property) {
+        String name = propertyNameMap.get(property.getClass());
+        if(name == null) {
+            name = property.getClass().getName();
+            name = name.substring(name.lastIndexOf('.') + 1);
+            name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
+        }
+        return name;
+    }
+
+    @SuppressWarnings("unused")
+    <P extends ComponentProperty> void setPropertyName(Class<P> propertyClass, String name) {
+        propertyNameMap.put(propertyClass, name);
+    }
+
+    <P extends ComponentProperty> P getProperty(Class<P> propertyClass, boolean create) {
+        @SuppressWarnings("unchecked") P property = (P) propertyMap.get(propertyClass);
+        if(property == null && create) {
+            try {
+                property = propertyClass.getDeclaredConstructor().newInstance();
+            } catch(Throwable ignored) {
+                return null;
+            }
+            propertyMap.put(propertyClass, property);
+        }
+        return property;
+    }
+
+    void setProperty(ComponentProperty property) {
+        propertyMap.put(property.getClass(), property);
     }
 
     String axisName(int axis) {
@@ -288,7 +339,7 @@ public class Chart extends AbstractPart implements Component {
     }
 
     /**
-     * Set the name of the chart. (This will be used in displaying the legend if legend is enabled in the
+     * Set the name of the chart. (This will be used in displaying the legend if the legend is enabled in the
      * {@link SOChart} or added separately).
      *
      * @return Name.
@@ -305,5 +356,35 @@ public class Chart extends AbstractPart implements Component {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Set colors for the charts. Certain charts require more than one color, e.g., {@link PieChart}. (Colors are
+     * used sequentially and then, circularly).
+     *
+     * @param colors List of one or more colors.
+     */
+    public void setColors(Color... colors) {
+        this.colors = colors.length == 0 ? null : colors;
+    }
+
+    /**
+     * Get the tooltip. (If <code>true</code> is passed as the parameter, a new tooltip
+     * will be created if not already exists).
+     *
+     * @param create Whether to create it or not.
+     * @return Tooltip.
+     */
+    public Tooltip getTooltip(boolean create) {
+        return getProperty(Tooltip.class, create);
+    }
+
+    /**
+     * Set the tooltip.
+     *
+     * @param tooltip Tooltip.
+     */
+    public void setTooltip(Tooltip tooltip) {
+        setProperty(tooltip);
     }
 }
