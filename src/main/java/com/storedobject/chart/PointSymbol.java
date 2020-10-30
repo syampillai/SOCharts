@@ -21,61 +21,93 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public enum PointSymbol {
+public class PointSymbol implements ComponentProperty {
 
-    /**
-     * Circle.
-     */
-    CIRCLE,
-    /**
-     * Rectangle.
-     */
-    RECTANGLE("rect"),
-    /**
-     * Rounded rectangle.
-     */
-    ROUND_RECTANGLE("roundRect"),
-    /**
-     * Triangle.
-     */
-    TRIANGLE,
-    /**
-     * Diamond.
-     */
-    DIAMOND,
-    /**
-     * Pin.
-     */
-    PIN,
-    /**
-     * Arrow.
-     */
-    ARROW,
-    /**
-     * None.
-     */
-    NONE;
-
-    private final String value;
+    private PointSymbolType type = PointSymbolType.CIRCLE;
+    private boolean show = true;
+    private String size;
+    private boolean hoverAnimation = true;
 
     /**
      * Constructor.
      */
-    PointSymbol() {
-        this(null);
+    public PointSymbol() {
     }
 
     /**
-     * Constructor.
-     *
-     * @param value Value representation.
+     * Show the symbol.
      */
-    PointSymbol(String value) {
-        this.value = value;
+    public void show() {
+        show = true;
+    }
+
+    /**
+     * Hide the symbol.
+     */
+    public void hide() {
+        show = false;
+    }
+
+    /**
+     * Set the point symbol that decides how the points will be drawn.
+     *
+     * @param pointSymbolType Point symbol.
+     */
+    public void setType(PointSymbolType pointSymbolType) {
+        this.type = pointSymbolType;
+    }
+
+    /**
+     * Set size of the point symbol.
+     *
+     * @param size Size in pixels.
+     */
+    public void setSize(int size) {
+        if(size <= 0) {
+            this.size = null;
+        } else {
+            this.size = "" + size;
+        }
+    }
+
+    /**
+     * Set size of the point symbol.
+     *
+     * @param width Width in pixels.
+     * @param height Height in pixels.
+     */
+    public void setSize(int width, int height) {
+        if(width > 0 && height > 0) {
+            this.size = "[" + width + "," + height + "]";
+        } else if(width > 0) {
+            setSize(width);
+        } else if(height > 0) {
+            setSize(height);
+        } else {
+            this.size = null;
+        }
+    }
+
+    /**
+     * Animate on hover.
+     *
+     * @param hoverAnimation True/false.
+     */
+    public void setHoverAnimation(boolean hoverAnimation) {
+        this.hoverAnimation = hoverAnimation;
     }
 
     @Override
-    public String toString() {
-        return "\"" + (value == null ? super.toString().toLowerCase() : value) + "\"";
+    public void encodeJSON(StringBuilder sb) {
+        sb.append(",\"showSymbol\":").append(show);
+        if(type != null) {
+            ComponentPart.encode(sb,"symbol", type, true);
+            type = null;
+        }
+        if(size != null) {
+            sb.append(",\"symbolSize\":").append(size);
+            size = null;
+        }
+        sb.append(",\"hoverAnimation\":").append(hoverAnimation);
     }
 }

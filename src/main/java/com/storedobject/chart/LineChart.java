@@ -63,8 +63,7 @@ public class LineChart extends XYChart {
             stepped = null;
         }
         if(pointSymbol != null) {
-            ComponentPart.encode(sb,"symbol", pointSymbol, true);
-            pointSymbol = null;
+            pointSymbol.encodeJSON(sb);
         }
         ComponentPart.encode(sb,"connectNulls", connectNulls, true);
     }
@@ -116,15 +115,6 @@ public class LineChart extends XYChart {
     }
 
     /**
-     * Set the point symbol that decides how the points will be drawn.
-     *
-     * @param pointSymbol Point symbol.
-     */
-    public void setPointSymbol(PointSymbol pointSymbol) {
-        this.pointSymbol = pointSymbol;
-    }
-
-    /**
      * Get the line-style. (If <code>true</code> is passed as the parameter, a new line-style
      * will be created if not already exists).
      *
@@ -145,8 +135,8 @@ public class LineChart extends XYChart {
     }
 
     /**
-     * Get the area-style. (If <code>true</code> is passed as the parameter, a new area-style
-     * will be created if not already exists).
+     * Get the area-style (to style the area under the line).
+     * (If <code>true</code> is passed as the parameter, a new area-style will be created if not already exists).
      *
      * @param create Whether to create it or not.
      * @return Area-style.
@@ -162,5 +152,27 @@ public class LineChart extends XYChart {
      */
     public void setAreaStyle(AreaStyle areaStyle) {
         setProperty(areaStyle);
+    }
+
+    /**
+     * Get the point symbol definition associated with this chart.
+     *
+     * @param create Whether to create it if doesn't exist.
+     * @return Point symbol.
+     */
+    public PointSymbol getPointSymbol(boolean create) {
+        if(pointSymbol == null && create) {
+            pointSymbol = new PointSymbol();
+        }
+        return pointSymbol;
+    }
+
+    /**
+     * Set the point symbol definition to be used.
+     *
+     * @param pointSymbol Point symbol to set.
+     */
+    public void setPointSymbol(PointSymbol pointSymbol) {
+        this.pointSymbol = pointSymbol;
     }
 }

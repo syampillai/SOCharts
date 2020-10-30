@@ -108,7 +108,7 @@ public abstract class AbstractDataZoom implements Component {
             axes.stream().filter(a -> a.getClass() == ac).forEach(a -> {
                 if(first.get()) {
                     first.set(false);
-                    sb.append('"').append(a.axisName()).append("Index\":[");
+                    sb.append(",\"").append(a.axisName()).append("Index\":[");
                 } else {
                     sb.append(',');
                 }
