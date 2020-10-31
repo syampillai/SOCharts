@@ -138,7 +138,7 @@ public abstract class AbstractDataZoom implements Component {
         if(start != Integer.MIN_VALUE || end != Integer.MAX_VALUE || startValue != null || endValue != null) {
             sb.append(",\"rangeMode\":[\"");
             sb.append(startValue != null ? "value" : "percent");
-            sb.append(",\"");
+            sb.append("\",\"");
             sb.append(endValue != null ? "value" : "percent");
             sb.append("\"]");
         }
