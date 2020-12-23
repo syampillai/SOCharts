@@ -16,6 +16,8 @@
 
 package com.storedobject.chart;
 
+import com.storedobject.helper.ID;
+
 /**
  * Represents a part used by chart {@link Component}s.
  *
@@ -25,7 +27,7 @@ public interface ComponentPart extends ComponentProperty {
 
     /**
      * Each part should have a unique Id. (It can be a final variable and can be set by
-     * incrementing {@link SOChart#id}).
+     * calling {@link ID#newID()}.
      *
      * @return Unique Id.
      */

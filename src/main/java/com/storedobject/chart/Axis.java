@@ -16,6 +16,8 @@
 
 package com.storedobject.chart;
 
+import com.storedobject.helper.ID;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -48,7 +50,7 @@ public abstract class Axis extends VisibleProperty {
          */
         NONE
     }
-    private final long id = SOChart.id.incrementAndGet();
+    private final long id = ID.newID();
     private DataType dataType;
     Map<CoordinateSystem, AxisWrapper> wrappers = new HashMap<>();
     private String name;
@@ -1365,7 +1367,7 @@ public abstract class Axis extends VisibleProperty {
     static class AxisWrapper implements ComponentPart {
 
         private int serial;
-        private final long id = SOChart.id.incrementAndGet();
+        private final long id = ID.newID();
         final Axis axis;
         private final CoordinateSystem coordinateSystem;
 

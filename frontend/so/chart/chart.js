@@ -38,7 +38,7 @@ export class SOChart extends LitElement {
 
     disconnectedCallback() {
         super.disconnectedCallback();
-        this.destoryChart();
+        this.destroyChart();
     }
 
     updated(changedProps) {
@@ -54,7 +54,7 @@ export class SOChart extends LitElement {
         this.chart.clear();
     }
 
-    destoryChart() {
+    destroyChart() {
         if(this.chart == null) {
             return;
         }
@@ -72,4 +72,3 @@ export class SOChart extends LitElement {
 }
 
 customElements.define('so-chart', SOChart);
-

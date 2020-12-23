@@ -16,6 +16,8 @@
 
 package com.storedobject.chart;
 
+import com.storedobject.helper.ID;
+
 import java.util.Objects;
 
 /**
@@ -26,7 +28,7 @@ import java.util.Objects;
 public abstract class AbstractPart implements ComponentPart {
 
     private int serial;
-    private final long id = SOChart.id.incrementAndGet();
+    private final long id = ID.newID();
 
     /**
      * Get a unique Id for this part.

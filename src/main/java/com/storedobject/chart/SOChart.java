@@ -16,12 +16,17 @@
 
 package com.storedobject.chart;
 
-import com.vaadin.flow.component.*;
+import com.storedobject.helper.ID;
+import com.storedobject.helper.LitComponent;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.HasSize;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * <p>
@@ -74,7 +79,6 @@ public class SOChart extends LitComponent implements HasSize {
             new ComponentEncoder("series", Chart.class),
             new ComponentEncoder("dataZoom", DataZoom.class),
     };
-    final static AtomicLong id = new AtomicLong(0);
     private final List<Component> components = new ArrayList<>();
     private final List<ComponentPart> parts = new ArrayList<>();
     private Legend legend = new Legend();
@@ -88,7 +92,7 @@ public class SOChart extends LitComponent implements HasSize {
      * Constructor.
      */
     public SOChart() {
-        getElement().setProperty("idChart", "sochart" + id.incrementAndGet());
+        getElement().setProperty("idChart", "sochart" + ID.newID());
     }
 
     @Override

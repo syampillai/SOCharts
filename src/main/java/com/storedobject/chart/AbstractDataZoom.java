@@ -16,6 +16,8 @@
 
 package com.storedobject.chart;
 
+import com.storedobject.helper.ID;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class AbstractDataZoom implements Component {
 
     private int serial;
-    private final long id = SOChart.id.incrementAndGet();
+    private final long id = ID.newID();
     private final String type;
     private final List<Axis> axes = new ArrayList<>();
     private final CoordinateSystem coordinateSystem;

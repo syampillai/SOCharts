@@ -16,6 +16,8 @@
 
 package com.storedobject.chart;
 
+import com.storedobject.helper.ID;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -27,7 +29,7 @@ import java.util.stream.Stream;
  */
 public class TreeData implements TreeDataProvider {
 
-    private final long id = SOChart.id.incrementAndGet();
+    private final long id = ID.newID();
     private final String name;
     private final Number value;
     private List<TreeData> children;

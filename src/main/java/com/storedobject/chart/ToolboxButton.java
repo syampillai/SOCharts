@@ -16,6 +16,8 @@
 
 package com.storedobject.chart;
 
+import com.storedobject.helper.ID;
+
 /**
  * This is the base class for creating "toolbox buttons" that can be added to {@link Toolbox}. A standard set of
  * "toolbox buttons" are available as static classes within {@link Toolbox}. However, support for
@@ -25,7 +27,7 @@ package com.storedobject.chart;
  */
 public abstract class ToolboxButton implements ComponentPart {
 
-    private final long id = SOChart.id.incrementAndGet();
+    private final long id = ID.newID();
     private boolean show = true;
     private String caption;
 
@@ -54,7 +56,6 @@ public abstract class ToolboxButton implements ComponentPart {
         }
     }
 
-    @SuppressWarnings("RedundantThrows")
     @Override
     public void validate() throws ChartException {
     }
