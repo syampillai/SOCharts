@@ -1,5 +1,5 @@
 import { LitElement, html, css, property, customElement } from 'lit-element'
-import echarts from 'echarts/dist/echarts.min'
+import * as echarts from 'echarts/dist/echarts.min'
 
 export class SOChart extends LitElement {
 
