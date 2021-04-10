@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -30,6 +30,16 @@ public class YAxis extends XYAxis {
      */
     public YAxis(DataType dataType) {
         super(dataType);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param data Data type will be determined from the data provider. Note: It is not required to use
+     *             same the data on this axis.
+     */
+    public YAxis(AbstractDataProvider<?> data) {
+        super(data);
     }
 
     @Override

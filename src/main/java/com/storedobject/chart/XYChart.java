@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -32,7 +32,7 @@ public abstract class XYChart extends AbstractChart {
      * @param xData Data for X axis.
      * @param yData Data for Y axis.
      */
-    public XYChart(ChartType type, AbstractDataProvider<?> xData, DataProvider yData) {
+    public XYChart(ChartType type, AbstractDataProvider<?> xData, AbstractDataProvider<?> yData) {
         super(type, xData, yData);
     }
 
@@ -50,7 +50,7 @@ public abstract class XYChart extends AbstractChart {
      *
      * @param yData Data for Y axis.
      */
-    public void setYData(DataProvider yData) {
+    public void setYData(AbstractDataProvider<?> yData) {
         setData(yData, 1);
     }
 

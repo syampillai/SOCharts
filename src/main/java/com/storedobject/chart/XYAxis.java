@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -33,6 +33,16 @@ public abstract class XYAxis extends Axis {
      */
     public XYAxis(DataType dataType) {
         super(dataType);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param data Data type will be determined from the data provider. Note: It is not required to use
+     *             same the data on this axis.
+     */
+    public XYAxis(AbstractDataProvider<?> data) {
+        super(data);
     }
 
     abstract String positionString();
