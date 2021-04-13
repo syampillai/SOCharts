@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -42,7 +42,7 @@ public class LineChart extends XYChart {
      * @param xData Data for X axis.
      * @param yData Data for Y axis.
      */
-    public LineChart(AbstractDataProvider<?> xData, DataProvider yData) {
+    public LineChart(AbstractDataProvider<?> xData, AbstractDataProvider<?> yData) {
         super(ChartType.Line, xData, yData);
     }
 

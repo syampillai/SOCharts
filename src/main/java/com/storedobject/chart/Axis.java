@@ -109,7 +109,7 @@ public abstract class Axis extends VisibleProperty {
 
     Object value(Object value) {
         if(value == null) {
-            return value;
+            return null;
         }
         if(dataType != null) {
             if(dataType == DataType.CATEGORY) {
@@ -586,6 +586,7 @@ public abstract class Axis extends VisibleProperty {
         private boolean inside = false;
         private Boolean showMaxLabel, showMinLabel;
         private int interval = Integer.MIN_VALUE;
+        private String formatter;
 
         /**
          * Constructor.
@@ -636,6 +637,9 @@ public abstract class Axis extends VisibleProperty {
             sb.append("\"inside\":").append(inside);
             if(rotation >= -90 && rotation <= 90) {
                 sb.append(",\"rotate\":").append(rotation);
+            }
+            if(formatter != null) {
+                sb.append(",\"formatter\":\"").append(formatter).append('\"');
             }
             sb.append(",\"showMinLabel\":").append(showMinLabel);
             sb.append(",\"showMaxLabel\":").append(showMaxLabel);
@@ -706,6 +710,54 @@ public abstract class Axis extends VisibleProperty {
          */
         public void setInterval(int interval) {
             this.interval = interval;
+        }
+
+        /**
+         * Get the label formatter currently set. See {@link #setFormatter(String)}.
+         *
+         * @return Label formatter.
+         */
+        public String getFormatter() {
+            return formatter;
+        }
+
+        /**
+         * Set the label formatter.
+         * <pre>
+         * Example (numeric values):
+         * "{value} kg" => Produces labels like "20 kg"
+         * Examples (date/time values):
+         * "{yyyy}-{MM}-{dd}" => Produces labels like "1998-01-23"
+         * "Day {d}" => Produces labels like "Day 1"
+         * All date/time value formatting characters:
+         * {yyyy} => years (2020, 2021 etc.)
+         * {yy} => years (20, 21 etc.)
+         * {Q} => quarter {1, 2, 3 etc.}
+         * {MMMM} => dull name of the month (January, February etc.)
+         * {MMM} => short name of the month (Jan, Feb etc.)
+         * {MM} => 2 digits of the month (01, 02, 03 etc.)
+         * {M} => 1/2 digits of the month (1, 2, 3 etc.)
+         * {dd} => 2 digits day of the month (01, 02, 03 etc.)
+         * {d} => 1/2 digits day of the month (8, 9, 10, 11 etc.)
+         * {eeee} => day of week - full name (Monday, Tuesday etc.)
+         * {ee} => day of week - short name (Mon, Tue etc.)
+         * {e} => day of week (1 to 54)
+         * {HH} => Hour (01-23)
+         * {H} => Hour (00-23)
+         * {hh} => Hour (00-12)
+         * {h} => Hour (1-12)
+         * {mm} => Minute {00-59}
+         * {m} => Minute {0-59}
+         * {ss} => Second {00-59}
+         * {s} => Second {0-59}
+         * {SSS} => Second {000-999}
+         * {S} => Second {0-999}
+         * </pre>
+         *
+         * @param formatter Label formatter to be set.
+         */
+        public void setFormatter(String formatter) {
+            this.formatter = formatter;
         }
     }
 

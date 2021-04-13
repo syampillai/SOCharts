@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -33,7 +33,6 @@ public abstract class AbstractChart extends Chart {
         super(type);
         super.setType(type);
         AbstractDataProvider<?>[] d = new AbstractDataProvider[type.getAxes().length];
-        super.setData(d);
         if(data != null) {
             for (int i = 0; i < data.length; i++) {
                 if(i == d.length) {
@@ -42,6 +41,7 @@ public abstract class AbstractChart extends Chart {
                 d[i] = data[i];
             }
         }
+        super.setData(d);
     }
 
     /**

@@ -19,46 +19,27 @@ package com.storedobject.chart;
 import java.util.stream.Stream;
 
 /**
- * Implementation of serially increasing/decreasing numbers as data.
+ * A data provider implementation to provide data from a {@link Stream}.
  *
  * @author Syam
  */
-public class SerialData implements AbstractDataProvider<Integer> {
+public final class DataStream implements AbstractDataProvider<Number> {
 
-    private final int start, end, step;
     private int serial;
+    private final Stream<Number> dataStream;
 
     /**
      * Constructor.
      *
-     * @param start Starting value.
-     * @param end Ending value.
+     * @param dataStream Data stream that provides the data.
      */
-    public SerialData(int start, int end) {
-        this(start, end, 1);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param start Starting value.
-     * @param end Ending value.
-     * @param step Step value.
-     */
-    public SerialData(int start, int end, int step) {
-        this.step = step == 0 ? 1 : step;
-        if(this.step > 0) {
-            this.start = Math.min(start, end);
-            this.end = Math.max(start, end);
-        } else {
-            this.start = Math.max(start, end);
-            this.end = Math.min(start, end);
-        }
+    public DataStream(Stream<Number> dataStream) {
+        this.dataStream = dataStream;
     }
 
     @Override
-    public Stream<Integer> stream() {
-        return Stream.iterate(start, i -> (step > 1 ? i <= end : i >= end), i -> i + step);
+    public Stream<Number> stream() {
+        return dataStream;
     }
 
     @Override

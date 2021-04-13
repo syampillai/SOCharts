@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -30,6 +30,7 @@ public class SerialDate implements AbstractDataProvider<LocalDate> {
     private final LocalDate start, end;
     private final int step;
     private final ChronoUnit stepUnit;
+    private int serial;
 
     /**
      * Constructor.
@@ -74,11 +75,21 @@ public class SerialDate implements AbstractDataProvider<LocalDate> {
 
     @Override
     public Stream<LocalDate> stream() {
-        return Stream.iterate(start, d -> step > 0 ? !d.isAfter(end) : !d.isBefore(end), d -> start.plus(step, stepUnit));
+        return Stream.iterate(start, d -> step > 0 ? !d.isAfter(end) : !d.isBefore(end), d -> d.plus(step, stepUnit));
     }
 
     @Override
     public DataType getDataType() {
         return DataType.DATE;
+    }
+
+    @Override
+    public void setSerial(int serial) {
+        this.serial = serial;
+    }
+
+    @Override
+    public int getSerial() {
+        return serial;
     }
 }

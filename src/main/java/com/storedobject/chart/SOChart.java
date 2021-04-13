@@ -40,8 +40,8 @@ import java.util.List;
  * An example of a {@link ComponentPart} is {@link AngleAxis} that is used by the {@link PolarCoordinate}.
  * </p>
  * <p>
- * Typical usage of SOChart is to new it and add it to some layout for displaying it. Any {@link Component} that is
- * added to the {@link Chart} will be be displayed. For example, you can crate a {@link PieChart} and add it to the
+ * Typical usage of the SOChart is to new it and add it to some layout for displaying it. Any {@link Component} that is
+ * added to the {@link Chart} will be be displayed. For example, you can create a {@link PieChart} and add it to the
  * {@link SOChart} using {@link #add(Component...)}.
  * </p>
  * <pre>
@@ -317,7 +317,7 @@ public class SOChart extends LitComponent implements HasSize {
         }
         for(Component c: components) {
             if(skipData) {
-                if (c instanceof AbstractData) {
+                if (c instanceof AbstractDataProvider) {
                     if (c.getSerial() < 0) {
                         throw new ChartException(SKIP_DATA + c.className());
                     }
@@ -334,7 +334,7 @@ public class SOChart extends LitComponent implements HasSize {
         }
         for(ComponentPart c: parts) {
             if(skipData) {
-                if (c instanceof AbstractData) {
+                if (c instanceof AbstractDataProvider) {
                     if (c.getSerial() < 0) {
                         throw new ChartException(SKIP_DATA + c.className());
                     }
@@ -363,6 +363,8 @@ public class SOChart extends LitComponent implements HasSize {
                 if(ce.partType.isAssignableFrom(cp.getClass())) {
                     if(cp.getSerial() == -2) {
                         cp.setSerial(serial++);
+                    } else if(cp.getSerial() < 0) {
+                        throw new ChartException("Get/set serial not properly implemented in " + cp.className());
                     }
                 }
             }

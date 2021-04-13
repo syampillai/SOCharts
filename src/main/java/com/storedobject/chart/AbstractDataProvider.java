@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -80,7 +80,7 @@ public interface AbstractDataProvider<T> extends ComponentPart {
      * Append the JSON encoding of all values coming from a stream to the given string builder.
      *
      * @param sb Append the JSONified string to this.
-     * @param stream Sream of data values.
+     * @param stream Stream of data values.
      * @param prefix Prefix to add.
      * @param suffix Suffix to add.
      * @param appendAnyway Append prefix and suffix even if data is empty.

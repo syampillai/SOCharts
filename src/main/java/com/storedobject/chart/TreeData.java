@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 public class TreeData implements TreeDataProvider {
 
     private final long id = ID.newID();
+    private int serial;
     private final String name;
     private final Number value;
     private List<TreeData> children;
@@ -63,6 +64,16 @@ public class TreeData implements TreeDataProvider {
     @Override
     public final long getId() {
         return id;
+    }
+
+    @Override
+    public void setSerial(int serial) {
+        this.serial = serial;
+    }
+
+    @Override
+    public int getSerial() {
+        return serial;
     }
 
     /**
