@@ -16,65 +16,55 @@
 
 package com.storedobject.chart;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
- * Treemap chart.
+ * Sunburst chart (Beta version - not fully tested)
  *
  * @author Syam
  */
-public class TreemapChart extends AbstractDataChart implements HasPosition {
+public class SunburstChart extends AbstractDataChart implements HasPosition {
 
-    private final List<TreeDataProvider> data = new ArrayList<>();
+    private TreeDataProvider data;
     private Position position;
+    private ItemStyle itemStyle;
 
     /**
-     * Create a tree chart of the set of provided data.
-     *
-     * @param data Data to be used.
+     * Create a tree chart. Data can be set later.
      */
-    public TreemapChart(TreeDataProvider... data) {
-        super(ChartType.Treemap);
-        addData(data);
+    public SunburstChart() {
+        this(null);
     }
 
     /**
-     * Get the the list of data associated with this chart.
+     * Create a tree chart of the set of data.
      *
-     * @return List of data providers.
+     * @param data Data to be used.
      */
-    public List<TreeDataProvider> getTreemapData() {
+    public SunburstChart(TreeDataProvider data) {
+        super(ChartType.Sunburst);
+    }
+
+    /**
+     * Get the the data associated with this chart.
+     *
+     * @return Data provider.
+     */
+    public TreeDataProvider getTreeData() {
         return data;
     }
 
     /**
-     * Add data to the chart.
+     * Set data to the chart.
      *
-     * @param data List of data to add.
+     * @param data Data provider to set.
      */
-    public void addData(TreeDataProvider... data) {
-        if(data != null) {
-            this.data.addAll(Arrays.asList(data));
-        }
-    }
-
-    /**
-     * Remove data from the chart.
-     *
-     * @param data List of data to remove.
-     */
-    public void removeData(TreeDataProvider... data) {
-        if(data != null) {
-            this.data.removeAll(Arrays.asList(data));
-        }
+    public void setTreeData(TreeDataProvider data) {
+        this.data = data;
     }
 
     @Override
     public void validate() throws ChartException {
         super.validate();
-        if(data.isEmpty()) {
+        if(data == null) {
             throw new ChartException("No data provided for " + className());
         }
     }
@@ -82,18 +72,14 @@ public class TreemapChart extends AbstractDataChart implements HasPosition {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
+        if(itemStyle != null) {
+            ComponentPart.encode(sb, "itemStyle", itemStyle);
+        }
         if(!skippingData) {
             sb.append(",\"data\":[");
-            for(int i = 0; i < data.size(); i++) {
-                if(i > 0) {
-                    sb.append(',');
-                }
-                data.get(i).encodeJSON(sb);
-            }
+            data.encodeJSON(sb);
             sb.append(']');
         }
-        ComponentPart.addComma(sb);
-        ComponentPart.encode(sb, "leafDepth", 1);
     }
 
     @Override
@@ -107,5 +93,27 @@ public class TreemapChart extends AbstractDataChart implements HasPosition {
     @Override
     public final void setPosition(Position position) {
         this.position = position;
+    }
+
+    /**
+     * Get item style.
+     *
+     * @param create If passed true, a new style is created if not exists.
+     * @return Item style.
+     */
+    public final ItemStyle getItemStyle(boolean create) {
+        if(itemStyle == null && create) {
+            itemStyle = new ItemStyle();
+        }
+        return itemStyle;
+    }
+
+    /**
+     * Set item style.
+     *
+     * @param itemStyle Style to set.
+     */
+    public void setItemStyle(ItemStyle itemStyle) {
+        this.itemStyle = itemStyle;
     }
 }

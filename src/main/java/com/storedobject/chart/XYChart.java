@@ -17,13 +17,14 @@
 package com.storedobject.chart;
 
 /**
- * Basic XY-type chart (mostly plotted on {@link RectangularCoordinate} system.
+ * Basic XY-type chart - mostly plotted on a {@link RectangularCoordinate} system.
  *
  * @author Syam
  */
 public abstract class XYChart extends AbstractChart {
 
     String stackName;
+    private ItemStyle itemStyle;
 
     /**
      * Constructor.
@@ -60,6 +61,9 @@ public abstract class XYChart extends AbstractChart {
         if(stackName != null) {
             ComponentPart.encode(sb, "stack", stackName, true);
         }
+        if(itemStyle != null) {
+            ComponentPart.encode(sb, "itemStyle", itemStyle, true);
+        }
     }
 
     /**
@@ -71,5 +75,27 @@ public abstract class XYChart extends AbstractChart {
      */
     public void setStackName(String stackName) {
         this.stackName = stackName;
+    }
+
+    /**
+     * Get item style.
+     *
+     * @param create If passed true, a new style is created if not exists.
+     * @return Item style.
+     */
+    public final ItemStyle getItemStyle(boolean create) {
+        if(itemStyle == null && create) {
+            itemStyle = new ItemStyle();
+        }
+        return itemStyle;
+    }
+
+    /**
+     * Set item style.
+     *
+     * @param itemStyle Style to set.
+     */
+    public void setItemStyle(ItemStyle itemStyle) {
+        this.itemStyle = itemStyle;
     }
 }

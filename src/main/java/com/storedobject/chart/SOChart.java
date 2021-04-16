@@ -85,7 +85,7 @@ public class SOChart extends LitComponent implements HasSize {
     private Tooltip tooltip = new Tooltip();
     private boolean neverUpdated = true;
     private DefaultColors defaultColors;
-    private Color defaultBackground;
+    private AbstractColor defaultBackground;
     private DefaultTextStyle defaultTextStyle;
 
     /**
@@ -116,7 +116,7 @@ public class SOChart extends LitComponent implements HasSize {
      *
      * @return List of default colors.
      */
-    public List<Color> getDefaultColors() {
+    public List<AbstractColor> getDefaultColors() {
         if(defaultColors == null) {
             defaultColors = new DefaultColors();
         }
@@ -475,7 +475,7 @@ public class SOChart extends LitComponent implements HasSize {
         }
     }
 
-    private static class DefaultColors extends ArrayList<Color> implements ComponentPart {
+    private static class DefaultColors extends ArrayList<AbstractColor> implements ComponentPart {
 
         private static final String[] colors = new String[] {
                 "0000ff",
@@ -498,7 +498,7 @@ public class SOChart extends LitComponent implements HasSize {
             sb.append("\"color\":[");
             int count = 0;
             boolean first = true;
-            for(Color c: this) {
+            for(AbstractColor c: this) {
                 if(c == null) {
                     continue;
                 }
@@ -510,7 +510,7 @@ public class SOChart extends LitComponent implements HasSize {
                 sb.append(c);
                 ++count;
             }
-            Color c;
+            AbstractColor c;
             for(int i = 0; count < 11; i++) {
                 c = new Color(colors[i]);
                 if(this.contains(c)) {

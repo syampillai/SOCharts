@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -29,7 +29,7 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
     private PolarProperty polarProperty;
     private CategoryDataProvider axisIndicators;
     private int startingAngle = 90;
-    private Color color;
+    private AbstractColor color;
 
     /**
      * Constructor. Axis indicators can be set later.
@@ -125,7 +125,7 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
      *
      * @return Color.
      */
-    public final Color getColor() {
+    public final AbstractColor getColor() {
         return color;
     }
 
@@ -134,7 +134,7 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
      *
      * @param color Color.
      */
-    public void setColor(Color color) {
+    public void setColor(AbstractColor color) {
         this.color = color;
     }
 }

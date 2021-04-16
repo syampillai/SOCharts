@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -25,7 +25,7 @@ package com.storedobject.chart;
 public class Shadow implements ComponentProperty {
 
     private String prefix;
-    private Color color;
+    private AbstractColor color;
     private int blur = Integer.MIN_VALUE, offsetX = Integer.MIN_VALUE, offsetY = Integer.MIN_VALUE;
     private int opacity = Integer.MIN_VALUE;
 
@@ -90,7 +90,7 @@ public class Shadow implements ComponentProperty {
      *
      * @return Color.
      */
-    public final Color getColor() {
+    public final AbstractColor getColor() {
         return color;
     }
 
@@ -99,7 +99,7 @@ public class Shadow implements ComponentProperty {
      *
      * @param color Color.
      */
-    public void setColor(Color color) {
+    public void setColor(AbstractColor color) {
         this.color = color;
     }
 

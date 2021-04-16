@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -49,8 +49,8 @@ public class RectangularCoordinate extends CoordinateSystem {
 
     /**
      * Get the border.
-     * @param create Whether to create if not exists or not.
      *
+     * @param create Whether to create if not exists or not.
      * @return Border.
      */
     public final Border getBorder(boolean create) {

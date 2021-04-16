@@ -639,7 +639,7 @@ public abstract class Axis extends VisibleProperty {
                 sb.append(",\"rotate\":").append(rotation);
             }
             if(formatter != null) {
-                sb.append(",\"formatter\":\"").append(formatter).append('\"');
+                sb.append(",\"formatter\":").append(ComponentPart.escape(formatter));
             }
             sb.append(",\"showMinLabel\":").append(showMinLabel);
             sb.append(",\"showMaxLabel\":").append(showMaxLabel);
@@ -1025,8 +1025,8 @@ public abstract class Axis extends VisibleProperty {
         @Override
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
-            ComponentPart.addComma(sb);
             if(interval >= -1) {
+                ComponentPart.addComma(sb);
                 sb.append("\"interval\":");
                 if(interval == -1) {
                     sb.append("\"auto\"");
@@ -1284,7 +1284,7 @@ public abstract class Axis extends VisibleProperty {
 
         private int width = -1, height = -1, gap = -1;
         private Shadow shadow;
-        private Color color;
+        private AbstractColor color;
 
         /**
          * Constructor.
@@ -1388,7 +1388,7 @@ public abstract class Axis extends VisibleProperty {
          *
          * @return Color
          */
-        public Color getColor() {
+        public AbstractColor getColor() {
             return color;
         }
 
@@ -1397,7 +1397,7 @@ public abstract class Axis extends VisibleProperty {
          *
          * @param color Color.
          */
-        public void setColor(Color color) {
+        public void setColor(AbstractColor color) {
             this.color = color;
         }
 

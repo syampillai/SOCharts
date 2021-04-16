@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -45,7 +45,19 @@ public interface TreeDataProvider extends ComponentPart {
         if(name == null) {
             name = "Name?";
         }
-        sb.append("{\"name\":").append(ComponentPart.escape(name)).append(",\"value\":").append(getValue());
+        sb.append("{\"name\":").append(ComponentPart.escape(name));
+        Number value = getValue();
+        if(value != null) {
+            sb.append(",\"value\":").append(value);
+        }
+        Label label = getLabel(false);
+        if(label != null) {
+            label.encodeJSON(sb);
+        }
+        ItemStyle itemStyle = getItemStyle(false);
+        if(itemStyle != null) {
+            itemStyle.encodeJSON(sb);
+        }
         Stream<? extends TreeDataProvider> children = getChildren();
         if(children != null) {
             AbstractDataProvider.append(sb, children, ",\"children\":[", "]", false,
@@ -56,5 +68,51 @@ public interface TreeDataProvider extends ComponentPart {
 
     @Override
     default void validate() {
+    }
+
+    /**
+     * Get the label for this tree node.
+     *
+     * @param create Whether to create it if not exists.
+     * @return Return the label.
+     */
+    default Label getLabel(boolean create) {
+        return null;
+    }
+
+    /**
+     * Get item style.
+     *
+     * @param create If passed true, a new style is created if not exists.
+     * @return Item style.
+     */
+    default ItemStyle getItemStyle(boolean create) {
+        return null;
+    }
+
+    class Label extends TextStyle {
+
+        private boolean show = true;
+
+        /**
+         * Show labels.
+         */
+        public void show() {
+            show = true;
+        }
+
+        /**
+         * Hide labels.
+         */
+        public void hide() {
+            show = false;
+        }
+
+        @Override
+        public void encodeJSON(StringBuilder sb) {
+            super.encodeJSON(sb);
+            ComponentPart.addComma(sb);
+            sb.append("\"show\":").append(show);
+        }
     }
 }

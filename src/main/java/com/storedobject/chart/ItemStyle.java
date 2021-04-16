@@ -17,27 +17,41 @@
 package com.storedobject.chart;
 
 /**
- * Effect scatter chart. It is a scatter chart with certain rendering effects.
- * (Future versions will provide more chart-specific methods).
+ * Item style. (Used to define style of an individual item in many charts).
  *
  * @author Syam
  */
-public class EffectScatterChart extends XYChart {
+public class ItemStyle extends AbstractStyle {
 
-    /**
-     * Constructor. (Data can be set later).
-     */
-    public EffectScatterChart() {
-        this(null, null);
+    private Border border;
+
+    @Override
+    public void encodeJSON(StringBuilder sb) {
+        super.encodeJSON(sb);
+        if(border != null) {
+            border.encodeJSON(sb);
+        }
     }
 
     /**
-     * Constructor.
+     * Get the border.
+     * @param create Whether to create if not exists or not.
      *
-     * @param xData Data for X axis.
-     * @param yData Data for Y axis.
+     * @return Border.
      */
-    public EffectScatterChart(AbstractDataProvider<?> xData, AbstractDataProvider<?> yData) {
-        super(ChartType.EffectScatter, xData, yData);
+    public final Border getBorder(boolean create) {
+        if(border == null && create) {
+            border = new Border();
+        }
+        return border;
+    }
+
+    /**
+     * Set the border.
+     *
+     * @param border Border.
+     */
+    public void setBorder(Border border) {
+        this.border = border;
     }
 }

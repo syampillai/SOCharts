@@ -24,6 +24,8 @@ package com.storedobject.chart;
  */
 public class BarChart extends XYChart {
 
+    private boolean roundCap;
+
     /**
      * Constructor. (Data can be set later).
      */
@@ -39,5 +41,30 @@ public class BarChart extends XYChart {
      */
     public BarChart(AbstractDataProvider<?> xData, AbstractDataProvider<?> yData) {
         super(ChartType.Bar, xData, yData);
+    }
+
+    @Override
+    public void encodeJSON(StringBuilder sb) {
+        super.encodeJSON(sb);
+        ComponentPart.encode(sb,"roundCap", roundCap, true);
+    }
+
+    /**
+     * Is round-cap feature set?
+     *
+     * @return True/false.
+     */
+    public final boolean isRoundCap() {
+        return roundCap;
+    }
+
+    /**
+     * Set round-cap feature. If set it to <code>true</code>, the ending portion of the bar will be rounded.
+     * This will be effective only when plotting this chart on {@link PolarCoordinate}s.
+     *
+     * @param roundCap Round-cap feature.
+     */
+    public void setRoundCap(boolean roundCap) {
+        this.roundCap = roundCap;
     }
 }

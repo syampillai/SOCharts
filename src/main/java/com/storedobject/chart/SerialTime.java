@@ -17,6 +17,7 @@
 package com.storedobject.chart;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
@@ -73,23 +74,45 @@ public class SerialTime implements AbstractDataProvider<LocalDateTime> {
         }
     }
 
+    /**
+     * Constructor.
+     *
+     * @param start Starting value in milliseconds.
+     * @param end Ending value in milliseconds.
+     */
+    public SerialTime(long start, long end) {
+        this(start, end, 0);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param start Starting value in milliseconds.
+     * @param end Ending value in milliseconds.
+     * @param step Step value in milliseconds.
+     */
+    public SerialTime(long start, long end, int step) {
+        this(LocalDateTime.ofEpochSecond(start, 0, ZoneOffset.UTC),
+                LocalDateTime.ofEpochSecond(start, 0, ZoneOffset.UTC), step, ChronoUnit.MILLIS);
+    }
+
     @Override
     public Stream<LocalDateTime> stream() {
         return Stream.iterate(start, t -> step > 0 ? !t.isAfter(end) : !t.isBefore(end), t -> t.plus(step, stepUnit));
     }
 
     @Override
-    public DataType getDataType() {
+    public final DataType getDataType() {
         return DataType.TIME;
     }
 
     @Override
-    public void setSerial(int serial) {
+    public final void setSerial(int serial) {
         this.serial = serial;
     }
 
     @Override
-    public int getSerial() {
+    public final int getSerial() {
         return serial;
     }
 }

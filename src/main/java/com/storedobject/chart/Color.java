@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -29,9 +29,10 @@ public class Color extends AbstractColor {
     /**
      * Transparent color.
      */
-    public static final Color TRANSPARENT = new SpecialColor("transparent");
+    public static final Color TRANSPARENT = new Color("transparent");
 
     private int red, green, blue, alpha = Integer.MAX_VALUE;
+    private String colorName;
 
     /**
      * Constructor. (Alpha value will be set to 100).
@@ -84,7 +85,8 @@ public class Color extends AbstractColor {
     }
 
     /**
-     * Construct from an hex value.
+     * Construct from an hex value. (Also accepts rgb(...), hsl(...) or standard HTML color names
+     * like "red", "green" etc. here).
      *
      * @param hexValue Hex value of the color. (Example: FF0000 for red).
      */
@@ -93,7 +95,8 @@ public class Color extends AbstractColor {
     }
 
     /**
-     * Set the values from a given hex value.
+     * Set the values from a given hex value. (Also accepts rgb(...), hsl(...) or standard HTML color names
+     * like "red", "green" etc.).
      *
      * @param hexValue Hex value of the color. (Example: FF0000 for red).
      */
@@ -104,12 +107,13 @@ public class Color extends AbstractColor {
         if(hexValue.startsWith("#")) {
             hexValue = hexValue.substring(1);
         }
+        if(!isHex(hexValue)) {
+            colorName = hexValue;
+            return;
+        }
         hexValue = hexValue.toUpperCase();
         if(hexValue.length() > 8) {
             hexValue = hexValue.substring(0, 8);
-        }
-        if(!isHex(hexValue)) {
-            return;
         }
         if(hexValue.length() > 6) {
             alpha = value(hexValue.substring(6));
@@ -194,6 +198,9 @@ public class Color extends AbstractColor {
 
     @Override
     public String toString() {
+        if(colorName != null) {
+            return '"' + colorName + '"';
+        }
         StringBuilder sb = new StringBuilder();
         sb.append("\"rgb");
         if(alpha != Integer.MAX_VALUE) {
@@ -212,6 +219,9 @@ public class Color extends AbstractColor {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Color color = (Color) o;
+        if(this.colorName != null || color.colorName != null) {
+            return Objects.equals(this.colorName, color.colorName);
+        }
         return red == color.red &&
                 green == color.green &&
                 blue == color.blue &&
@@ -220,21 +230,6 @@ public class Color extends AbstractColor {
 
     @Override
     public int hashCode() {
-        return Objects.hash(red, green, blue, alpha);
-    }
-
-    private static class SpecialColor extends Color {
-
-        private final String color;
-
-        private SpecialColor(String color) {
-            super(0, 0,0);
-            this.color = color;
-        }
-
-        @Override
-        public String toString() {
-            return "\"" + color + "\"";
-        }
+        return Objects.hash(red, green, blue, alpha, colorName);
     }
 }

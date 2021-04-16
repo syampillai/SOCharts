@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -49,6 +49,9 @@ public class Area extends VisibleProperty {
      * @return Style.
      */
     public AreaStyle getStyle(boolean create) {
+        if(style == null && create) {
+            style = new AreaStyle();
+        }
         return style;
     }
 

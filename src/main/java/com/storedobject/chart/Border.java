@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -25,7 +25,7 @@ import java.util.Arrays;
  */
 public class Border extends TextBorder {
 
-    private Color background;
+    private AbstractColor background;
     private final int[] radius = new int[4];
 
     /**
@@ -75,7 +75,7 @@ public class Border extends TextBorder {
      *
      * @return Background color.
      */
-    public final Color getBackground() {
+    public final AbstractColor getBackground() {
         return background;
     }
 
@@ -84,7 +84,7 @@ public class Border extends TextBorder {
      *
      * @param background Background color.
      */
-    public void setBackground(Color background) {
+    public void setBackground(AbstractColor background) {
         this.background = background;
     }
 

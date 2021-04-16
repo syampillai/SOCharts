@@ -32,8 +32,19 @@ public class TreeData implements TreeDataProvider {
     private final long id = ID.newID();
     private int serial;
     private final String name;
-    private final Number value;
+    private Number value;
+    private Label label;
+    private ItemStyle itemStyle;
     private List<TreeData> children;
+
+    /**
+     * Constructor.
+     *
+     * @param name Name.
+     */
+    public TreeData(String name) {
+        this(name, null);
+    }
 
     /**
      * Constructor.
@@ -54,6 +65,14 @@ public class TreeData implements TreeDataProvider {
     @Override
     public final Number getValue() {
         return value;
+    }
+
+    /**
+     * Set the value for the tree-node.
+     * @param value Value to be set. Could be null.
+     */
+    public void setValue(Number value) {
+        this.value = value;
     }
 
     @Override
@@ -117,5 +136,44 @@ public class TreeData implements TreeDataProvider {
      */
     public TreeData get(int index) {
         return children != null && index >= 0 && index < children.size() ? children.get(index) : null;
+    }
+
+    @Override
+    public Label getLabel(boolean create) {
+        if(label == null && create) {
+            label = new Label();
+        }
+        return label;
+    }
+
+    /**
+     * Set the label.
+     *
+     * @param label Label to be set.
+     */
+    public void setLabel(Label label) {
+        this.label = label;
+    }
+
+    /**
+     * Get item style.
+     *
+     * @param create If passed true, a new style is created if not exists.
+     * @return Item style.
+     */
+    public final ItemStyle getItemStyle(boolean create) {
+        if(itemStyle == null && create) {
+            itemStyle = new ItemStyle();
+        }
+        return itemStyle;
+    }
+
+    /**
+     * Set item style.
+     *
+     * @param itemStyle Style to set.
+     */
+    public void setItemStyle(ItemStyle itemStyle) {
+        this.itemStyle = itemStyle;
     }
 }

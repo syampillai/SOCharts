@@ -23,14 +23,39 @@ import java.util.stream.Stream;
  *
  * @author Syam
  */
-public final class DataStream extends AbstractDataStream<Number> {
+public class AbstractDataStream<T> implements AbstractDataProvider<T> {
+
+    private int serial;
+    private final DataType dataType;
+    private final Stream<T> dataStream;
 
     /**
      * Constructor.
      *
      * @param dataStream Data stream that provides the data.
      */
-    public DataStream(Stream<Number> dataStream) {
-        super(DataType.NUMBER, dataStream);
+    public AbstractDataStream(DataType dataType, Stream<T> dataStream) {
+        this.dataType = dataType;
+        this.dataStream = dataStream;
+    }
+
+    @Override
+    public Stream<T> stream() {
+        return dataStream;
+    }
+
+    @Override
+    public final DataType getDataType() {
+        return dataType;
+    }
+
+    @Override
+    public final void setSerial(int serial) {
+        this.serial = serial;
+    }
+
+    @Override
+    public final int getSerial() {
+        return serial;
     }
 }

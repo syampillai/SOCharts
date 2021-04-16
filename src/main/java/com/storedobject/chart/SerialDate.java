@@ -33,7 +33,7 @@ public class SerialDate implements AbstractDataProvider<LocalDate> {
     private int serial;
 
     /**
-     * Constructor.
+     * Constructor. (Step value will be 1 day)
      *
      * @param start Starting value.
      * @param end Ending value.
@@ -47,7 +47,7 @@ public class SerialDate implements AbstractDataProvider<LocalDate> {
      *
      * @param start Starting value.
      * @param end Ending value.
-     * @param step Step value.
+     * @param step Step value (Number of days).
      */
     public SerialDate(LocalDate start, LocalDate end, int step) {
         this(start, end, step, ChronoUnit.DAYS);
@@ -79,17 +79,17 @@ public class SerialDate implements AbstractDataProvider<LocalDate> {
     }
 
     @Override
-    public DataType getDataType() {
+    public final DataType getDataType() {
         return DataType.DATE;
     }
 
     @Override
-    public void setSerial(int serial) {
+    public final void setSerial(int serial) {
         this.serial = serial;
     }
 
     @Override
-    public int getSerial() {
+    public final int getSerial() {
         return serial;
     }
 }

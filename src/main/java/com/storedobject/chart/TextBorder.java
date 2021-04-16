@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -21,12 +21,11 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public class TextBorder implements ComponentProperty {
+public class TextBorder extends AbstractStyle {
 
     private String prefix;
-    private Color color;
     private int width = -1;
-    private Shadow shadow;
+    private LineStyle.Type type;
 
     /**
      * Constructor.
@@ -36,6 +35,7 @@ public class TextBorder implements ComponentProperty {
 
     @Override
     public void encodeJSON(StringBuilder sb) {
+        AbstractColor color = getColor();
         if(color != null) {
             ComponentPart.addComma(sb);
             sb.append('"').append(p("borderColor")).append("\":").append(color);
@@ -44,11 +44,13 @@ public class TextBorder implements ComponentProperty {
             ComponentPart.addComma(sb);
             sb.append('"').append(p("borderWidth")).append("\":").append(width);
         }
+        Shadow shadow = getShadow(false);
         if(shadow != null) {
             shadow.setPrefix(prefix);
             ComponentPart.encodeProperty(sb, shadow);
         }
         prefix = null;
+        encode(sb, "borderType", type);
     }
 
     String p(String any) {
@@ -56,24 +58,6 @@ public class TextBorder implements ComponentProperty {
             return any;
         }
         return prefix + any.substring(0, 1).toUpperCase() + any.substring(1);
-    }
-
-    /**
-     * Get the color of the border.
-     *
-     * @return Color of the border.
-     */
-    public final Color getColor() {
-        return color;
-    }
-
-    /**
-     * Set the color of the border.
-     *
-     * @param color Color to set.
-     */
-    public void setColor(Color color) {
-        this.color = color;
     }
 
     /**
@@ -100,24 +84,20 @@ public class TextBorder implements ComponentProperty {
     }
 
     /**
-     * Get the shadow.
+     * Get the line-type.
      *
-     * @param create Whether to create if not exists or not.
-     * @return Shadow.
+     * @return Line type.
      */
-    public final Shadow getShadow(boolean create) {
-        if(shadow == null && create) {
-            shadow = new Shadow();
-        }
-        return shadow;
+    public final LineStyle.Type getType() {
+        return type;
     }
 
     /**
-     * Set the shadow.
+     * Set the line-type.
      *
-     * @param shadow Shadow.
+     * @param type Line type.
      */
-    public void setShadow(Shadow shadow) {
-        this.shadow = shadow;
+    public void setType(LineStyle.Type type) {
+        this.type = type;
     }
 }

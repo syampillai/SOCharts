@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -23,7 +23,7 @@ package com.storedobject.chart;
  */
 public class TextStyle implements ComponentProperty {
 
-    private Color color, background;
+    private AbstractColor color, background;
     private FontStyle fontStyle;
     private FontWeight fontWeight;
     private String fontFamily;
@@ -58,6 +58,10 @@ public class TextStyle implements ComponentProperty {
             return;
         }
         ComponentPart.addComma(sb);
+        if(value instanceof AbstractColor) {
+            sb.append('"').append(name).append("\":").append(value);
+            return;
+        }
         ComponentPart.encode(sb, name, value);
     }
 
@@ -66,7 +70,7 @@ public class TextStyle implements ComponentProperty {
      *
      * @return Color.
      */
-    public final Color getColor() {
+    public final AbstractColor getColor() {
         return color;
     }
 
@@ -75,7 +79,7 @@ public class TextStyle implements ComponentProperty {
      *
      * @param color Color.
      */
-    public void setColor(Color color) {
+    public void setColor(AbstractColor color) {
         this.color = color;
     }
 
@@ -84,7 +88,7 @@ public class TextStyle implements ComponentProperty {
      *
      * @return Background color.
      */
-    public final Color getBackground() {
+    public final AbstractColor getBackground() {
         return background;
     }
 
@@ -93,7 +97,7 @@ public class TextStyle implements ComponentProperty {
      *
      * @param background Background color.
      */
-    public void setBackground(Color background) {
+    public void setBackground(AbstractColor background) {
         this.background = background;
     }
 
@@ -273,7 +277,7 @@ public class TextStyle implements ComponentProperty {
     }
 
     static class OuterProperties {
-        Color background;
+        AbstractColor background;
         Padding padding;
         Border border;
         Alignment alignment;

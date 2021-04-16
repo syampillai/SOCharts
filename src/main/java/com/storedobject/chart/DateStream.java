@@ -16,21 +16,22 @@
 
 package com.storedobject.chart;
 
+import java.time.LocalDate;
 import java.util.stream.Stream;
 
 /**
- * A data provider implementation to provide data from a {@link Stream}.
+ * A date data provider implementation to provide data from a {@link Stream}.
  *
  * @author Syam
  */
-public final class DataStream extends AbstractDataStream<Number> {
+public final class DateStream extends AbstractDataStream<LocalDate> {
 
     /**
      * Constructor.
      *
-     * @param dataStream Data stream that provides the data.
+     * @param dateStream Data stream that provides the date data.
      */
-    public DataStream(Stream<Number> dataStream) {
-        super(DataType.NUMBER, dataStream);
+    public DateStream(Stream<LocalDate> dateStream) {
+        super(DataType.DATE, dateStream);
     }
 }

@@ -62,17 +62,17 @@ public class SerialData implements AbstractDataProvider<Integer> {
     }
 
     @Override
-    public DataType getDataType() {
+    public final DataType getDataType() {
         return DataType.NUMBER;
     }
 
     @Override
-    public void setSerial(int serial) {
+    public final void setSerial(int serial) {
         this.serial = serial;
     }
 
     @Override
-    public int getSerial() {
+    public final int getSerial() {
         return serial;
     }
 }

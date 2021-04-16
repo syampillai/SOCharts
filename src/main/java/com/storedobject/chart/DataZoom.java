@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -27,7 +27,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
 
     private boolean show = true;
     private Position position;
-    private Color background, fillerColor, borderColor;
+    private AbstractColor background, fillerColor, borderColor;
     private HandleStyle handleStyle;
     private DataShadowStyle dataShadowStyle;
 
@@ -108,7 +108,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
      *
      * @return Background color.
      */
-    public final Color getBackground() {
+    public final AbstractColor getBackground() {
         return background;
     }
 
@@ -117,7 +117,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
      *
      * @param background Background color.
      */
-    public void setBackground(Color background) {
+    public void setBackground(AbstractColor background) {
         this.background = background;
     }
 
@@ -126,7 +126,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
      *
      * @return Filler color.
      */
-    public final Color getFillerColor() {
+    public final AbstractColor getFillerColor() {
         return fillerColor;
     }
 
@@ -135,7 +135,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
      *
      * @param fillerColor Filler color.
      */
-    public void setFillerColor(Color fillerColor) {
+    public void setFillerColor(AbstractColor fillerColor) {
         this.fillerColor = fillerColor;
     }
 
@@ -144,7 +144,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
      *
      * @return Border color.
      */
-    public final Color getBorderColor() {
+    public final AbstractColor getBorderColor() {
         return borderColor;
     }
 
@@ -153,7 +153,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
      *
      * @param borderColor Border color.
      */
-    public void setBorderColor(Color borderColor) {
+    public void setBorderColor(AbstractColor borderColor) {
         this.borderColor = borderColor;
     }
 
@@ -208,7 +208,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
      */
     public static class HandleStyle implements ComponentProperty {
 
-        private Color color, borderColor;
+        private AbstractColor color, borderColor;
         private int borderWidth = -1;
         private LineStyle.Type borderType;
         private Shadow shadow;
@@ -242,7 +242,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
          *
          * @return Color.
          */
-        public final Color getColor() {
+        public final AbstractColor getColor() {
             return color;
         }
 
@@ -251,7 +251,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
          *
          * @param color Color.
          */
-        public void setColor(Color color) {
+        public void setColor(AbstractColor color) {
             this.color = color;
         }
 
@@ -260,7 +260,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
          *
          * @return Border color.
          */
-        public final Color getBorderColor() {
+        public final AbstractColor getBorderColor() {
             return borderColor;
         }
 
@@ -269,7 +269,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
          *
          * @param color Border color.
          */
-        public void setBorderColor(Color color) {
+        public void setBorderColor(AbstractColor color) {
             this.borderColor = color;
         }
 
