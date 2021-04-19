@@ -154,11 +154,29 @@ public class SOChart extends LitComponent implements HasSize {
     }
 
     /**
+     * Get the default tooltip. You can customize it.
+     *
+     * @return THe default tooltip. Will return null it it was disabled via {@link #disableDefaultTooltip()}.
+     */
+    public Tooltip getDefaultTooltip() {
+        return tooltip;
+    }
+
+    /**
      * Legends will be shown by default. However, you can either disable it using this method or
      * you can create your own customized legends and add it using {@link #add(Component...)}.
      */
     public void disableDefaultLegend() {
         legend = null;
+    }
+
+    /**
+     * Get the default legend. You can customize it.
+     *
+     * @return THe default legend. Will return null it it was disabled via {@link #disableDefaultLegend()}.
+     */
+    public Legend getDefaultLegend() {
+        return legend;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,6 +16,9 @@
 
 package com.storedobject.chart;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Representation of legend. A legend will be automatically displayed by the {@link SOChart}. However, that
  * can be turned off using {@link SOChart#disableDefaultLegend()} and customized legends may be added using
@@ -30,6 +33,7 @@ public class Legend extends VisiblePart implements Component, HasPosition, HasPa
     private TextStyle textStyle;
     private boolean vertical = false;
     private Border border;
+    private List<Chart> hiddenCharts;
 
     @Override
     public void encodeJSON(StringBuilder sb) {
@@ -46,6 +50,17 @@ public class Legend extends VisiblePart implements Component, HasPosition, HasPa
             sb.append("\"orient\":\"vertical\"");
         }
         ComponentPart.encodeProperty(sb, border);
+        if(hiddenCharts != null && !hiddenCharts.isEmpty()) {
+            ComponentPart.addComma(sb);
+            sb.append("\"selected\":{");
+            for(int i = 0; i < hiddenCharts.size(); i++) {
+                if(i > 0) {
+                    sb.append(',');
+                }
+                sb.append(ComponentPart.escape(hiddenCharts.get(i).getName())).append(":false");
+            }
+            sb.append('}');
+        }
     }
 
     @Override
@@ -127,5 +142,34 @@ public class Legend extends VisiblePart implements Component, HasPosition, HasPa
      */
     public void setBorder(Border border) {
         this.border = border;
+    }
+
+    private List<Chart> hiddenCharts() {
+        if(hiddenCharts == null) {
+            hiddenCharts = new ArrayList<>();
+        }
+        return hiddenCharts;
+    }
+
+    /**
+     * Hide a chart. The chart can be made visible by clicking on the legend later.
+     *
+     * @param chart Chart to hide.
+     */
+    public void hide(Chart chart) {
+        if(chart != null) {
+            hiddenCharts().add(chart);
+        }
+    }
+
+    /**
+     * Make a hidden chart visible again.
+     *
+     * @param chart Chart to make visible.
+     */
+    public void show(Chart chart) {
+        if(chart != null) {
+            hiddenCharts().remove(chart);
+        }
     }
 }
