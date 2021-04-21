@@ -23,6 +23,7 @@ export class SOChart extends LitElement {
     constructor() {
         super();
         this.idChart = null;
+        this.data = null;
         this.minw = "5vw";
         this.minh = "5vw";
         this.maxw = "6000px";
@@ -68,6 +69,34 @@ export class SOChart extends LitElement {
             this.chart = echarts.init(this.shadowRoot.getElementById(this.idChart));
         }
         this.chart.setOption(json);
+        this.data = json.dataset.source;
+    }
+
+    pushData(data) {
+        this._pushData(data, true);
+    }
+
+    appendData(data) {
+        this._pushData(data, false);
+    }
+
+    _pushData(data, shift) {
+        if(this.chart == null) {
+            return;
+        }
+        var no = { dataset: { source: { } } };
+        var valueSets = JSON.parse(data)["d"];
+        var o = this.chart.getOption();
+        var d;
+        for(const valueSet of valueSets) {
+            d = o.dataset[0].source["d" + valueSet.i];
+            if(shift) {
+                d.shift();
+            }
+            d.push(valueSet.v);
+            no.dataset.source["d" + valueSet.i] = d;
+        }
+        this.chart.setOption(no);
     }
 }
 

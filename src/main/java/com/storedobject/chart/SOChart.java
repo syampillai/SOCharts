@@ -334,14 +334,6 @@ public class SOChart extends LitComponent implements HasSize {
             return;
         }
         for(Component c: components) {
-            if(skipData) {
-                if (c instanceof AbstractDataProvider) {
-                    if (c.getSerial() < 0) {
-                        throw new ChartException(SKIP_DATA + c.className());
-                    }
-                    continue;
-                }
-            }
             c.skippingData(skipData);
             c.validate();
             c.setSerial(-2);
@@ -425,6 +417,20 @@ public class SOChart extends LitComponent implements HasSize {
     @SuppressWarnings("RedundantThrows")
     protected String customizeJSON(String json) throws Exception {
         return json;
+    }
+
+    void pushData(String data) {
+        if(neverUpdated) {
+            return;
+        }
+        executeJS("pushData", data);
+    }
+
+    void appendData(String data) {
+        if(neverUpdated) {
+            return;
+        }
+        executeJS("appendData", data);
     }
 
     static class ComponentEncoder {

@@ -29,7 +29,7 @@ import java.util.stream.Stream;
  * @param <T> Data type.
  * @author Syam
  */
-public class AbstractData<T> extends ArrayList<T> implements AbstractDataProvider<T>, ComponentPart {
+public class AbstractData<T> extends ArrayList<T> implements AbstractDataProvider<T> {
 
     private int serial = -1;
     private final DataType dataType;
