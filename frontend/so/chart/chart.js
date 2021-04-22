@@ -73,14 +73,18 @@ export class SOChart extends LitElement {
     }
 
     pushData(data) {
-        this._pushData(data, true);
+        this._pushData(data, 1);
     }
 
     appendData(data) {
-        this._pushData(data, false);
+        this._pushData(data, 0);
     }
 
-    _pushData(data, shift) {
+    resetData(data) {
+        this._pushData(data, 2);
+    }
+
+    _pushData(data, code) {
         if(this.chart == null) {
             return;
         }
@@ -90,10 +94,14 @@ export class SOChart extends LitElement {
         var d;
         for(const valueSet of valueSets) {
             d = o.dataset[0].source["d" + valueSet.i];
-            if(shift) {
-                d.shift();
+            if(code == 2) { // Reset
+                d = [];
+            } else {
+                if(code == 1) { // Push, not append
+                    d.shift();
+                }
+                d.push(valueSet.v);
             }
-            d.push(valueSet.v);
             no.dataset.source["d" + valueSet.i] = d;
         }
         this.chart.setOption(no);

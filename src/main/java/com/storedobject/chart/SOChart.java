@@ -419,18 +419,11 @@ public class SOChart extends LitComponent implements HasSize {
         return json;
     }
 
-    void pushData(String data) {
+    void updateData(String data, String command) {
         if(neverUpdated) {
             return;
         }
-        executeJS("pushData", data);
-    }
-
-    void appendData(String data) {
-        if(neverUpdated) {
-            return;
-        }
-        executeJS("appendData", data);
+        executeJS(command + "Data", data);
     }
 
     static class ComponentEncoder {

@@ -53,7 +53,7 @@ public final class DataChannel {
      */
     public void append(Object... data) throws ChartException {
         checkData(data);
-        soChart.appendData(data(data));
+        soChart.updateData(data(data), "append");
     }
 
     /**
@@ -67,17 +67,26 @@ public final class DataChannel {
      */
     public void push(Object... data) throws ChartException {
         checkData(data);
-        soChart.pushData(data(data));
+        soChart.updateData(data(data), "push");
+    }
+
+    /**
+     * Reset data. All data defined in this channel are removed.LocalDate date
+     */
+    public void reset() {
+        soChart.updateData(data(null), "reset");
     }
 
     private String data(Object[] d) {
         StringBuilder sb = new StringBuilder("{\"d\":[");
-        for(int i = 0; i < d.length; i++) {
+        for(int i = 0; i < dataProviders.length; i++) {
             if(i > 0) {
                 sb.append(',');
             }
             sb.append("{\"i\":").append(dataProviders[i].getSerial());
-            ComponentPart.encode(sb, "v", d[i], true);
+            if(d != null) {
+                ComponentPart.encode(sb, "v", d[i], true);
+            }
             sb.append("}");
         }
         sb.append("]}");
