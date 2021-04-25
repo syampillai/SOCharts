@@ -1,63 +1,72 @@
-/*
- *  Copyright 2019-2020 Syam Pillai
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
-
 package com.storedobject.chart;
 
 /**
- * Represents a line.
+ * Defines a line segment that can be added to {@link SOChart}.
  *
  * @author Syam
  */
-public class Line extends VisibleProperty {
+public class Line extends Shape {
 
-    private LineStyle style;
+    private Point from, to;
 
     /**
      * Constructor.
+     *
+     * @param from From point.
+     * @param to To point.
      */
-    public Line() {
+    public Line(Point from, Point to) {
+        this.from = from;
+        this.to = to;
+    }
+
+    @Override
+    protected final String getType() {
+        return "line";
     }
 
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        if(style != null) {
-            ComponentPart.addComma(sb);
-            sb.append("\"lineStyle\":{");
-            ComponentPart.encodeProperty(sb, style);
-            sb.append('}');
-        }
+        sb.append("\"shape\":{");
+        encodePoint(sb, "x1", "y1", from);
+        encodePoint(sb, "x2", "y2", to);
+        sb.append('}');
     }
 
     /**
-     * Get the style.
+     * Get the "from" point.
      *
-     * @param create Whether to create if not exists or not.
-     * @return Style.
+     * @return From point.
      */
-    public LineStyle getStyle(boolean create) {
-        return style;
+    public final Point getFrom() {
+        return from;
     }
 
     /**
-     * Set the style.
+     * Set the "from" point.
      *
-     * @param style Style to set.
+     * @param from From point.
      */
-    public void setStyle(LineStyle style) {
-        this.style = style;
+    public void setFrom(Point from) {
+        this.from = from;
+    }
+
+    /**
+     * Get the "to" point.
+     *
+     * @return To point.
+     */
+    public final Point getTo() {
+        return to;
+    }
+
+    /**
+     * Set the "to" point.
+     *
+     * @param to To point.
+     */
+    public void setTo(Point to) {
+        this.to = to;
     }
 }

@@ -24,10 +24,7 @@ package com.storedobject.chart;
 public class TextStyle implements ComponentProperty {
 
     private AbstractColor color, background;
-    private FontStyle fontStyle;
-    private FontWeight fontWeight;
-    private String fontFamily;
-    private int fontSize = -1;
+    private Font font;
     private Padding padding;
     private Border border;
     private Alignment alignment;
@@ -36,10 +33,16 @@ public class TextStyle implements ComponentProperty {
     @Override
     public void encodeJSON(StringBuilder sb) {
         encode(sb, "color", color);
-        encode(sb, "fontStyle", fontStyle);
-        encode(sb, "fontWeight", fontWeight);
-        encode(sb, "fontFamily", fontFamily);
-        encode(sb, "fontSize", fontSize);
+        if(font != null) {
+            if(font.getStyle() != null) {
+                encode(sb, "fontStyle", font.getStyle());
+            }
+            if(font.getWeight() != null) {
+                encode(sb, "fontWeight", font.getWeight());
+            }
+            encode(sb, "fontFamily", font.getFamily());
+            encode(sb, "fontSize", font.getSize());
+        }
         encode(sb, "backgroundColor", background);
         ComponentPart.encodeProperty(sb, border);
         ComponentPart.encodeProperty(sb, padding);
@@ -102,75 +105,21 @@ public class TextStyle implements ComponentProperty {
     }
 
     /**
-     * Get font-style.
+     * Get font.
      *
-     * @return Font-style.
+     * @return Font.
      */
-    public final FontStyle getFontStyle() {
-        return fontStyle;
+    public final Font getFontStyle() {
+        return font;
     }
 
     /**
-     * Set font-style.
+     * Set font.
      *
-     * @param fontStyle Font-style.
+     * @param font Font.
      */
-    public void setFontStyle(FontStyle fontStyle) {
-        this.fontStyle = fontStyle;
-    }
-
-    /**
-     * Get font-size.
-     *
-     * @return Font-size.
-     */
-    public final int getFontSize() {
-        return fontSize;
-    }
-
-    /**
-     * Set font-size.
-     *
-     * @param fontSize Font-size.
-     */
-    public void setFontSize(int fontSize) {
-        this.fontSize = fontSize;
-    }
-
-    /**
-     * Get font-weight.
-     *
-     * @return Font-weight.
-     */
-    public final FontWeight getFontWeight() {
-        return fontWeight;
-    }
-
-    /**
-     * Set font-weight.
-     *
-     * @param fontWeight Font-weight.
-     */
-    public void setFontWeight(FontWeight fontWeight) {
-        this.fontWeight = fontWeight;
-    }
-
-    /**
-     * Get font-family.
-     *
-     * @return Font-family.
-     */
-    public final String getFontFamily() {
-        return fontFamily;
-    }
-
-    /**
-     * Set font-family. (Example: "sans-serif", "serif", "monospace" etc.).
-     *
-     * @param fontFamily Font-family.
-     */
-    public void setFontFamily(String fontFamily) {
-        this.fontFamily = fontFamily;
+    public void setFontStyle(Font font) {
+        this.font = font;
     }
 
     /**
@@ -246,6 +195,9 @@ public class TextStyle implements ComponentProperty {
      * @return Alignment.
      */
     public Alignment getAlignment(boolean create) {
+        if(alignment == null && create) {
+            alignment = new Alignment();
+        }
         return alignment;
     }
 

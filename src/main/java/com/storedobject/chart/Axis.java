@@ -762,25 +762,11 @@ public abstract class Axis extends VisibleProperty {
     }
 
     /**
-     * Represents a line of the axis.
-     *
-     * @author Syam
-     */
-    public static class Line extends com.storedobject.chart.Line {
-
-        /**
-         * Constructor.
-         */
-        public Line() {
-        }
-    }
-
-    /**
      * Represents ticks on an axis line.
      *
      * @author Syam
      */
-    public static abstract class AbstractTicks extends com.storedobject.chart.Line {
+    public static abstract class AbstractTicks extends Line {
 
         private int width = 0;
 
@@ -944,12 +930,56 @@ public abstract class Axis extends VisibleProperty {
         }
     }
 
+    public static class Line extends VisibleProperty {
+
+        private LineStyle style;
+
+        /**
+         * Constructor.
+         */
+        public Line() {
+        }
+
+        @Override
+        public void encodeJSON(StringBuilder sb) {
+            super.encodeJSON(sb);
+            if(style != null) {
+                ComponentPart.addComma(sb);
+                sb.append("\"lineStyle\":{");
+                ComponentPart.encodeProperty(sb, style);
+                sb.append('}');
+            }
+        }
+
+        /**
+         * Get the style.
+         *
+         * @param create Whether to create if not exists or not.
+         * @return Style.
+         */
+        public LineStyle getStyle(boolean create) {
+            if(style == null && create) {
+                style = new LineStyle();
+            }
+            return style;
+        }
+
+        /**
+         * Set the style.
+         *
+         * @param style Style to set.
+         */
+        public void setStyle(LineStyle style) {
+            this.style = style;
+        }
+    }
+
     /**
      * Represents the grid-lines drawn by the axis.
      *
      * @author Syam
      */
-    public static class GridLines extends com.storedobject.chart.Line {
+    public static class GridLines extends Line {
 
         private int interval = Integer.MIN_VALUE;
 
@@ -998,7 +1028,7 @@ public abstract class Axis extends VisibleProperty {
      *
      * @author Syam
      */
-    public static class MinorGridLines extends com.storedobject.chart.Line {
+    public static class MinorGridLines extends Line {
 
         /**
          * Constructor.

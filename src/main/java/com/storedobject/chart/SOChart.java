@@ -78,6 +78,7 @@ public class SOChart extends LitComponent implements HasSize {
             new ComponentEncoder("grid", RectangularCoordinate.class),
             new ComponentEncoder("series", Chart.class),
             new ComponentEncoder("dataZoom", DataZoom.class),
+            new ComponentEncoder("graphic", Shape.class),
     };
     private final List<Component> components = new ArrayList<>();
     private final List<ComponentPart> parts = new ArrayList<>();

@@ -29,6 +29,7 @@ public abstract class AbstractPart implements ComponentPart {
 
     private int serial;
     private final long id = ID.newID();
+    private int z = -1;
 
     /**
      * Get a unique Id for this part.
@@ -58,6 +59,9 @@ public abstract class AbstractPart implements ComponentPart {
             ComponentPart.encodeProperty(sb, ((HasPolarProperty) this).getPolarProperty(false));
         }
         sb.append(',');
+        if(z >= 0) {
+            sb.append("\"z\":").append(z).append(',');
+        }
     }
 
     /**
@@ -90,5 +94,23 @@ public abstract class AbstractPart implements ComponentPart {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    /**
+     * Get the Z (determines the overlap order when displayed on the screen) of this.
+     *
+     * @return Z value.
+     */
+    public final int getZ() {
+        return z;
+    }
+
+    /**
+     * Set the Z (determines the overlap order when displayed on the screen) of this.
+     *
+     * @param z Z value to set.
+     */
+    public final void setZ(int z) {
+        this.z = z;
     }
 }
