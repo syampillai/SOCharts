@@ -55,7 +55,7 @@ import java.util.List;
  *
  * @author Syam
  */
-@NpmPackage(value = "echarts", version = "5.0.2")
+@NpmPackage(value = "echarts", version = "5.1.1")
 @Tag("so-chart")
 @JsModule("./so/chart/chart.js")
 public class SOChart extends LitComponent implements HasSize {
@@ -103,7 +103,8 @@ public class SOChart extends LitComponent implements HasSize {
             if(neverUpdated) {
                 update();
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

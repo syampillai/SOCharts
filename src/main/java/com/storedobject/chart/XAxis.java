@@ -36,7 +36,7 @@ public class XAxis extends XYAxis {
      * Constructor.
      *
      * @param data Data type will be determined from the data provider. Note: It is not required to use
-     *             same the data on this axis.
+     *             the same data on this axis.
      */
     public XAxis(AbstractDataProvider<?> data) {
         super(data);

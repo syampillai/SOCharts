@@ -32,6 +32,16 @@ public class RadiusAxis extends Axis {
         super(dataType);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param data Data type will be determined from the data provider. Note: It is not required to use
+     *             the same data on this axis.
+     */
+    public RadiusAxis(AbstractDataProvider<?> data) {
+        super(data);
+    }
+
     @Override
     ComponentPart wrap(CoordinateSystem coordinateSystem) {
         AxisWrapper w = wrappers.get(coordinateSystem);

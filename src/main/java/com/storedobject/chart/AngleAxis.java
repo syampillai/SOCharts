@@ -37,6 +37,16 @@ public class AngleAxis extends Axis {
         super(dataType);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param data Data type will be determined from the data provider. Note: It is not required to use
+     *             the same data on this axis.
+     */
+    public AngleAxis(AbstractDataProvider<?> data) {
+        super(data);
+    }
+
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
