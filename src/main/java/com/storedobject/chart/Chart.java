@@ -41,6 +41,7 @@ public class Chart extends AbstractPart implements Component {
 
     List<Axis> axes;
     private ChartType type = ChartType.Line;
+    private Label label;
     private String name;
     CoordinateSystem coordinateSystem;
     private AbstractDataProvider<?>[] data;
@@ -166,6 +167,12 @@ public class Chart extends AbstractPart implements Component {
             sb.append('"').append(axes[i]).append("\":\"d").append(data[i].getSerial()).append("\"");
         }
         sb.append('}');
+        if(label != null) {
+            sb.append(",\"label\":{");
+            label.chart = this;
+            ComponentPart.encodeProperty(sb, label);
+            sb.append('}');
+        }
     }
 
     @Override
@@ -386,5 +393,228 @@ public class Chart extends AbstractPart implements Component {
      */
     public void setTooltip(Tooltip tooltip) {
         setProperty(tooltip);
+    }
+
+    /**
+     * Get the label for this chart values.
+     *
+     * @param create Whether to create if not exists or not.
+     * @return Label.
+     */
+    public final Label getLabel(boolean create) {
+        if(label == null && create) {
+            label = new Label();
+        }
+        return label;
+    }
+
+    /**
+     * Set the label for this chart values.
+     *
+     * @param label Label.
+     */
+    public void setLabel(Label label) {
+        this.label = label;
+    }
+
+    /**
+     * Value-label that can be customized for a chart.
+     *
+     * @author Syam
+     */
+    public static class Label extends com.storedobject.chart.Label {
+
+        /**
+         * Chart associated with this label.
+         */
+        Chart chart;
+        private final LabelPosition position = new LabelPosition();
+
+        /**
+         * Constructor.
+         */
+        public Label() {
+            formatParser = this::format;
+        }
+
+        @Override
+        protected String getGapName() {
+            return "distance";
+        }
+
+        /**
+         * Set the label formatter. (Note: Formatter is not applicable to {@link AbstractDataChart}s.)
+         * <p>Format template may contain patterns like {n} where "n" is the index of the axis. So {0} represents
+         * the x-axis value and {1} represents the y-axis value for an {@link XYChart}. If 2 y-axes are there,
+         * it will be {1} and {2} respectively. There can be many axes and the index value will increase
+         * accordingly. The index indicates is the order in which the axes were added to the chart.</p>
+         * <pre>
+         * Examples:
+         * "{0}, {1}" => Produces labels like "Rice 20" where "Rice" is the x-value and 20 is the y-value.
+         * "{1} kg" => Produces labels like "20 kg" where 20 is the y-value.
+         * "{1} kg/year of {chart}" => Produces labels like "4000 kg/year of Rice" where 4000 is the y-value
+         * and "Rice" is the name of the chart.
+         * </pre>
+         *
+         * @param formatter Label formatter to be set.
+         */
+        public void setFormatter(String formatter) {
+            this.formatter = formatter;
+        }
+
+        private String format(String f) {
+            for(int i = 0; i < chart.data.length; i++) {
+                f = f.replace("{" + i + "}", "{@d" + chart.data[i].getSerial() + "}");
+            }
+            return f.replace("{chart}", "{a}");
+        }
+
+        /**
+         * Get the position indicator of this label.
+         *
+         * @return Label position.
+         */
+        public LabelPosition getPosition() {
+            return position;
+        }
+
+        @Override
+        public void encodeJSON(StringBuilder sb) {
+            super.encodeJSON(sb);
+            sb.append(position.encode(isInside()));
+        }
+    }
+
+    /**
+     * Position indicator for labels used in charts.
+     *
+     * @author Syam
+     */
+    public static class LabelPosition {
+
+        private boolean left = false, right = false, top = false, bottom = false;
+        private Size x, y;
+
+        /**
+         * Set the (x, y) position. The origin is at top-left point of the bounding rectangle.
+         *
+         * @param x X position.
+         * @param y Y position.
+         */
+        public void at(Size x, Size y) {
+            this.x = x;
+            this.y = y;
+            left = right = top = bottom = false;
+        }
+
+        /**
+         * Set the label position to the left side.
+         *
+         * @return Self reference.
+         */
+        public LabelPosition left() {
+            x = y = null;
+            left = true;
+            right = false;
+            return this;
+        }
+
+        /**
+         * Set the label position to the right side.
+         *
+         * @return Self reference.
+         */
+        public LabelPosition right() {
+            x = y = null;
+            left = false;
+            right = true;
+            return this;
+        }
+
+        /**
+         * Set the label position to the top side.
+         *
+         * @return Self reference.
+         */
+        public LabelPosition top() {
+            x = y = null;
+            top = true;
+            bottom = false;
+            return this;
+        }
+
+        /**
+         * Set the label position to the bottom side.
+         *
+         * @return Self reference.
+         */
+        public LabelPosition bottom() {
+            x = y = null;
+            top = false;
+            bottom = true;
+            return this;
+        }
+
+        private boolean set(Size size) {
+            switch(size.get()) {
+                case -101:
+                    left = true;
+                    break;
+                case -102:
+                case -111:
+                case -112:
+                    top = true;
+                    break;
+                case -103:
+                    right = true;
+                    break;
+                case -113:
+                    bottom = true;
+                    break;
+                default:
+                    return false;
+            }
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            if(x != null && y != null) {
+                if(set(x)) {
+                    x = null;
+                }
+                if(set(y)) {
+                    y = null;
+                }
+                if(x != null && y != null) {
+                    return "[" + x.encode() + "," + y.encode() + "]";
+                }
+            }
+            StringBuilder s = new StringBuilder();
+            if(top) {
+                s.append("Top");
+            }
+            if(bottom) {
+                s.append("Bottom");
+            }
+            if(left) {
+                s.append("Left");
+            }
+            if(right) {
+                s.append("Right");
+            }
+            return s.toString();
+        }
+
+        private String encode(boolean inside) {
+            String s = toString();
+            if(inside) {
+                s = "Inside" + s;
+            }
+            if(s.isEmpty()) {
+                return s;
+            }
+            return ",\"position\":\"" + s.substring(0, 1).toLowerCase() + s.substring(1) + "\"";
+        }
     }
 }

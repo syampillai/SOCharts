@@ -29,6 +29,7 @@ public class TextStyle implements ComponentProperty {
     private Border border;
     private Alignment alignment;
     private TextBorder textBorder;
+    private RichTextStyle richTextStyle;
 
     @Override
     public void encodeJSON(StringBuilder sb) {
@@ -51,6 +52,17 @@ public class TextStyle implements ComponentProperty {
             textBorder.setPrefix("text");
         }
         ComponentPart.encodeProperty(sb, textBorder);
+        if(richTextStyle != null && !richTextStyle.parts.isEmpty()) {
+            ComponentPart.addComma(sb);
+            sb.append("\"rich\":{");
+            richTextStyle.parts.forEach((p, s) -> {
+                sb.append('"').append(p).append("\":{");
+                ComponentPart.encodeProperty(sb, s);
+                sb.append("},");
+            });
+            ComponentPart.removeComma(sb);
+            sb.append('}');
+        }
     }
 
     private static void encode(StringBuilder sb, String name, Object value) {
@@ -210,6 +222,33 @@ public class TextStyle implements ComponentProperty {
         this.alignment = alignment;
     }
 
+    /**
+     * Get the {@link RichTextStyle} instance associated with this text style.
+     *
+     * @param create Whether to create if not exists or not.
+     * @return {@link RichTextStyle} if exists or created just now.
+     */
+    public RichTextStyle getRichTextStyle(boolean create) {
+        if(create && richTextStyle == null) {
+            richTextStyle = new RichTextStyle();
+        }
+        return richTextStyle;
+    }
+
+    /**
+     * Set a {@link RichTextStyle} instance that was created elsewhere.
+     *
+     * @param richTextStyle {@link RichTextStyle} to set.
+     */
+    public void setRichTextStyle(RichTextStyle richTextStyle) {
+        this.richTextStyle = richTextStyle;
+    }
+
+    /**
+     * Save state. For internal use only.
+     *
+     * @param op Save to this.
+     */
     void save(OuterProperties op) {
         op.background = background;
         background = null;
@@ -221,6 +260,11 @@ public class TextStyle implements ComponentProperty {
         alignment = null;
     }
 
+    /**
+     * Restore state. For internal purpose only.
+     *
+     * @param op Restore from this.
+     */
     void restore(OuterProperties op) {
         background = op.background;
         padding = op.padding;
@@ -228,6 +272,9 @@ public class TextStyle implements ComponentProperty {
         alignment = op.alignment;
     }
 
+    /**
+     * Store definition to save/restore state.
+     */
     static class OuterProperties {
         AbstractColor background;
         Padding padding;

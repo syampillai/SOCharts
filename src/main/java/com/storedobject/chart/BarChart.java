@@ -25,6 +25,7 @@ package com.storedobject.chart;
 public class BarChart extends XYChart {
 
     private boolean roundCap;
+    private int barGap = Integer.MAX_VALUE, barCategoryGap = Integer.MAX_VALUE, barWidth = Integer.MAX_VALUE;
 
     /**
      * Constructor. (Data can be set later).
@@ -47,6 +48,15 @@ public class BarChart extends XYChart {
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
         ComponentPart.encode(sb,"roundCap", roundCap, true);
+        if(barGap < Integer.MAX_VALUE) {
+            ComponentPart.encode(sb, "barGap", barGap, true);
+        }
+        if(barCategoryGap < Integer.MAX_VALUE) {
+            ComponentPart.encode(sb, "barCategoryGap", barCategoryGap, true);
+        }
+        if(barWidth < Integer.MAX_VALUE) {
+            ComponentPart.encode(sb, "barWidth", barWidth, true);
+        }
     }
 
     /**
@@ -66,5 +76,61 @@ public class BarChart extends XYChart {
      */
     public void setRoundCap(boolean roundCap) {
         this.roundCap = roundCap;
+    }
+
+    /**
+     * Get the gap between bars when multiple bar charts are displayed on the same coordinate system.
+     *
+     * @return Gap as a percentage value. Negative values are supported to enable overlapping.
+     */
+    public final int getBarGap() {
+        return barGap;
+    }
+
+    /**
+     * Set the gap between bars when multiple bar charts are displayed on the same coordinate system. Need to set only
+     * on one of the bar charts and it will be shared by all bar charts on the same coordinate system. If you set
+     * different values on different bar charts, only the one set in the last one will be used.
+     *
+     * @param barGap Gap as a percentage value. Negative values are supported to enable overlapping.
+     */
+    public void setBarGap(int barGap) {
+        this.barGap = barGap;
+    }
+
+    /**
+     * Get the gap between the categories of the same bar chart.
+     *
+     * @return Gap as a percentage value. Negative values are supported to enable overlapping.
+     */
+    public final int getBarCategoryGap() {
+        return barCategoryGap;
+    }
+
+    /**
+     * Set the gap between the categories of the same bar chart.
+     *
+     * @param barCategoryGap Gap as a percentage value. Negative values are supported to enable overlapping.
+     */
+    public void setBarCategoryGap(int barCategoryGap) {
+        this.barCategoryGap = barCategoryGap;
+    }
+
+    /**
+     * Get the width of the bar.
+     *
+     * @return Width of the bar in pixels.
+     */
+    public final int getBarWidth() {
+        return barWidth;
+    }
+
+    /**
+     * Set the width of the bar.
+     *
+     * @param barWidth Width of the bar in pixels.
+     */
+    public void setBarWidth(int barWidth) {
+        this.barWidth = barWidth;
     }
 }

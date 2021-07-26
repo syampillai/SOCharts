@@ -527,66 +527,10 @@ public abstract class Axis extends VisibleProperty {
      *
      * @author Syam
      */
-    public abstract static class AbstractLabel extends TextStyle {
+    public static class Label extends com.storedobject.chart.Label {
 
-        private boolean show = true;
-        private int gap = Integer.MIN_VALUE;
-
-        /**
-         * Show labels.
-         */
-        public void show() {
-            show = true;
-        }
-
-        /**
-         * Hide labels.
-         */
-        public void hide() {
-            show = false;
-        }
-
-        @Override
-        public void encodeJSON(StringBuilder sb) {
-            super.encodeJSON(sb);
-            ComponentPart.addComma(sb);
-            sb.append("\"show\":").append(show);
-            if(gap > Integer.MIN_VALUE) {
-                sb.append(",\"margin\":").append(gap);
-            }
-        }
-
-        /**
-         * Set the gap between the axis and labels.
-         *
-         * @return Gap in pixels.
-         */
-        public int getGap() {
-            return gap;
-        }
-
-        /**
-         * Set the gap between the axis and labels.
-         *
-         * @param gap Gap in pixels.
-         */
-        public void setGap(int gap) {
-            this.gap = gap;
-        }
-    }
-
-    /**
-     * Represents the label used by {@link Axis}.
-     *
-     * @author Syam
-     */
-    public static class Label extends AbstractLabel {
-
-        private int rotation = Integer.MIN_VALUE;
-        private boolean inside = false;
         private Boolean showMaxLabel, showMinLabel;
         private int interval = Integer.MIN_VALUE;
-        private String formatter;
 
         /**
          * Constructor.
@@ -594,53 +538,9 @@ public abstract class Axis extends VisibleProperty {
         public Label() {
         }
 
-        /**
-         * Get the rotation of the label.
-         *
-         * @return Rotation in degrees.
-         */
-        public final int getRotation() {
-            return rotation;
-        }
-
-        /**
-         * Set the rotation of the label.
-         *
-         * @param rotation Rotation in degrees. (Must be between -90 and 90).
-         */
-        public void setRotation(int rotation) {
-            this.rotation = rotation;
-        }
-
-        /**
-         * Check if the label is drawn inside or outside of the axis.
-         *
-         * @return True if inside.
-         */
-        public boolean isInside() {
-            return inside;
-        }
-
-        /**
-         * Setting for drawing the label inside the axis.
-         *
-         * @param inside True if inside.
-         */
-        public void setInside(boolean inside) {
-            this.inside = inside;
-        }
-
         @Override
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
-            ComponentPart.addComma(sb);
-            sb.append("\"inside\":").append(inside);
-            if(rotation >= -90 && rotation <= 90) {
-                sb.append(",\"rotate\":").append(rotation);
-            }
-            if(formatter != null) {
-                sb.append(",\"formatter\":").append(ComponentPart.escape(formatter));
-            }
             sb.append(",\"showMinLabel\":").append(showMinLabel);
             sb.append(",\"showMaxLabel\":").append(showMaxLabel);
             if(interval >= -1) {
@@ -710,15 +610,6 @@ public abstract class Axis extends VisibleProperty {
          */
         public void setInterval(int interval) {
             this.interval = interval;
-        }
-
-        /**
-         * Get the label formatter currently set. See {@link #setFormatter(String)}.
-         *
-         * @return Label formatter.
-         */
-        public String getFormatter() {
-            return formatter;
         }
 
         /**
