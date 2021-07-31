@@ -45,7 +45,11 @@ public enum DataType {
     /**
      * Logarithmic values.
      */
-    LOGARITHMIC("log", Number.class);
+    LOGARITHMIC("log", Number.class),
+    /**
+     * Object values - used by specialized charts.
+     */
+    OBJECT("", Object.class);
 
     private final String name;
     private final Class<?> type;

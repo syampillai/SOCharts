@@ -18,16 +18,18 @@ package com.storedobject.chart;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Radar chart. It is generally used with multi-dimensional data. Multiple sets of data can be added using the
- * {@link #addData(DataProvider...)} method.
+ * {@link #addData(DataProvider...)} method. It should be plotted on a {@link RadarCoordinate} system.
  *
  * @author Syam
  */
-public class RadarChart extends AbstractDataChart {
+public class RadarChart extends Chart {
 
     private final List<DataProvider> dataList = new ArrayList<>();
+    private final RadarData data = new RadarData();
 
     /**
      * Create a chart with data.
@@ -36,7 +38,12 @@ public class RadarChart extends AbstractDataChart {
      */
     public RadarChart(DataProvider... data) {
         super(ChartType.Radar);
+        super.setData(this.data);
         addData(data);
+    }
+
+    @Override
+    public void setData(AbstractDataProvider<?>... data) {
     }
 
     /**
@@ -73,38 +80,60 @@ public class RadarChart extends AbstractDataChart {
     public void validate() throws ChartException {
         super.validate();
         if(!(coordinateSystem instanceof RadarCoordinate)) {
-            throw new ChartException("Radar chart can be plotted on a Radar Coordinate system only: " + className());
-        }
-        if(skippingData) {
-            return;
+            throw new ChartException("Radar chart should be plotted on a Radar Coordinate system: " + className());
         }
         if(dataList.isEmpty()) {
             throw new ChartException("No data set for " + className());
         }
+        String name;
+        for(int i = 0; i < dataList.size(); i++) {
+            name = dataList.get(i).getName();
+            if(name == null) {
+                dataList.get(i).setName("Data " + i);
+            }
+        }
+    }
+
+    @Override
+    protected AbstractDataProvider<?> dataToEmbed() {
+        return data;
     }
 
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        if(skippingData) {
-            return;
+    }
+
+    private class RadarData implements AbstractDataProvider<DataProvider>, InternalDataProvider {
+
+        private int serial = -1;
+
+        @Override
+        public Stream<DataProvider> stream() {
+            return dataList.stream();
         }
-        sb.append(",\"data\":[");
-        String name;
-        int i = 1;
-        for(DataProvider data: dataList) {
-            if(i > 1) {
-                sb.append(',');
-            }
-            sb.append("{\"value\":");
-            name = data.getName();
-            if(name == null) {
-                name = "Data " + i;
-            }
-            data.append(sb);
-            sb.append(",\"name\":").append(ComponentPart.escape(name)).append('}');
-            ++i;
+
+        @Override
+        public void encode(StringBuilder sb, DataProvider value) {
+            String name = value.getName();
+            sb.append("{\"name\":\"").append(name == null ? "Data" : name).append("\",\"value\":");
+            value.encodeJSON(sb);
+            sb.append('}');
         }
-        sb.append(']');
+
+        @Override
+        public DataType getDataType() {
+            return DataType.OBJECT;
+        }
+
+        @Override
+        public void setSerial(int serial) {
+            this.serial = serial;
+        }
+
+        @Override
+        public int getSerial() {
+            return serial;
+        }
     }
 }

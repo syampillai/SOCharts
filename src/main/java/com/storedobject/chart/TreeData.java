@@ -99,8 +99,9 @@ public class TreeData implements TreeDataProvider {
      * Add children.
      *
      * @param treeData Data to add to children.
+     * @return Self-reference.
      */
-    public void add(TreeData... treeData) {
+    public TreeData add(TreeData... treeData) {
         if(treeData != null) {
             for(TreeData td: treeData) {
                 if(td != null) {
@@ -111,14 +112,27 @@ public class TreeData implements TreeDataProvider {
                 }
             }
         }
+        return this;
+    }
+
+    /**
+     * Create and add a child.
+     *
+     * @param name Name of the child.
+     * @param value Value for the child.
+     * @return Self-reference.
+     */
+    public TreeData add(String name, Number value) {
+        return add(new TreeData(name, value));
     }
 
     /**
      * Remove children.
      *
      * @param treeData Data to be removed from children.
+     * @return Self-reference.
      */
-    public void remove(TreeData... treeData) {
+    public TreeData remove(TreeData... treeData) {
         if(treeData != null && children != null) {
             for(TreeData td: treeData) {
                 if(td != null) {
@@ -126,6 +140,7 @@ public class TreeData implements TreeDataProvider {
                 }
             }
         }
+        return this;
     }
 
     /**

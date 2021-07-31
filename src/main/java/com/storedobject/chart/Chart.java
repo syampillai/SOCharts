@@ -90,13 +90,24 @@ public class Chart extends AbstractPart implements Component {
      *
      * @return Data.
      */
-    public AbstractDataProvider<?>[] getData() {
+    public final AbstractDataProvider<?>[] getData() {
         return data;
     }
 
     private String type() {
         String t = type.toString();
         return Character.toLowerCase(t.charAt(0)) + t.substring(1);
+    }
+
+    /**
+     * Get the data to embed. This is useful only for those special charts that embed data in the chart itself rather
+     * than pointing to the dataset. Example: {@link TreeChart}, {@link GaugeChart} etc.
+     * If null is returned from this method, no data will be embedded.
+     *
+     * @return Data to embed.
+     */
+    protected AbstractDataProvider<?> dataToEmbed() {
+        return null;
     }
 
     @Override
@@ -111,6 +122,10 @@ public class Chart extends AbstractPart implements Component {
                 sb.append(colors[i]);
             }
             sb.append("],");
+        }
+        AbstractDataProvider<?> dataToEmbed = dataToEmbed();
+        if(dataToEmbed != null) {
+            sb.append("\"data\":").append(dataToEmbed.getSerial()).append(',');
         }
         ComponentPart.encode(sb, "type", type());
         if(coordinateSystem != null) {
@@ -149,7 +164,13 @@ public class Chart extends AbstractPart implements Component {
             ComponentPart.encodeProperty(sb, p);
             sb.append("}");
         });
-        if(this instanceof AbstractDataChart) {
+        if(label != null) {
+            sb.append(",\"label\":{");
+            label.chart = this;
+            ComponentPart.encodeProperty(sb, label);
+            sb.append('}');
+        }
+        if(dataToEmbed != null) {
             return;
         }
         sb.append(",\"encode\":{");
@@ -167,12 +188,6 @@ public class Chart extends AbstractPart implements Component {
             sb.append('"').append(axes[i]).append("\":\"d").append(data[i].getSerial()).append("\"");
         }
         sb.append('}');
-        if(label != null) {
-            sb.append(",\"label\":{");
-            label.chart = this;
-            ComponentPart.encodeProperty(sb, label);
-            sb.append('}');
-        }
     }
 
     @Override
@@ -198,8 +213,8 @@ public class Chart extends AbstractPart implements Component {
                         if(name == null) {
                             name = ComponentPart.className(a.getClass());
                         }
-                        throw new ChartException("Axis " + name + " doesn't belong to the coordinate system of this chart - "
-                                + getName());
+                        throw new ChartException("Axis " + name
+                                + " doesn't belong to the coordinate system of this chart - " + getName());
                     }
                 }
             }
@@ -418,6 +433,43 @@ public class Chart extends AbstractPart implements Component {
     }
 
     /**
+     * Get the minimum value for this chart. This is used to determine the minimum value to be used by some other
+     * components (such as {@link VisualMap}) when rendering occurs. The default implementation tries various ways to
+     * determine it automatically.
+     *
+     * @return The minimum value if it is possible to determine. Otherwise, null.
+     */
+    public Object getMin() {
+        AbstractDataProvider<?> d = data4MinMax();
+        return d == null ? null : d.getMin();
+    }
+
+    /**
+     * Get the minimum value for this chart. This is used to determine the minimum value to be used by some other
+     * components (such as {@link VisualMap}) when rendering occurs. The default implementation tries various ways to
+     * determine it automatically.
+     *
+     * @return The minimum value if it is possible to determine. Otherwise, null.
+     */
+    public Object getMax() {
+        AbstractDataProvider<?> d = data4MinMax();
+        return d == null ? null : d.getMax();
+    }
+
+    private AbstractDataProvider<?> data4MinMax() {
+        AbstractDataProvider<?> d = dataToEmbed();
+        if(d != null) {
+            return d;
+        }
+        for(AbstractDataProvider<?> dp: data) {
+            if(!(dp instanceof CategoryDataProvider)) {
+                return dp;
+            }
+        }
+        return data.length == 0 ? null : (data.length == 1 ? data[0] : data[1]);
+    }
+
+    /**
      * Value-label that can be customized for a chart.
      *
      * @author Syam
@@ -443,7 +495,7 @@ public class Chart extends AbstractPart implements Component {
         }
 
         /**
-         * Set the label formatter. (Note: Formatter is not applicable to {@link AbstractDataChart}s.)
+         * Set the label formatter.
          * <p>Format template may contain patterns like {n} where "n" is the index of the axis. So {0} represents
          * the x-axis value and {1} represents the y-axis value for an {@link XYChart}. If 2 y-axes are there,
          * it will be {1} and {2} respectively. There can be many axes and the index value will increase

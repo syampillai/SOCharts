@@ -16,17 +16,20 @@
 
 package com.storedobject.chart;
 
+import java.util.stream.Stream;
+
 /**
  * Gauge chart.
  *
  * @author Syam
  */
-public class GaugeChart extends AbstractDataChart implements HasPolarProperty {
+public class GaugeChart extends Chart implements HasPolarProperty {
 
     private final Needle[] needles;
     private int startAngle = Integer.MIN_VALUE, endAngle = Integer.MIN_VALUE, divisions = Integer.MIN_VALUE;
     private Number min = Integer.MIN_VALUE, max = Integer.MIN_VALUE;
     private PolarProperty polarProperty;
+    private final NeedleData data;
 
     /**
      * Constructor with a single needle for the gauge.
@@ -59,6 +62,13 @@ public class GaugeChart extends AbstractDataChart implements HasPolarProperty {
         for(needles = 0; needles < this.needles.length; needles++) {
             this.needles[needles] = new Needle();
         }
+        data = new NeedleData();
+        setData(data);
+    }
+
+    @Override
+    protected AbstractDataProvider<?> dataToEmbed() {
+        return data;
     }
 
     /**
@@ -119,14 +129,6 @@ public class GaugeChart extends AbstractDataChart implements HasPolarProperty {
         encode(sb, "min", min);
         encode(sb, "max", max);
         encode(sb, "splitNumber", divisions);
-        if(skippingData) {
-            return;
-        }
-        sb.append(",\"data\":[");
-        for (Needle needle : needles) {
-            ComponentPart.encodeProperty(sb, needle);
-        }
-        sb.append(']');
     }
 
     private void encode(StringBuilder sb, String name, Number value) {
@@ -248,6 +250,36 @@ public class GaugeChart extends AbstractDataChart implements HasPolarProperty {
          */
         public void setName(String name) {
             this.name = name;
+        }
+    }
+
+    private class NeedleData implements AbstractDataProvider<Needle>, InternalDataProvider {
+
+        private int serial = 0;
+
+        @Override
+        public Stream<Needle> stream() {
+            return Stream.of(needles);
+        }
+
+        @Override
+        public DataType getDataType() {
+            return DataType.OBJECT;
+        }
+
+        @Override
+        public void setSerial(int serial) {
+            this.serial = serial;
+        }
+
+        @Override
+        public int getSerial() {
+            return serial;
+        }
+
+        @Override
+        public void encode(StringBuilder sb, Needle value) {
+            value.encodeJSON(sb);
         }
     }
 }

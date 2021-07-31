@@ -68,6 +68,10 @@ public enum ChartType {
      * Sunburst.
      */
     Sunburst(new String[] {}, false),
+    /**
+     * Heatmap.
+     */
+    Heatmap(new String[] {}, true),
     ;
 
     private final String[] axes;

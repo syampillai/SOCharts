@@ -79,13 +79,4 @@ public class PieChart extends SelfPositioningChart implements HasPolarProperty {
     public final void setPolarProperty(PolarProperty polarProperty) {
         this.polarProperty = polarProperty;
     }
-
-    /**
-     * Set the hole radius (when used as a donut chart). (Basically, it is setting the inner radius of the polar).
-     *
-     * @param size Hole radius.
-     */
-    public void setHoleRadius(Size size) {
-        getPolarProperty(true).setInnerRadius(size);
-    }
 }

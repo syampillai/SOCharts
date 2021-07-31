@@ -153,6 +153,14 @@ public interface ComponentPart extends ComponentProperty {
     }
 
     /**
+     * Set a name for this part.
+     *
+     * @param name Name to set.
+     */
+    default void setName(String name) {
+    }
+
+    /**
      * Helper method to return the class name of a given class in a more human-friendly way.
      *
      * @param anyClass Any class.

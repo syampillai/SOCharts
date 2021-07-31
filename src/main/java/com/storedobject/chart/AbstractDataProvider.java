@@ -16,10 +16,12 @@
 
 package com.storedobject.chart;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 /**
@@ -34,6 +36,7 @@ public interface AbstractDataProvider<T> extends ComponentPart {
 
     /**
      * Data provided by this provider as a stream.
+     * <p>Note: The {@link Stream} should be reproducible after a terminal operation.</p>
      *
      * @return Stream of data values.
      */
@@ -63,54 +66,26 @@ public interface AbstractDataProvider<T> extends ComponentPart {
 
     @Override
     default void encodeJSON(StringBuilder sb) {
-        sb.append("\"d").append(getSerial()).append("\":");
-        append(sb);
-    }
-
-    /**
-     * Append the JSON encoding of this to the given string builder.
-     *
-     * @param sb Append the JSONified string to this.
-     */
-    default void append(StringBuilder sb) {
-        append(sb, stream(),"[", "]", true, null);
-    }
-
-    /**
-     * Append the JSON encoding of all values coming from a stream to the given string builder.
-     *
-     * @param sb Append the JSONified string to this.
-     * @param stream Stream of data values.
-     * @param prefix Prefix to add.
-     * @param suffix Suffix to add.
-     * @param appendAnyway Append prefix and suffix even if data is empty.
-     * @param valueEncoder Encoder for the value read from the stream. If <code>null</code> is passed, stringified
-     *                     version will be appended.
-     * @param <O> Type of data value in the stream.
-     */
-    static <O> void append(StringBuilder sb, Stream<O> stream, String prefix, String suffix, boolean appendAnyway,
-                           BiConsumer<StringBuilder, Object> valueEncoder) {
+        sb.append('[');
         AtomicBoolean first = new AtomicBoolean(true);
-        stream.forEach(v -> {
+        stream().forEach(v -> {
             if(first.get()) {
                 first.set(false);
-                sb.append(prefix);
             } else {
                 sb.append(',');
             }
-            if(valueEncoder == null) {
-                sb.append(ComponentPart.escape(v));
-            } else {
-                valueEncoder.accept(sb, v);
-            }
+            encode(sb, v);
         });
-        if(first.get()) {
-            if(appendAnyway) {
-                sb.append(prefix).append(suffix);
-            }
-        } else {
-            sb.append(suffix);
-        }
+        sb.append(']');
+    }
+
+    /**
+     * Encode a value for this data.
+     *
+     * @param value Value to encode.
+     */
+    default void encode(StringBuilder sb, T value) {
+        sb.append(ComponentPart.escape(value));
     }
 
     @Override
@@ -120,5 +95,64 @@ public interface AbstractDataProvider<T> extends ComponentPart {
 
     @Override
     default void validate() throws ChartException {
+    }
+
+    /**
+     * Get the minimum value from this data. This is used by certain components such as {@link VisualMap}
+     * to automatically find out the minimum value of a value-based chart.
+     * <p>The default implementation tries to use the {@link Comparator} returned by the {@link #getComparator()} method
+     * to determine the this value. If no {@link Comparator} is available, <code>null</code> will be returned.</p>
+     *
+     * @return Minimum value of the data.
+     */
+    default T getMin() {
+        if(getDataType() == DataType.CATEGORY) {
+            return stream().findFirst().orElse(null);
+        }
+        Comparator<T> comparator = getComparator();
+        return comparator == null ? null : stream().min(getComparator()).orElse(null);
+    }
+
+    /**
+     * Get the maximum value from this data. This is used by certain components such as {@link VisualMap}
+     * to automatically find out the minimum value of a value-based chart.
+     * <p>The default implementation tries to use the {@link Comparator} returned by the {@link #getComparator()} method
+     * to determine the this value. If no {@link Comparator} is available, <code>null</code> will be returned.</p>
+     *
+     * @return Minimum value of the data.
+     */
+    default T getMax() {
+        if(getDataType() == DataType.CATEGORY) {
+            AtomicReference<T> value = new AtomicReference<>(null);
+            stream().forEach(value::set);
+            return value.get();
+        }
+        Comparator<T> comparator = getComparator();
+        return comparator == null ? null : stream().max(getComparator()).orElse(null);
+    }
+
+    /**
+     * This comparator, if available, will be used to determine the min/max values of the data if required by the
+     * {@link #getMin()} and {@link #getMax()} methods.
+     *
+     * @return Comparator. (Default is null).
+     */
+    default Comparator<T> getComparator() {
+        //noinspection unchecked
+        return getDataType() == DataType.NUMBER ? (Comparator<T>) new NumberComparator() : null;
+    }
+
+    /**
+     * A crude {@link Number} comparator that can be used for data that is of {@link Number} type.
+     */
+    class NumberComparator implements Comparator<Number> {
+
+        @Override
+        public int compare(Number n1, Number n2) {
+            if(n1 == null || n2 == null) {
+                return n1 == null && n2 == null ? 0 : (n1 == null ? -1 : 1);
+            }
+            return new BigDecimal(n1.toString()).compareTo(new BigDecimal(n2.toString()));
+        }
     }
 }

@@ -19,7 +19,7 @@ package com.storedobject.chart;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Radar coordinate is used by {@link RadarChart}. Its each leg (axis) can be labelled (indicators)
+ * Radar coordinate is used by {@link RadarChart}. Each of its leg (radial axis) can be labelled (indicators)
  * by {@link CategoryData}.
  *
  * @author Syam
@@ -30,21 +30,55 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
     private CategoryDataProvider axisIndicators;
     private int startingAngle = 90;
     private AbstractColor color;
+    private RadarAxis axis;
+    private boolean circular;
+
+    /**
+     * Constructor. Axis indicators can be set later. A default {@link RadarAxis} will be created.
+     */
+    public RadarCoordinate() {
+        this(null, null);
+    }
+
+    /**
+     * Construct with the given set of axis indicators. A default {@link RadarAxis} will be created.
+     *
+     * @param axisIndicators Axis indicators to set.
+     */
+    public RadarCoordinate(CategoryDataProvider axisIndicators) {
+        this(null, axisIndicators);
+    }
 
     /**
      * Constructor. Axis indicators can be set later.
+     *
+     * @param axis Radar axis.
      */
-    public RadarCoordinate() {
-        this(null);
+    public RadarCoordinate(RadarAxis axis) {
+        this(axis, null);
     }
 
     /**
      * Construct with the given set of axis indicators.
      *
+     * @param axis Radar axis.
      * @param axisIndicators Axis indicators to set.
      */
-    public RadarCoordinate(CategoryDataProvider axisIndicators) {
+    public RadarCoordinate(RadarAxis axis, CategoryDataProvider axisIndicators) {
         this.axisIndicators = axisIndicators;
+        setAxis(axis);
+    }
+
+    @Override
+    public void addAxis(Axis... axes) {
+    }
+
+    public void setAxis(RadarAxis axis) {
+        this.axis = axis;
+    }
+
+    public RadarAxis getAxis() {
+        return axis;
     }
 
     /**
@@ -86,6 +120,9 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
             sb.append("{\"name\":").append(ComponentPart.escape(category)).append('}');
         });
         sb.append("],\"startAngle\":").append(startingAngle);
+        if(circular) {
+            sb.append(",\"shape\":\"circle\"");
+        }
         ComponentPart.encodeProperty(sb, color);
     }
 
@@ -136,5 +173,23 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
      */
     public void setColor(AbstractColor color) {
         this.color = color;
+    }
+
+    /**
+     * Set the shape as circular.
+     *
+     * @param circular True/false.
+     */
+    public void setCircular(boolean circular) {
+        this.circular = circular;
+    }
+
+    /**
+     * Is the shape circular?
+     *
+     * @return True/false.
+     */
+    public final boolean isCircular() {
+        return circular;
     }
 }

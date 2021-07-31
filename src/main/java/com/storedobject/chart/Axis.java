@@ -68,6 +68,7 @@ public abstract class Axis extends VisibleProperty {
     private MinorGridLines minorGridLines;
     private GridAreas gridAreas;
     private Pointer pointer;
+    private CategoryData data;
 
     /**
      * Constructor.
@@ -81,8 +82,7 @@ public abstract class Axis extends VisibleProperty {
     /**
      * Constructor.
      *
-     * @param data Data type will be determined from the data provider. Note: It is not required to use
-     *             the same data on this axis.
+     * @param data Data type will be determined from the data provider.
      */
     public Axis(AbstractDataProvider<?> data) {
         this(data.getDataType());
@@ -141,9 +141,16 @@ public abstract class Axis extends VisibleProperty {
         }
     }
 
+    void setData(CategoryData data) {
+        this.data = data;
+    }
+
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
+        if(data != null) {
+            sb.append(",\"data\":").append(data.getSerial());
+        }
         if(inverted) {
             sb.append(",\"inverse\":true");
         }
@@ -541,8 +548,12 @@ public abstract class Axis extends VisibleProperty {
         @Override
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
-            sb.append(",\"showMinLabel\":").append(showMinLabel);
-            sb.append(",\"showMaxLabel\":").append(showMaxLabel);
+            if(showMinLabel != null) {
+                sb.append(",\"showMinLabel\":").append(showMinLabel);
+            }
+            if(showMaxLabel != null) {
+                sb.append(",\"showMaxLabel\":").append(showMaxLabel);
+            }
             if(interval >= -1) {
                 sb.append(",\"interval\":");
                 if(interval == -1) {

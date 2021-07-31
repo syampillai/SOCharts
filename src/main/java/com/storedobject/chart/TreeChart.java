@@ -16,16 +16,19 @@
 
 package com.storedobject.chart;
 
+import java.util.stream.Stream;
+
 /**
  * Tree chart.
  *
  * @author Syam
  */
-public class TreeChart extends AbstractDataChart implements HasPosition {
+public class TreeChart extends Chart implements HasPosition {
 
     private TreeDataProvider data;
     private Position position;
     private Orientation orientation;
+    private final TD td;
 
     /**
      * Create a tree chart. Data can be set later.
@@ -41,11 +44,17 @@ public class TreeChart extends AbstractDataChart implements HasPosition {
      */
     public TreeChart(TreeDataProvider data) {
         super(ChartType.Tree);
+        this.data = data;
+        super.setData(td = new TD());
         getOrientation(true).radial();
     }
 
+    @Override
+    public void setData(AbstractDataProvider<?>... data) {
+    }
+
     /**
-     * Get the the data associated with this chart.
+     * Get the data associated with this chart.
      *
      * @return Data provider.
      */
@@ -71,13 +80,13 @@ public class TreeChart extends AbstractDataChart implements HasPosition {
     }
 
     @Override
+    protected AbstractDataProvider<?> dataToEmbed() {
+        return td;
+    }
+
+    @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        if(!skippingData) {
-            sb.append(",\"data\":[");
-            data.encodeJSON(sb);
-            sb.append(']');
-        }
         ComponentPart.addComma(sb);
         ComponentPart.encode(sb, "expandAndCollapse", true);
         ComponentPart.encodeProperty(sb, orientation);
@@ -116,5 +125,35 @@ public class TreeChart extends AbstractDataChart implements HasPosition {
      */
     public final void setOrientation(Orientation orientation) {
         this.orientation = orientation;
+    }
+
+    private class TD implements AbstractDataProvider<Object>, InternalDataProvider {
+
+        private int serial = -1;
+
+        @Override
+        public Stream<Object> stream() {
+            return Stream.of(data);
+        }
+
+        @Override
+        public void encode(StringBuilder sb, Object value) {
+            ((TreeDataProvider)value).encodeJSON(sb);
+        }
+
+        @Override
+        public DataType getDataType() {
+            return DataType.OBJECT;
+        }
+
+        @Override
+        public void setSerial(int serial) {
+            this.serial = serial;
+        }
+
+        @Override
+        public int getSerial() {
+            return serial;
+        }
     }
 }

@@ -60,7 +60,6 @@ import java.util.List;
 @JsModule("./so/chart/chart.js")
 public class SOChart extends LitComponent implements HasSize {
 
-    private static final String SKIP_DATA = "Skipping data but new data found: ";
     final static ComponentEncoder[] encoders = {
             new ComponentEncoder("color", DefaultColors.class),
             new ComponentEncoder("textStyle", DefaultTextStyle.class),
@@ -68,7 +67,6 @@ public class SOChart extends LitComponent implements HasSize {
             new ComponentEncoder(Legend.class),
             new ComponentEncoder(Toolbox.class),
             new ComponentEncoder(Tooltip.class),
-            new ComponentEncoder("dataset", AbstractDataProvider.class),
             new ComponentEncoder("angleAxis", AngleAxis.AngleAxisWrapper.class),
             new ComponentEncoder("radiusAxis", RadiusAxis.RadiusAxisWrapper.class),
             new ComponentEncoder("xAxis", XAxis.XAxisWrapper.class),
@@ -78,6 +76,7 @@ public class SOChart extends LitComponent implements HasSize {
             new ComponentEncoder("grid", RectangularCoordinate.class),
             new ComponentEncoder("series", Chart.class),
             new ComponentEncoder("dataZoom", DataZoom.class),
+            new ComponentEncoder("visualMap", VisualMap.class),
             new ComponentEncoder("graphic", Shape.class),
     };
     private final List<Component> components = new ArrayList<>();
@@ -323,20 +322,23 @@ public class SOChart extends LitComponent implements HasSize {
      * via the method {@link #remove(Component...)}.
      * </p>
      *
-     * @param skipData Skip data or not. This parameter will be ignored if this is the first-time update.
-     * @throws ChartException When any of the component is not valid or new data found while skipping data.
+     * @param skipData Skip data or not. This parameter will be ignored if this is the first-time update. However,
+     *                any data that was never sent to the client will be sent anyway.
+     * @throws ChartException When any of the component is not valid.
      * @throws Exception If the JSON customizer raises any exception.
      */
     public void update(boolean skipData) throws ChartException, Exception {
         if(neverUpdated && skipData) {
             skipData = false;
         }
+        if(!skipData) {
+            executeJS("clearData");
+        }
         if(components.isEmpty()) {
             clear();
             return;
         }
         for(Component c: components) {
-            c.skippingData(skipData);
             c.validate();
             c.setSerial(-2);
         }
@@ -344,15 +346,33 @@ public class SOChart extends LitComponent implements HasSize {
         for(Component c: components) {
             c.addParts(this);
         }
-        for(ComponentPart c: parts) {
-            if(skipData) {
-                if (c instanceof AbstractDataProvider) {
-                    if (c.getSerial() < 0) {
-                        throw new ChartException(SKIP_DATA + c.className());
-                    }
-                    continue;
-                }
+        List<AbstractDataProvider<?>> data = new ArrayList<>(), dataSet = new ArrayList<>();
+        parts.stream().filter(p -> p instanceof AbstractDataProvider).map(p -> (AbstractDataProvider<?>)p)
+                .forEach(data::add);
+        parts.removeIf(p -> p instanceof AbstractDataProvider);
+        int dserial = data.stream().mapToInt(ComponentPart::getSerial).max().orElse(1);
+        dserial = Math.max(dserial, 1);
+        while(!data.isEmpty()) {
+            AbstractDataProvider<?> d = data.remove(0);
+            if(!(d instanceof InternalDataProvider)) {
+                dataSet.add(d);
             }
+            if(skipData) {
+                if(d.getSerial() <= 0) {
+                    d.validate();
+                    d.setSerial(dserial++);
+                    initData(d);
+                }
+            } else {
+                if(d.getSerial() <= 0) {
+                    d.validate();
+                    d.setSerial(dserial++);
+                }
+                initData(d);
+            }
+            data.removeIf(ad -> ad.getSerial() == d.getSerial());
+        }
+        for(ComponentPart c: parts) {
             c.validate();
             c.setSerial(-2);
         }
@@ -383,21 +403,28 @@ public class SOChart extends LitComponent implements HasSize {
         }
         parts.sort(Comparator.comparing(ComponentPart::getSerial));
         StringBuilder sb = new StringBuilder();
-        sb.append('{');
+        sb.append("{\"dataset\":{\"source\":{");
+        boolean first = true;
+        for(AbstractDataProvider<?> d: dataSet) {
+            if(first) {
+                first = false;
+            } else {
+                sb.append(',');
+            }
+            sb.append("\"d").append(d.getSerial()).append("\":").append(d.getSerial());
+        }
+        sb.append("}}");
         if(defaultBackground != null) {
-            sb.append("\"backgroundColor\":").append(defaultBackground);
+            sb.append(",\"backgroundColor\":").append(defaultBackground);
         }
         for(ComponentEncoder ce: encoders) {
-            if(skipData && "dataset".equals(ce.label)) {
-                continue;
-            }
             ce.encode(sb, parts);
             if(sb.length() > 1 && sb.charAt(sb.length() - 1) != '\n') {
                 sb.append('\n');
             }
         }
         sb.append('}');
-        executeJS("updateChart", customizeJSON(sb.toString()));
+        executeJS("updateChart", !skipData, customizeJSON(sb.toString()));
         parts.clear();
         defaultColors = null;
         defaultBackground = null;
@@ -409,16 +436,54 @@ public class SOChart extends LitComponent implements HasSize {
      * This method is invoked just before the JSON string that is being constructed in the {@link #update()} method
      * is sent to the client. The returned value by this method will be sent to the "echarts" instance
      * at the client-side. The default implementation just returns the same string. However, if someone wants to do
-     * some cutting-edge customization, this method can be used. This JOSN string is used to construct the
+     * some cutting-edge customization, this method can be used. This JSON string is used to construct the
      * "option" parameter for the "echarts.setOption(option)" JavaScript method.
      *
      * @param json JSON string constructed by the {@link #update()} method.
      * @return Customized JSON string.
-     * @throws ChartException If any custom error to be notified so that rendering will not happen.
+     * @throws Exception If any custom error to be notified so that rendering will not happen.
      */
     @SuppressWarnings("RedundantThrows")
     protected String customizeJSON(String json) throws Exception {
         return json;
+    }
+
+    /**
+     * This method is invoked just before the JSON string that is being constructed to send data
+     * to the client. The returned value by this method will be sent to the "echarts" instance
+     * at the client-side. The default implementation just returns the same string. However, if someone wants to do
+     * some cutting-edge customization, this method can be used.
+     *
+     * @param json JSON string constructed by the {@link #update()} method.
+     * @param data The data part for which this JSON string was created.
+     * @return Customized JSON string.
+     * @throws Exception If any custom error to be notified so that rendering will not happen.
+     */
+    protected String customizeDataJSON(String json, @SuppressWarnings("unused") AbstractDataProvider<?> data) throws Exception {
+        return json;
+    }
+
+    private void initData(AbstractDataProvider<?> data) throws Exception {
+        updateData("init", data);
+    }
+
+    private void updateData(String command, AbstractDataProvider<?> data) throws Exception {
+        StringBuilder sb = new StringBuilder("{\"d\":");
+        data.encodeJSON(sb);
+        sb.append('}');
+        executeJS(command + "Data", data.getSerial(), customizeDataJSON(sb.toString(), data));
+    }
+
+    /**
+     * Update the chart with modified data from the data provider.
+     *
+     * @param data Data to be updated.
+     * @throws Exception if custom error is raised by {@link #customizeDataJSON(String, AbstractDataProvider)}.
+     */
+    public void updateData(AbstractDataProvider<?> data) throws Exception {
+        if(data.getSerial() > 0) {
+            updateData("update", data);
+        }
     }
 
     void updateData(String data, String command) {
@@ -448,7 +513,6 @@ public class SOChart extends LitComponent implements HasSize {
         }
 
         private void encode(StringBuilder sb, List<? extends ComponentPart> components) {
-            boolean data = label.equals("dataset");
             boolean first = true;
             int serial = -2;
             for (ComponentPart c: components) {
@@ -466,30 +530,18 @@ public class SOChart extends LitComponent implements HasSize {
                             sb.append(',');
                         }
                         sb.append('"').append(label).append("\":");
-                        if(data) {
-                            sb.append("{\"source\":{");
-                        } else {
-                            sb.append('[');
-                        }
+                        sb.append('[');
                     } else {
                         sb.append(',');
                     }
-                    if(!data) {
-                        sb.append('{');
-                    }
+                    sb.append('{');
                     c.encodeJSON(sb);
                     ComponentPart.removeComma(sb);
-                    if(!data) {
-                        sb.append('}');
-                    }
+                    sb.append('}');
                 }
             }
             if(!first) {
-                if(data) {
-                    sb.append("}}");
-                } else {
-                    sb.append(']');
-                }
+                sb.append(']');
             }
         }
     }

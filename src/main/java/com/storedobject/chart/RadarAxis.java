@@ -17,27 +17,29 @@
 package com.storedobject.chart;
 
 /**
- * Some charts can not encode chart data in a centralized way because its data require some special encoding. This
- * is the base class for such charts.
+ * Representation of radius axis. This can be used in {@link RadarChart}s.
  *
  * @author Syam
  */
-public class AbstractDataChart extends AbstractChart {
-
-    boolean skippingData = false;
+public class RadarAxis extends Axis {
 
     /**
-     * Create a chart of a given type and data.
-     *
-     * @param type type of the chart.
-     * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
+     * Constructor.
      */
-    public AbstractDataChart(ChartType type, AbstractDataProvider<?>... data) {
-        super(type, data);
+    public RadarAxis() {
+        super(DataType.CATEGORY);
     }
 
     @Override
-    public final void skippingData(boolean skipping) {
-        this.skippingData = skipping;
+    ComponentPart wrap(CoordinateSystem coordinateSystem) {
+        Axis.AxisWrapper w = wrappers.get(coordinateSystem);
+        return w == null ? new RadarAxisWrapper(this, coordinateSystem) : w;
+    }
+
+    static class RadarAxisWrapper extends Axis.AxisWrapper {
+
+        RadarAxisWrapper(Axis axis, CoordinateSystem coordinateSystem) {
+            super(axis, coordinateSystem);
+        }
     }
 }

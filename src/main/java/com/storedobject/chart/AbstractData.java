@@ -94,6 +94,7 @@ public class AbstractData<T> extends ArrayList<T> implements AbstractDataProvide
      *
      * @return Name.
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -103,6 +104,7 @@ public class AbstractData<T> extends ArrayList<T> implements AbstractDataProvide
      *
      * @param name Name to set.
      */
+    @Override
     public void setName(String name) {
         this.name = name;
     }

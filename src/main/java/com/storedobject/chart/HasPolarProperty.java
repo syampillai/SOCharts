@@ -38,4 +38,29 @@ public interface HasPolarProperty {
      * @param polarProperty Polar property to set. It could be <code>null</code>.
      */
     void setPolarProperty(PolarProperty polarProperty);
+
+
+    /**
+     * Set the hole radius (if a hole is required at the center).
+     *
+     * @param size Hole radius.
+     */
+    default void setHoleRadius(Size size) {
+        PolarProperty pp = getPolarProperty(true);
+        if(pp != null) {
+            pp.setInnerRadius(size);
+        }
+    }
+
+    /**
+     * Set the radius.
+     *
+     * @param size Radius.
+     */
+    default void setRadius(Size size) {
+        PolarProperty pp = getPolarProperty(true);
+        if(pp != null) {
+            pp.setRadius(size);
+        }
+    }
 }

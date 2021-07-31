@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,19 +16,11 @@
 
 package com.storedobject.chart;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 /**
- * Category data is typically non-numeric kind of (string) data that can be used in many charts like
- * in the X-axis of a {@link BarChart}. It is also used when data/item labels are required, for example:
- * {@link PieChart}.
+ * A marker interface to denote that an {@link AbstractDataProvider} is internal to some chart that handles its data
+ * internally and that can't be shared with other charts. (End-developers need not use this anywhere in their code).
  *
  * @author Syam
  */
-public interface CategoryDataProvider extends AbstractDataProvider<String> {
-
-    @Override
-    default DataType getDataType() {
-        return DataType.CATEGORY;
-    }
+public interface InternalDataProvider {
 }

@@ -16,7 +16,11 @@
 
 package com.storedobject.chart;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Comparator;
+import java.util.Date;
 
 /**
  * Data provider to provide time values.
@@ -28,5 +32,60 @@ public interface TimeDataProvider extends AbstractDataProvider<LocalDateTime> {
     @Override
     default DataType getDataType() {
         return DataType.TIME;
+    }
+
+    /**
+     * Add a time value.
+     *
+     * @param time time value to add.
+     * @return True if added. Otherwise, false.
+     */
+    boolean add(LocalDateTime time);
+
+    /**
+     * Add a date value.
+     *
+     * @param date Date value to add.
+     * @return True if added. Otherwise, false.
+     */
+    default boolean add(LocalDate date) {
+        if(date == null) {
+            return false;
+        }
+        return add(date.atStartOfDay());
+    }
+
+    /**
+     * Add a date value.
+     *
+     * @param date Date value to add.
+     * @return True if added. Otherwise, false.
+     */
+    default boolean add(Date date) {
+        if(date == null) {
+            return false;
+        }
+        return add(date.getTime());
+    }
+
+    /**
+     * Add a time value as time in milliseconds.
+     *
+     * @param timeInMillis Time in milliseconds.
+     * @return True if added. Otherwise, false.
+     */
+    default boolean add(long timeInMillis) {
+        long nanos = (timeInMillis - ((timeInMillis / 1000L) * 1000L)) * 1000L;
+        return add(LocalDateTime.ofEpochSecond(timeInMillis / 1000L, (int) nanos, ZoneOffset.UTC));
+    }
+
+    @Override
+    default Comparator<LocalDateTime> getComparator() {
+        return (d1, d2) -> {
+            if(d1 == null || d2 == null) {
+                return d1 == null && d2 == null ? 0 : (d1 == null ? -1 : 1);
+            }
+            return d1.isBefore(d2) ? -1 : (d1.isAfter(d2) ? 1 : 0);
+        };
     }
 }

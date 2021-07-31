@@ -16,57 +16,81 @@
 
 package com.storedobject.chart;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
 /**
- * Sunburst chart (Beta version - not fully tested)
+ * Sunburst chart.
  *
  * @author Syam
  */
-public class SunburstChart extends AbstractDataChart implements HasPosition {
+public class SunburstChart extends Chart implements HasPosition, HasPolarProperty {
 
-    private TreeDataProvider data;
+    private final List<TreeDataProvider> data = new ArrayList<>();
     private Position position;
     private ItemStyle itemStyle;
+    private final TD td = new TD();
+    private PolarProperty polarProperty;
 
     /**
-     * Create a tree chart. Data can be set later.
-     */
-    public SunburstChart() {
-        this(null);
-    }
-
-    /**
-     * Create a tree chart of the set of data.
+     * Create a tree chart.
      *
      * @param data Data to be used.
      */
-    public SunburstChart(TreeDataProvider data) {
+    public SunburstChart(TreeDataProvider... data) {
         super(ChartType.Sunburst);
+        super.setData(td);
+        addData(data);
+    }
+
+    @Override
+    public void setData(AbstractDataProvider<?>... data) {
     }
 
     /**
-     * Get the the data associated with this chart.
+     * Get the list of data associated with this chart.
      *
-     * @return Data provider.
+     * @return List of data providers.
      */
-    public TreeDataProvider getTreeData() {
+    public List<TreeDataProvider> getSunburstData() {
         return data;
     }
 
     /**
-     * Set data to the chart.
+     * Add data to the chart.
      *
-     * @param data Data provider to set.
+     * @param data List of data to add.
      */
-    public void setTreeData(TreeDataProvider data) {
-        this.data = data;
+    public void addData(TreeDataProvider... data) {
+        if(data != null) {
+            this.data.addAll(Arrays.asList(data));
+        }
+    }
+
+    /**
+     * Remove data from the chart.
+     *
+     * @param data List of data to remove.
+     */
+    public void removeData(TreeDataProvider... data) {
+        if(data != null) {
+            this.data.removeAll(Arrays.asList(data));
+        }
     }
 
     @Override
     public void validate() throws ChartException {
         super.validate();
-        if(data == null) {
+        if(data.isEmpty()) {
             throw new ChartException("No data provided for " + className());
         }
+    }
+
+    @Override
+    protected AbstractDataProvider<?> dataToEmbed() {
+        return td;
     }
 
     @Override
@@ -74,11 +98,6 @@ public class SunburstChart extends AbstractDataChart implements HasPosition {
         super.encodeJSON(sb);
         if(itemStyle != null) {
             ComponentPart.encode(sb, "itemStyle", itemStyle);
-        }
-        if(!skippingData) {
-            sb.append(",\"data\":[");
-            data.encodeJSON(sb);
-            sb.append(']');
         }
     }
 
@@ -115,5 +134,48 @@ public class SunburstChart extends AbstractDataChart implements HasPosition {
      */
     public void setItemStyle(ItemStyle itemStyle) {
         this.itemStyle = itemStyle;
+    }
+
+    @Override
+    public final PolarProperty getPolarProperty(boolean create) {
+        if(polarProperty == null && create) {
+            polarProperty = new PolarProperty();
+        }
+        return polarProperty;
+    }
+
+    @Override
+    public final void setPolarProperty(PolarProperty polarProperty) {
+        this.polarProperty = polarProperty;
+    }
+
+    private class TD implements AbstractDataProvider<Object>, InternalDataProvider {
+
+        private int serial = -1;
+
+        @Override
+        public Stream<Object> stream() {
+            return data.stream().map(o -> o);
+        }
+
+        @Override
+        public void encode(StringBuilder sb, Object value) {
+            ((TreeDataProvider)value).encodeJSON(sb);
+        }
+
+        @Override
+        public DataType getDataType() {
+            return DataType.OBJECT;
+        }
+
+        @Override
+        public void setSerial(int serial) {
+            this.serial = serial;
+        }
+
+        @Override
+        public int getSerial() {
+            return serial;
+        }
     }
 }

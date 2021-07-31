@@ -1,0 +1,214 @@
+package com.storedobject.chart;
+
+import com.storedobject.helper.ID;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+public class VisualMap implements Component, HasPosition {
+
+    private int serial;
+    private final long id = ID.newID();
+    private boolean continuous = true, calculable = true, vertical = false;
+    private Chart chart;
+    private Position position = new Position();
+    private Number min, max;
+
+    /**
+     * Constructor.
+     */
+    public VisualMap() {
+        this(null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param chart Chart for which this map will be used.
+     */
+    public VisualMap(Chart chart) {
+        this.chart = chart;
+        position.alignBottom();
+        position.justifyCenter();
+    }
+
+    @Override
+    public long getId() {
+        return id;
+    }
+
+    @Override
+    public void setSerial(int serial) {
+        this.serial = serial;
+    }
+
+    @Override
+    public int getSerial() {
+        return serial;
+    }
+
+    @Override
+    public void validate() throws ChartException {
+    }
+
+    @Override
+    public void encodeJSON(StringBuilder sb) {
+        sb.append("\"id\":").append(id);
+        ComponentPart.encode(sb, "calculable", calculable, true);
+        ComponentPart.encode(sb, "type", continuous ? "continuous" : "piecewise", true);
+        if(chart != null) {
+            ComponentPart.encode(sb, "seriesIndex", chart.getSerial(), true);
+            if(min == null) {
+                encode(sb, "min", chart.getMin());
+            }
+            if(max == null) {
+                encode(sb, "max", chart.getMax());
+            }
+        }
+        if(min != null) {
+            encode(sb, "min", min);
+        }
+        if(min != null) {
+            encode(sb, "max", max);
+        }
+        ComponentPart.encode(sb, "orient", vertical ? "vertical" : "horizontal", true);
+        if(position != null) {
+            ComponentPart.encodeProperty(sb, position);
+        }
+    }
+
+    private void encode(StringBuilder sb, String tag, Object m) {
+        if(m instanceof Number || m instanceof LocalDate || m instanceof LocalDateTime) {
+            ComponentPart.encode(sb, tag, m, true);
+        }
+    }
+
+    /**
+     * Is the rendering continuous?
+     *
+     * @return True/false.
+     */
+    public final boolean isContinuous() {
+        return continuous;
+    }
+
+    /**
+     * Set the rendering continuous. (By default, it is continuous).
+     *
+     * @param continuous True/false.
+     */
+    public void setContinuous(boolean continuous) {
+        this.continuous = continuous;
+    }
+
+    /**
+     * Is the values calculable?
+     *
+     * @return True/false.
+     */
+    public final boolean isCalculable() {
+        return calculable;
+    }
+
+    /**
+     * Set that the value is calculable or not.
+     *
+     * @param calculable True/false.
+     */
+    public void setCalculable(boolean calculable) {
+        this.calculable = calculable;
+    }
+
+    /**
+     * Get the chart for which this visual map is used. (It could be null and in that case, it will be used for all
+     * the charts).
+     *
+     * @return Chart.
+     */
+    public final Chart getChart() {
+        return chart;
+    }
+
+    /**
+     * Set the chart for which this visual map is used. (If it is null, it will be used for all
+     * the charts).
+     *
+     * @param chart Chart.
+     */
+    public void setChart(Chart chart) {
+        this.chart = chart;
+    }
+
+    /**
+     * Is the orientation vertical?
+     *
+     * @return True/false.
+     */
+    public boolean isVertical() {
+        return vertical;
+    }
+
+    /**
+     * Set vertical orientation for the visual map. (By default, it is horizontal).
+     *
+     * @param vertical True/false.
+     */
+    public void setVertical(boolean vertical) {
+        this.vertical = vertical;
+    }
+
+    @Override
+    public final Position getPosition(boolean create) {
+        if(position == null && create) {
+            position = new Position();
+        }
+        return position;
+    }
+
+    @Override
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
+    /**
+     * Get the minimum value to be used by this map.
+     * <p>Note: This will return whatever value set via {@link #setMin(Number)}. If not set, it will try to
+     * determine this value from the associated chart if possible when rendering occurs.</p>
+     *
+     * @return Minimum value.
+     */
+    public final Number getMin() {
+        return min;
+    }
+
+    /**
+     * Set the minimum value to be used by this map when rendering. If a non-null value is set via this method,
+     * it will be used while rendering and no attempt is made to determine it from the associated chart if any.
+     *
+     * @param min Value to set.
+     */
+    public void setMin(Number min) {
+        this.min = min;
+    }
+
+    /**
+     * Get the maximum value to be used by this map.
+     * <p>Note: This will return whatever value set via {@link #setMax(Number)}. If not set, it will try to
+     * determine this value from the associated chart if possible when rendering occurs.</p>
+     *
+     * @return Maximum value.
+     */
+    public final Number getMax() {
+        return max;
+    }
+
+    /**
+     * Set the maximum value to be used by this map when rendering. If a non-null value is set via this method,
+     * it will be used while rendering and no attempt is made to determine it from the associated chart if any.
+     *
+     * @param max Value to set.
+     */
+    public void setMax(Number max) {
+        this.max = max;
+    }
+}

@@ -16,6 +16,7 @@
 
 package com.storedobject.chart;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 /**
@@ -58,12 +59,27 @@ public interface TreeDataProvider extends ComponentPart {
         if(itemStyle != null) {
             itemStyle.encodeJSON(sb);
         }
-        Stream<? extends TreeDataProvider> children = getChildren();
-        if(children != null) {
-            AbstractDataProvider.append(sb, children, ",\"children\":[", "]", false,
-                    (buffer, v) -> ((TreeDataProvider)v).encodeJSON(sb));
-        }
+        encode(sb, getChildren());
         sb.append('}');
+    }
+
+    private void encode(StringBuilder sb, Stream<? extends TreeDataProvider> children) {
+        if(children == null) {
+            return;
+        }
+        AtomicBoolean first = new AtomicBoolean(true);
+        children.forEach(d -> {
+            if(first.get()) {
+                first.set(false);
+                sb.append(",\"children\":[");
+            } else {
+                sb.append(',');
+            }
+            d.encodeJSON(sb);
+        });
+        if(!first.get()) {
+            sb.append(']');
+        }
     }
 
     @Override

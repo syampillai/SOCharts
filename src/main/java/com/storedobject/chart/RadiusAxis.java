@@ -35,8 +35,7 @@ public class RadiusAxis extends Axis {
     /**
      * Constructor.
      *
-     * @param data Data type will be determined from the data provider. Note: It is not required to use
-     *             the same data on this axis.
+     * @param data Data type will be determined from the data provider.
      */
     public RadiusAxis(AbstractDataProvider<?> data) {
         super(data);
