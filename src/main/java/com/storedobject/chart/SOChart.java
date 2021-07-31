@@ -298,12 +298,17 @@ public class SOChart extends LitComponent implements HasSize {
      * and additions will be updated. If a completely new display is required, {@link #clear()} should be invoked before
      * this. (Please note that an "update" will automatically happen when a {@link SOChart} is added to its parent
      * layout for the first time).
+     * <p>Note: If this is not the first update, data changes will not be transmitted to the client. So, if you
+     * really want to update the whole data too, you should use the {@link #update(boolean)} method with the parameter
+     * set to <code>false</code>. However, it better to transmit data separately via
+     * {@link #updateData(AbstractDataProvider)} or use the {@link DataChannel} for updating data once the first
+     * rendering was already done.</p>
      *
      * @throws ChartException When any of the component is not valid.
      * @throws Exception If the JSON customizer raises any exception.
      */
     public void update() throws ChartException, Exception {
-        update(false);
+        update(true);
     }
 
     /**
