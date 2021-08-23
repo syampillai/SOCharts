@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * When styling any text using {@link TextStyle}, parts of the text can be separately styled. This class represents
- * those parts with additional style details. Each part has a {@link TextStyle}of its own.
+ * those parts with additional style details. Each part has a {@link TextStyle} of its own.
  * <p>This is mainly used when you set "formatter" strings such as
  * {@link com.storedobject.chart.Axis.Label#setFormatter(String)},
  * {@link com.storedobject.chart.Chart.Label#setFormatter(String)} etc. If you want to style parts of the

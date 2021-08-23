@@ -67,28 +67,23 @@ public class Title extends VisiblePart implements Component, HasPosition {
             ComponentPart.encode(sb, "subtext", t);
             if(subtextStyle != null) {
                 subtextStyle.save(op);
-                sb.append(",\"subtextStyle\":{");
-                ComponentPart.encodeProperty(sb, subtextStyle);
-                sb.append('}');
+                ComponentPart.encode(sb, "subtextStyle", subtextStyle);
                 subtextStyle.restore(op);
             }
         }
-        ComponentPart.encodeProperty(sb, position);
+        ComponentPart.encode(sb, null, position);
         if(textStyle != null) {
             textStyle.save(op);
-            ComponentPart.addComma(sb);
-            sb.append("\"textStyle\":{");
-            ComponentPart.encodeProperty(sb, textStyle);
-            sb.append('}');
+            ComponentPart.encode(sb, "textStyle", textStyle);
             textStyle.restore(op);
             if(op.background != null) {
                 sb.append(",\"backgroundColor\":").append(op.background);
             }
-            ComponentPart.encodeProperty(sb, op.padding);
-            ComponentPart.encodeProperty(sb, op.border);
+            ComponentPart.encode(sb, null, op.padding);
+            ComponentPart.encode(sb, null, op.border);
             if(op.alignment != null) {
                 op.alignment.setPrefix("text");
-                ComponentPart.encodeProperty(sb, op.alignment);
+                ComponentPart.encode(sb, null, op.alignment);
             }
         }
         if(gap > 0 && t != null) {

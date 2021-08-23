@@ -46,9 +46,7 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
         super.encodeJSON(sb);
         sb.append(",\"show\":").append(show);
         sb.append(",\"handleSize\":\"100%\"");
-        if(position != null) {
-            ComponentPart.encodeProperty(sb, position);
-        }
+        ComponentPart.encode(sb, null, position);
         if(background != null) {
             ComponentPart.encode(sb, "backgroundColor", background);
         }
@@ -58,15 +56,9 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
         if(borderColor != null) {
             ComponentPart.encode(sb, "borderColor", borderColor);
         }
-        if(handleStyle != null) {
-            sb.append(",\"handleStyle\":{");
-            ComponentPart.encodeProperty(sb, handleStyle);
-            sb.append('}');
-        }
+        ComponentPart.encode(sb, "handleStyle", handleStyle);
         if(dataShadowStyle != null && dataShadowStyle.valid()) {
-            sb.append(",\"dataBackground\":{");
-            ComponentPart.encodeProperty(sb, dataShadowStyle);
-            sb.append('}');
+            ComponentPart.encode(sb, "dataBackground", dataShadowStyle);
         }
     }
 
@@ -225,16 +217,16 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
                 ComponentPart.encode(sb, "color", color);
             }
             if(borderColor != null) {
-                ComponentPart.encode(sb, "borderColor", borderColor, true);
+                ComponentPart.encode(sb, "borderColor", borderColor);
             }
             if(borderType != null) {
-                ComponentPart.encode(sb, "borderType", borderType.toString().toLowerCase(), true);
+                ComponentPart.encode(sb, "borderType", borderType.toString().toLowerCase());
             }
             if(borderWidth >= 0) {
-                ComponentPart.encode(sb, "borderWidth", borderWidth, true);
+                ComponentPart.encode(sb, "borderWidth", borderWidth);
                 borderWidth = -1;
             }
-            ComponentPart.encodeProperty(sb, shadow);
+            ComponentPart.encode(sb, null, shadow);
         }
 
         /**
@@ -350,8 +342,8 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
 
         @Override
         public void encodeJSON(StringBuilder sb) {
-            ComponentPart.encodeProperty(sb, lineStyle);
-            ComponentPart.encodeProperty(sb, areaStyle);
+            ComponentPart.encode(sb, null, lineStyle);
+            ComponentPart.encode(sb, null, areaStyle);
         }
 
         private boolean valid() {

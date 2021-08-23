@@ -50,7 +50,7 @@ public abstract class XYAxis extends Axis {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        if(isOpposite()) {
+        if(opposite) {
             sb.append(',');
             ComponentPart.encode(sb, "position", positionString());
         }
@@ -67,7 +67,7 @@ public abstract class XYAxis extends Axis {
      *
      * @return True or false.
      */
-    public boolean isOpposite() {
+    public final boolean isOpposite() {
         return opposite;
     }
 

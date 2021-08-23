@@ -47,7 +47,7 @@ public class TextBorder extends AbstractStyle {
         Shadow shadow = getShadow(false);
         if(shadow != null) {
             shadow.setPrefix(prefix);
-            ComponentPart.encodeProperty(sb, shadow);
+            ComponentPart.encode(sb, null, shadow);
         }
         prefix = null;
         encode(sb, "borderType", type);

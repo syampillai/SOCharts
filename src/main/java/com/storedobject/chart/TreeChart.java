@@ -89,7 +89,7 @@ public class TreeChart extends Chart implements HasPosition {
         super.encodeJSON(sb);
         ComponentPart.addComma(sb);
         ComponentPart.encode(sb, "expandAndCollapse", true);
-        ComponentPart.encodeProperty(sb, orientation);
+        ComponentPart.encode(sb, null, orientation);
     }
 
     @Override
@@ -127,9 +127,7 @@ public class TreeChart extends Chart implements HasPosition {
         this.orientation = orientation;
     }
 
-    private class TD implements AbstractDataProvider<Object>, InternalDataProvider {
-
-        private int serial = -1;
+    private class TD extends BasicDataProvider<Object> {
 
         @Override
         public Stream<Object> stream() {
@@ -139,21 +137,6 @@ public class TreeChart extends Chart implements HasPosition {
         @Override
         public void encode(StringBuilder sb, Object value) {
             ((TreeDataProvider)value).encodeJSON(sb);
-        }
-
-        @Override
-        public DataType getDataType() {
-            return DataType.OBJECT;
-        }
-
-        @Override
-        public void setSerial(int serial) {
-            this.serial = serial;
-        }
-
-        @Override
-        public int getSerial() {
-            return serial;
         }
     }
 }

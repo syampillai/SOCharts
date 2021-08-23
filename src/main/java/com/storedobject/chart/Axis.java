@@ -102,7 +102,11 @@ public abstract class Axis extends VisibleProperty {
     }
 
     String axisName() {
-        String name = getClass().getName();
+        Class<?> c = getClass();
+        while(!c.getName().startsWith("com.storedobject.chart")) {
+            c = c.getSuperclass();
+        }
+        String name = c.getName();
         name = name.substring(name.lastIndexOf('.') + 1);
         return Character.toLowerCase(name.charAt(0)) + name.substring(1);
     }
@@ -156,23 +160,15 @@ public abstract class Axis extends VisibleProperty {
         }
         sb.append(",\"type\":").append(dataType);
         if(name != null) {
-            sb.append(",\"name\":\"").append(name).append('"');
+            ComponentPart.encode(sb, "name", name);
             if(nameLocation != null) {
                 sb.append(",\"nameLocation\":").append(nameLocation);
             }
             sb.append(",\"nameGap\":").append(nameGap);
             sb.append(",\"nameRotate\":").append(nameRotation);
-            if(nameTextStyle != null) {
-                sb.append(",\"nameTextStyle\":{");
-                ComponentPart.encodeProperty(sb, nameTextStyle);
-                sb.append('}');
-            }
+            ComponentPart.encode(sb, "nameTextStyle", nameTextStyle);
         }
-        if(label != null) {
-            sb.append(",\"axisLabel\":{");
-            ComponentPart.encodeProperty(sb, label);
-            sb.append('}');
-        }
+        ComponentPart.encode(sb, "axisLabel", label);
         if(min != null) {
             sb.append(",\"min\":").append(min);
         }
@@ -187,36 +183,12 @@ public abstract class Axis extends VisibleProperty {
                 sb.append(",\"scale\":").append(!showZero);
             }
         }
-        if(ticks != null) {
-            sb.append(",\"axisTick\":{");
-            ComponentPart.encodeProperty(sb, ticks);
-            sb.append('}');
-        }
-        if(minorTicks != null) {
-            sb.append(",\"minorTick\":{");
-            ComponentPart.encodeProperty(sb, minorTicks);
-            sb.append('}');
-        }
-        if(gridLines != null) {
-            sb.append(",\"splitLine\":{");
-            ComponentPart.encodeProperty(sb, gridLines);
-            sb.append('}');
-        }
-        if(minorGridLines != null) {
-            sb.append(",\"minorSplitLine\":{");
-            ComponentPart.encodeProperty(sb, minorGridLines);
-            sb.append('}');
-        }
-        if(gridAreas != null) {
-            sb.append(",\"splitArea\":{");
-            ComponentPart.encodeProperty(sb, gridAreas);
-            sb.append('}');
-        }
-        if(pointer != null) {
-            sb.append(",\"axisPointer\":{");
-            ComponentPart.encodeProperty(sb, pointer);
-            sb.append('}');
-        }
+        ComponentPart.encode(sb, "axisTick", ticks);
+        ComponentPart.encode(sb, "minorTick", minorTicks);
+        ComponentPart.encode(sb, "splitLine", gridLines);
+        ComponentPart.encode(sb, "minorSplitLine", minorGridLines);
+        ComponentPart.encode(sb, "splitArea", gridAreas);
+        ComponentPart.encode(sb, "axisPointer", pointer);
     }
 
     /**
@@ -644,8 +616,8 @@ public abstract class Axis extends VisibleProperty {
          * {eeee} => day of week - full name (Monday, Tuesday etc.)
          * {ee} => day of week - short name (Mon, Tue etc.)
          * {e} => day of week (1 to 54)
-         * {HH} => Hour (01-23)
-         * {H} => Hour (00-23)
+         * {HH} => Hour (00-23)
+         * {H} => Hour (0-23)
          * {hh} => Hour (00-12)
          * {h} => Hour (1-12)
          * {mm} => Minute {00-59}
@@ -846,10 +818,7 @@ public abstract class Axis extends VisibleProperty {
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
             if(style != null) {
-                ComponentPart.addComma(sb);
-                sb.append("\"lineStyle\":{");
-                ComponentPart.encodeProperty(sb, style);
-                sb.append('}');
+                ComponentPart.encode(sb, "lineStyle", style);
             }
         }
 
@@ -1018,21 +987,9 @@ public abstract class Axis extends VisibleProperty {
             if(snap != null) {
                 sb.append(",\"snap\":").append(snap);
             }
-            if(label != null) {
-                sb.append(",\"label\":{");
-                ComponentPart.encodeProperty(sb, label);
-                sb.append('}');
-            }
-            if(shadow != null) {
-                sb.append(",\"shadowStyle\":{");
-                ComponentPart.encodeProperty(sb, shadow);
-                sb.append('}');
-            }
-            if(handle != null) {
-                sb.append(",\"handle\":{");
-                ComponentPart.encodeProperty(sb, handle);
-                sb.append('}');
-            }
+            ComponentPart.encode(sb, "label", label);
+            ComponentPart.encode(sb, "shadowStyle", shadow);
+            ComponentPart.encode(sb, "handle",handle);
         }
 
         /**
@@ -1248,7 +1205,7 @@ public abstract class Axis extends VisibleProperty {
             if(color != null) {
                 sb.append(",\"color\":").append(color);
             }
-            ComponentPart.encodeProperty(sb, shadow);
+            ComponentPart.encode(sb, null, shadow);
         }
 
         /**
@@ -1358,19 +1315,51 @@ public abstract class Axis extends VisibleProperty {
 
     abstract ComponentPart wrap(CoordinateSystem coordinateSystem);
 
+    /**
+     * Used internally to wrap an axis within a coordinate system. This wrapping is required because the same axis may
+     * be used by more than one coordinate system.
+     *
+     * @author Syam
+     */
     static class AxisWrapper implements ComponentPart {
 
-        private int serial;
+        private int serial, renderingIndex = -1;
         private final long id = ID.newID();
         final Axis axis;
         private final CoordinateSystem coordinateSystem;
 
+        /**
+         * Constructor.
+         * @param axis Axis.
+         * @param coordinateSystem Coordinate system.
+         */
         AxisWrapper(Axis axis, CoordinateSystem coordinateSystem) {
             this.axis = axis;
             this.coordinateSystem = coordinateSystem;
             this.axis.wrappers.put(this.coordinateSystem, this);
         }
 
+        /**
+         * Set the rendering index of this axis.
+         *
+         * @param index Rendering index.
+         */
+        @Override
+        public void setRenderingIndex(int index) {
+            this.renderingIndex = index;
+        }
+
+        /**
+         * Return the rendering index of this axis.
+         *
+         * @return Rendering index.
+         */
+        @Override
+        public int getRenderingIndex() {
+            return renderingIndex;
+        }
+
+        @Override
         public final long getId() {
             return id;
         }

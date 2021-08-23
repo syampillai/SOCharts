@@ -104,9 +104,9 @@ public class Text extends Shape {
 
         @Override
         public void encodeJSON(StringBuilder sb) {
-            ComponentPart.encode(sb, "text", text, true);
+            ComponentPart.encode(sb, "text", text);
             if(font != null) {
-                ComponentPart.encode(sb, "font", font, true);
+                ComponentPart.encode(sb, "font", font);
             }
             if(alignment != null) {
                 sb.append(',');

@@ -38,18 +38,11 @@ public class Legend extends VisiblePart implements Component, HasPosition, HasPa
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        if(textStyle != null) {
-            sb.append("\"textStyle\":{");
-            ComponentPart.encodeProperty(sb, textStyle);
-            sb.append('}');
-        }
+        ComponentPart.encode(sb, "textStyle", textStyle);
         if(vertical) {
-            if(textStyle != null) {
-                sb.append(',');
-            }
-            sb.append("\"orient\":\"vertical\"");
+            ComponentPart.encode(sb, "orient", "vertical");
         }
-        ComponentPart.encodeProperty(sb, border);
+        ComponentPart.encode(sb, null, border);
         if(hiddenCharts != null && !hiddenCharts.isEmpty()) {
             ComponentPart.addComma(sb);
             sb.append("\"selected\":{");

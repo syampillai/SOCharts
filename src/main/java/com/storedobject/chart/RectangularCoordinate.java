@@ -72,9 +72,9 @@ public class RectangularCoordinate extends CoordinateSystem {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        ComponentPart.encodeProperty(sb, border);
+        ComponentPart.encode(sb, null, border);
         if(sizeIncludeLabels) {
-            sb.append(",\"containLabel\":true");
+            ComponentPart.encode(sb, "containLabel", true);
         }
     }
 

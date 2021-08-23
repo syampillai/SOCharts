@@ -65,11 +65,20 @@ public abstract class Label extends AbstractLabel {
             sb.append(",\"rotate\":").append(rotation);
         }
         if(formatter != null) {
-            String f = formatParser == null ? formatter : formatParser.apply(formatter);
+            String f = getFormatterValue();
             if(f != null) {
                 sb.append(",\"formatter\":").append(ComponentPart.escape(f));
             }
         }
+    }
+
+    /**
+     * Get the encoded value of the formatter string.
+     *
+     * @return Encoded value of the formatter string.
+     */
+    String getFormatterValue() {
+        return formatParser == null ? formatter : formatParser.apply(formatter);
     }
 
     /**

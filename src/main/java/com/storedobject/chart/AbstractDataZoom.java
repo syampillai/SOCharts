@@ -51,12 +51,12 @@ public abstract class AbstractDataZoom implements Component {
      *
      * @param type Type.
      * @param coordinateSystem Coordinate system.
-     * @param axis Axis list.
+     * @param axes Axis list.
      */
-    AbstractDataZoom(String type, CoordinateSystem coordinateSystem, Axis... axis) {
+    AbstractDataZoom(String type, CoordinateSystem coordinateSystem, Axis... axes) {
         this.type = type;
         this.coordinateSystem = coordinateSystem;
-        addAxis(axis);
+        addAxis(axes);
     }
 
     @Override
@@ -67,11 +67,11 @@ public abstract class AbstractDataZoom implements Component {
     /**
      * Add list of axes.
      *
-     * @param axis Axis list.
+     * @param axes Axis list.
      */
-    public void addAxis(Axis... axis) {
-        if(axis != null) {
-            for(Axis a: axis) {
+    public void addAxis(Axis... axes) {
+        if(axes != null) {
+            for(Axis a: axes) {
                 if(a != null && !this.axes.contains(a)) {
                     this.axes.add(a);
                 }
@@ -102,7 +102,7 @@ public abstract class AbstractDataZoom implements Component {
     @Override
     public void encodeJSON(StringBuilder sb) {
         sb.append("\"id\":").append(id);
-        ComponentPart.encode(sb, "type", type, true);
+        ComponentPart.encode(sb, "type", type);
         Set<Class<?>> axisClasses = new HashSet<>();
         axes.forEach(a -> axisClasses.add(a.getClass()));
         axisClasses.forEach(ac -> {
@@ -157,10 +157,10 @@ public abstract class AbstractDataZoom implements Component {
             }
         }
         if(startValue != null) {
-            ComponentPart.encode(sb, "startValue", startValue, true);
+            ComponentPart.encode(sb, "startValue", startValue);
         }
         if(endValue != null) {
-            ComponentPart.encode(sb, "endValue", endValue, true);
+            ComponentPart.encode(sb, "endValue", endValue);
         }
         if(minSpan != Integer.MIN_VALUE) {
             sb.append(",\"minSpan\":").append(minSpan);
@@ -175,12 +175,12 @@ public abstract class AbstractDataZoom implements Component {
             }
         }
         if(minSpanValue != null) {
-            ComponentPart.encode(sb, "minValueSpan", minSpanValue, true);
+            ComponentPart.encode(sb, "minValueSpan", minSpanValue);
         }
         if(maxSpanValue != null) {
-            ComponentPart.encode(sb, "maxValueSpan", maxSpanValue, true);
+            ComponentPart.encode(sb, "maxValueSpan", maxSpanValue);
         }
-        ComponentPart.encode(sb, "zoomLock", zoomLock, true);
+        ComponentPart.encode(sb, "zoomLock", zoomLock);
     }
 
     @Override

@@ -18,7 +18,6 @@ package com.storedobject.chart;
 
 /**
  * Funnel chart.
- * (Future versions will provide more chart-specific methods).
  *
  * @author Syam
  */

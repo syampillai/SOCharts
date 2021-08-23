@@ -45,19 +45,19 @@ public class TextStyle implements ComponentProperty {
             encode(sb, "fontSize", font.getSize());
         }
         encode(sb, "backgroundColor", background);
-        ComponentPart.encodeProperty(sb, border);
-        ComponentPart.encodeProperty(sb, padding);
-        ComponentPart.encodeProperty(sb, alignment);
+        ComponentPart.encode(sb, null, border);
+        ComponentPart.encode(sb, null, padding);
+        ComponentPart.encode(sb, null, alignment);
         if(textBorder != null) {
             textBorder.setPrefix("text");
         }
-        ComponentPart.encodeProperty(sb, textBorder);
+        ComponentPart.encode(sb, null, textBorder);
         if(richTextStyle != null && !richTextStyle.parts.isEmpty()) {
             ComponentPart.addComma(sb);
             sb.append("\"rich\":{");
             richTextStyle.parts.forEach((p, s) -> {
                 sb.append('"').append(p).append("\":{");
-                ComponentPart.encodeProperty(sb, s);
+                ComponentPart.encode(sb, null, s);
                 sb.append("},");
             });
             ComponentPart.removeComma(sb);

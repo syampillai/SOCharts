@@ -43,13 +43,14 @@ public class Toolbox extends VisiblePart implements Component, HasPosition {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
+        ComponentPart.addComma(sb);
         sb.append("\"tooltip\":{\"show\":true}");
         if(vertical) {
-            sb.append(',');
             ComponentPart.encode(sb, "orient", "vertical");
         }
         if(show) {
-            sb.append(",\"feature\":{");
+            ComponentPart.addComma(sb);
+            sb.append("\"feature\":{");
             for (ToolboxButton button : buttons) {
                 if(button instanceof Internal) {
                     sb.append('"').append(((Internal) button).getTag()).append("\":{");

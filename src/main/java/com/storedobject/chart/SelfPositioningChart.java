@@ -36,6 +36,17 @@ public abstract class SelfPositioningChart extends AbstractChart implements HasP
         super(type, data);
     }
 
+    /**
+     * Create a chart of a given type and data.
+     *
+     * @param type type of the chart.
+     * @param axesBased Whether this is an axes-based chart or not.
+     * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
+     */
+    public SelfPositioningChart(ChartType type, boolean axesBased, AbstractDataProvider<?>... data) {
+        super(type, axesBased, data);
+    }
+
     @Override
     public final Position getPosition(boolean create) {
         if(position == null && create) {

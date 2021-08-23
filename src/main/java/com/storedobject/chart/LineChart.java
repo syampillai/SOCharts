@@ -65,7 +65,7 @@ public class LineChart extends XYChart {
         if(pointSymbol != null) {
             pointSymbol.encodeJSON(sb);
         }
-        ComponentPart.encode(sb,"connectNulls", connectNulls, true);
+        ComponentPart.encode(sb,"connectNulls", connectNulls);
     }
 
     /**

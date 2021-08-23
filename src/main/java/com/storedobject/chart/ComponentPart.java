@@ -26,6 +26,24 @@ import com.storedobject.helper.ID;
 public interface ComponentPart extends ComponentProperty {
 
     /**
+     * Set the rendering index of this part. Rendering index is the position of this part in on the chart when it is
+     * being rendered. It is up to the part to keep this value if required.
+     *
+     * @param index Rendering index.
+     */
+    default void setRenderingIndex(int index) {
+    }
+
+    /**
+     * Return the rendering index of this part. The default implementation returns -1.
+     *
+     * @return Rendering index.
+     */
+    default int getRenderingIndex() {
+        return -1;
+    }
+
+    /**
      * Each part should have a unique Id. (It can be a final variable and can be set by
      * calling {@link ID#newID()}.
      *
@@ -57,34 +75,23 @@ public interface ComponentPart extends ComponentProperty {
      * @param value Value to be encoded.
      */
     static void encode(StringBuilder sb, String name, Object value) {
-        encode(sb, name, value, false);
-    }
-
-    /**
-     * Helper method: Encode a (name, value) pair.
-     *
-     * @param sb Encoded JSON string to be appended to this.
-     * @param name Name to be encoded.
-     * @param value Value to be encoded.
-     * @param startingComma Whether to start with a comma or not.
-     */
-    static void encode(StringBuilder sb, String name, Object value, boolean startingComma) {
-        if(startingComma) {
-            addComma(sb);
+        if(value == null && name == null) {
+            return;
         }
-        sb.append('"').append(name).append("\":").append(escape(value));
-    }
-
-    /**
-     * Helper method: Encode a {@link ComponentProperty}.
-     *
-     * @param sb Encoded JSON string to be appended to this.
-     * @param componentProperty Component property (could be <code>null</code>).
-     */
-    static void encodeProperty(StringBuilder sb, ComponentProperty componentProperty) {
-        if(componentProperty != null) {
+        if(value instanceof ComponentProperty) {
             addComma(sb);
-            componentProperty.encodeJSON(sb);
+            if(name != null) {
+                sb.append('"').append(name).append("\":{");
+            }
+            ((ComponentProperty)value).encodeJSON(sb);
+            if(name != null) {
+                sb.append('}');
+            }
+            return;
+        }
+        if(name != null && value != null) {
+            addComma(sb);
+            sb.append('"').append(name).append("\":").append(escape(value));
         }
     }
 
@@ -111,6 +118,36 @@ public interface ComponentPart extends ComponentProperty {
             sb.append(',');
             break;
         }
+    }
+
+    /**
+     * Helper method: Encode a generic function
+     * @param sb Encoded JSON string to be appended to this.
+     * @param body Body of the function.
+     * @param name Name to be encoded (if null, name-part will not be encoded)
+     * @param params Parameters of the function.
+     */
+    static void encodeFunction(StringBuilder sb, String name, String body, String... params) {
+        if(name != null) {
+            addComma(sb);
+            sb.append('"').append(name).append("\":");
+        }
+        sb.append("{\"function\":{").append("\"params\":[");
+        if(params != null && params.length > 0) {
+            boolean first = true;
+            for(String p: params) {
+                if(first) {
+                    first = false;
+                } else {
+                    sb.append(',');
+                }
+                sb.append('"').append(p).append('"');
+            }
+        }
+        if(!body.endsWith(";")) {
+            body += ';';
+        }
+        sb.append("],\"body\":").append(escape(body)).append("}}");
     }
 
     /**

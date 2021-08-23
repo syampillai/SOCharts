@@ -16,20 +16,20 @@
 
 package com.storedobject.chart;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
- * Abstract coordinate system. Most {@link Chart}s are plotted on a coordinate system with the exception of charts
+ * Abstract coordinate system. Most {@link Chart}s are plotted on a coordinate system except the charts
  * such as {@link PieChart}, {@link NightingaleRoseChart} etc. One or more compatible {@link Chart}s can be plotted
  * on the same coordinate system.
  *
  * @author Syam
  */
-public abstract class CoordinateSystem extends VisiblePart implements Component, HasPosition {
+public abstract class CoordinateSystem extends VisiblePart implements Component, HasPosition, HasData {
 
     final List<Axis> axes = new ArrayList<>();
+    final Map<Axis, ComponentPart> wrappedAxes = new HashMap<>();
     private Position position;
     private final List<Chart> charts = new ArrayList<>();
 
@@ -118,10 +118,39 @@ public abstract class CoordinateSystem extends VisiblePart implements Component,
         for(Chart chart : charts) {
             soChart.addParts(chart);
             soChart.addParts(chart.getData());
+            MarkArea ma = chart.getMarkArea(false);
+            if(ma != null) {
+                soChart.addParts(ma.data);
+            }
         }
         for(Axis axis: axes) {
-            soChart.addParts(axis.wrap(this));
+            soChart.addParts(wrap(axis));
         }
+    }
+
+    @Override
+    public void declareData(Set<AbstractDataProvider<?>> dataSet) {
+        for(Chart chart : charts) {
+            chart.declareData(dataSet);
+        }
+    }
+
+    private ComponentPart wrap(Axis axis) {
+        ComponentPart aw = wrappedAxes.get(axis);
+        if(aw == null) {
+            aw = axis.wrap(this);
+            wrappedAxes.put(axis, aw);
+        }
+        return aw;
+    }
+
+    /**
+     * Get the rendering index of the specified axis.
+     *
+     * @param axis Axis for which rendering index is required.
+     */
+    int getAxisIndex(Axis axis) {
+        return wrap(axis).getRenderingIndex();
     }
 
     @Override

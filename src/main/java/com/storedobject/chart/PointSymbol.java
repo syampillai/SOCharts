@@ -25,7 +25,7 @@ public class PointSymbol implements ComponentProperty {
 
     private PointSymbolType type = PointSymbolType.CIRCLE;
     private boolean show = true;
-    private String size;
+    String size;
     private boolean hoverAnimation = true;
 
     /**
@@ -99,15 +99,12 @@ public class PointSymbol implements ComponentProperty {
 
     @Override
     public void encodeJSON(StringBuilder sb) {
-        sb.append(",\"showSymbol\":").append(show);
-        if(type != null) {
-            ComponentPart.encode(sb,"symbol", type, true);
-            type = null;
-        }
+        ComponentPart.encode(sb, "showSymbol", show);
+        ComponentPart.encode(sb,"symbol", type);
         if(size != null) {
-            sb.append(",\"symbolSize\":").append(size);
-            size = null;
+            ComponentPart.addComma(sb);
+            sb.append("\"symbolSize\":").append(size);
         }
-        sb.append(",\"hoverAnimation\":").append(hoverAnimation);
+        ComponentPart.encode(sb, "hoverAnimation", hoverAnimation);
     }
 }

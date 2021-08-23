@@ -30,7 +30,6 @@ public class SunburstChart extends Chart implements HasPosition, HasPolarPropert
 
     private final List<TreeDataProvider> data = new ArrayList<>();
     private Position position;
-    private ItemStyle itemStyle;
     private final TD td = new TD();
     private PolarProperty polarProperty;
 
@@ -94,14 +93,6 @@ public class SunburstChart extends Chart implements HasPosition, HasPolarPropert
     }
 
     @Override
-    public void encodeJSON(StringBuilder sb) {
-        super.encodeJSON(sb);
-        if(itemStyle != null) {
-            ComponentPart.encode(sb, "itemStyle", itemStyle);
-        }
-    }
-
-    @Override
     public final Position getPosition(boolean create) {
         if(position == null && create) {
             position = new Position();
@@ -112,28 +103,6 @@ public class SunburstChart extends Chart implements HasPosition, HasPolarPropert
     @Override
     public final void setPosition(Position position) {
         this.position = position;
-    }
-
-    /**
-     * Get item style.
-     *
-     * @param create If passed true, a new style is created if not exists.
-     * @return Item style.
-     */
-    public final ItemStyle getItemStyle(boolean create) {
-        if(itemStyle == null && create) {
-            itemStyle = new ItemStyle();
-        }
-        return itemStyle;
-    }
-
-    /**
-     * Set item style.
-     *
-     * @param itemStyle Style to set.
-     */
-    public void setItemStyle(ItemStyle itemStyle) {
-        this.itemStyle = itemStyle;
     }
 
     @Override

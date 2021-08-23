@@ -17,11 +17,13 @@
 package com.storedobject.chart;
 
 /**
- * Abstract base class for creating specific sub-types of charts.
+ * Abstract base class for creating specific sub-types of charts that requires one more axes.
  *
  * @author Syam
  */
 public abstract class AbstractChart extends Chart {
+
+    private final boolean axesBased;
 
     /**
      * Create a chart of a given type and data.
@@ -30,18 +32,34 @@ public abstract class AbstractChart extends Chart {
      * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
      */
     public AbstractChart(ChartType type, AbstractDataProvider<?>... data) {
+        this(type, true, data);
+    }
+
+    /**
+     * Create a chart of a given type and data.
+     *
+     * @param type type of the chart.
+     * @param axesBased Whether this is an axes-based chart or not.
+     * @param data Data to be used (multiples of them for charts that use multi-axis coordinate systems).
+     */
+    public AbstractChart(ChartType type, boolean axesBased, AbstractDataProvider<?>... data) {
         super(type);
         super.setType(type);
-        AbstractDataProvider<?>[] d = new AbstractDataProvider[type.getAxes().length];
-        if(data != null) {
-            for (int i = 0; i < data.length; i++) {
-                if(i == d.length) {
-                    break;
+        this.axesBased = axesBased;
+        if(axesBased) {
+            AbstractDataProvider<?>[] d = new AbstractDataProvider[type.getAxes().length];
+            if(data != null) {
+                for(int i = 0; i < data.length; i++) {
+                    if(i == d.length) {
+                        break;
+                    }
+                    d[i] = data[i];
                 }
-                d[i] = data[i];
             }
+            super.setData(d);
+        } else {
+            super.setData(data);
         }
-        super.setData(d);
     }
 
     /**
@@ -56,23 +74,29 @@ public abstract class AbstractChart extends Chart {
     @Override
     public void validate() throws ChartException {
         super.validate();
-        AbstractDataProvider<?>[] d = getData();
-        for(int i = 0; i < d.length; i++) {
-            if(d[i] == null) {
-                throw new ChartException("Data for " + axisName(i) + " not set for " + className());
+        if(axesBased) {
+            AbstractDataProvider<?>[] d = getData();
+            for(int i = 0; i < d.length; i++) {
+                if(d[i] == null) {
+                    throw new ChartException("Data for " + axisName(i) + " not set for " + className());
+                }
             }
         }
     }
 
     /**
-     * This method if invoked will raise a {@link RuntimeException}. However, you can use
+     * This method if invoked will raise a {@link RuntimeException} if this is an axes-based chart. However, you can use
      * {@link #setData(AbstractDataProvider, int)} to set data at a particular index.
      *
      * @param data Data to be used.
      */
     @Override
     public final void setData(AbstractDataProvider<?>... data) {
-        throw new RuntimeException();
+        if(axesBased) {
+            throw new RuntimeException();
+        } else {
+            super.setData(data);
+        }
     }
 
     /**

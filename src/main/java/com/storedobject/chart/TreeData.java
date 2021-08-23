@@ -34,7 +34,6 @@ public class TreeData implements TreeDataProvider {
     private final String name;
     private Number value;
     private Label label;
-    private ItemStyle itemStyle;
     private List<TreeData> children;
 
     /**
@@ -154,7 +153,7 @@ public class TreeData implements TreeDataProvider {
     }
 
     @Override
-    public Label getLabel(boolean create) {
+    public final Label getLabel(boolean create) {
         if(label == null && create) {
             label = new Label();
         }
@@ -168,27 +167,5 @@ public class TreeData implements TreeDataProvider {
      */
     public void setLabel(Label label) {
         this.label = label;
-    }
-
-    /**
-     * Get item style.
-     *
-     * @param create If passed true, a new style is created if not exists.
-     * @return Item style.
-     */
-    public final ItemStyle getItemStyle(boolean create) {
-        if(itemStyle == null && create) {
-            itemStyle = new ItemStyle();
-        }
-        return itemStyle;
-    }
-
-    /**
-     * Set item style.
-     *
-     * @param itemStyle Style to set.
-     */
-    public void setItemStyle(ItemStyle itemStyle) {
-        this.itemStyle = itemStyle;
     }
 }

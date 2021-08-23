@@ -21,12 +21,12 @@
 
     <groupId>com.storedobject.chart</groupId>
     <artifactId>so-charts</artifactId>
-    <version>2.2.0</version>
+    <version>2.3.0</version>
     <name>SO Charts</name>
     <description>Vaadin LitElement wrapper for ECharts</description>
 
     <properties>
-        <vaadin.version>14.6.7</vaadin.version>
+        <vaadin.version>14.6.8</vaadin.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

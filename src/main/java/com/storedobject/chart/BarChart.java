@@ -18,7 +18,6 @@ package com.storedobject.chart;
 
 /**
  * Bar chart.
- * (Future versions will provide more chart-specific methods).
  *
  * @author Syam
  */
@@ -47,15 +46,15 @@ public class BarChart extends XYChart {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        ComponentPart.encode(sb,"roundCap", roundCap, true);
+        ComponentPart.encode(sb,"roundCap", roundCap);
         if(barGap < Integer.MAX_VALUE) {
-            ComponentPart.encode(sb, "barGap", barGap, true);
+            ComponentPart.encode(sb, "barGap", barGap);
         }
         if(barCategoryGap < Integer.MAX_VALUE) {
-            ComponentPart.encode(sb, "barCategoryGap", barCategoryGap, true);
+            ComponentPart.encode(sb, "barCategoryGap", barCategoryGap);
         }
         if(barWidth < Integer.MAX_VALUE) {
-            ComponentPart.encode(sb, "barWidth", barWidth, true);
+            ComponentPart.encode(sb, "barWidth", barWidth);
         }
     }
 
@@ -132,5 +131,25 @@ public class BarChart extends XYChart {
      */
     public void setBarWidth(int barWidth) {
         this.barWidth = barWidth;
+    }
+
+    /**
+     * This chart doesn't support mark area and this method always returns <code>null</code>.
+     *
+     * @param create If passed true, a new {@link MarkArea} is created if not exists.
+     * @return <code>Null</code>
+     */
+    @Override
+    public final MarkArea getMarkArea(boolean create) {
+        return null;
+    }
+
+    /**
+     * This chart doesn't support mark area and this method does nothing.
+     *
+     * @param markArea Mark area to set.
+     */
+    @Override
+    public final void setMarkArea(MarkArea markArea) {
     }
 }

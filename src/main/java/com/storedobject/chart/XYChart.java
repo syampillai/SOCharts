@@ -24,7 +24,6 @@ package com.storedobject.chart;
 public abstract class XYChart extends AbstractChart {
 
     String stackName;
-    private ItemStyle itemStyle;
 
     /**
      * Constructor.
@@ -64,11 +63,18 @@ public abstract class XYChart extends AbstractChart {
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
         if(stackName != null) {
-            ComponentPart.encode(sb, "stack", stackName, true);
+            ComponentPart.encode(sb, "stack", stackName);
         }
-        if(itemStyle != null) {
-            ComponentPart.encode(sb, "itemStyle", itemStyle, true);
+        /*
+        int axisIndex = axes.size() > 0 ? coordinateSystem.getAxisIndex(axes.get(0)) : -1;
+        if(axisIndex >= 0) {
+            ComponentPart.encode(sb, "xAxisIndex", axisIndex);
         }
+        axisIndex = axes.size() > 1 ? coordinateSystem.getAxisIndex(axes.get(1)) : -1;
+        if(axisIndex >= 0) {
+            ComponentPart.encode(sb, "yAxisIndex", axisIndex);
+        }
+         */
     }
 
     /**
@@ -80,27 +86,5 @@ public abstract class XYChart extends AbstractChart {
      */
     public void setStackName(String stackName) {
         this.stackName = stackName;
-    }
-
-    /**
-     * Get item style.
-     *
-     * @param create If passed true, a new style is created if not exists.
-     * @return Item style.
-     */
-    public final ItemStyle getItemStyle(boolean create) {
-        if(itemStyle == null && create) {
-            itemStyle = new ItemStyle();
-        }
-        return itemStyle;
-    }
-
-    /**
-     * Set item style.
-     *
-     * @param itemStyle Style to set.
-     */
-    public void setItemStyle(ItemStyle itemStyle) {
-        this.itemStyle = itemStyle;
     }
 }

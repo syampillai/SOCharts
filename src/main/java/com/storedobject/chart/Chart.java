@@ -37,17 +37,19 @@ import java.util.*;
  *
  * @author Syam
  */
-public class Chart extends AbstractPart implements Component {
+public class Chart extends AbstractPart implements Component, HasData {
 
     List<Axis> axes;
     private ChartType type = ChartType.Line;
     private Label label;
+    private ItemStyle itemStyle;
     private String name;
     CoordinateSystem coordinateSystem;
     private AbstractDataProvider<?>[] data;
     private AbstractColor[] colors;
     private final Map<Class<? extends ComponentProperty>, ComponentProperty> propertyMap = new HashMap<>();
     private final Map<Class<? extends ComponentProperty>, String> propertyNameMap = new HashMap<>();
+    private MarkArea markArea;
 
     /**
      * Create a {@link ChartType#Line} chart.
@@ -110,10 +112,41 @@ public class Chart extends AbstractPart implements Component {
         return null;
     }
 
+    /**
+     * Get the data that represents the values of this chart. This is useful only for those special charts that embed
+     * data in the chart itself rather than pointing to the dataset. Example: {@link TreeChart}, {@link GaugeChart} etc.
+     * The default implementation returns the result of {@link #dataToEmbed()} if it is not null. Otherwise, it tries
+     * to determine it from the axis data if possible.
+     *
+     * @return Data that represents value.
+     */
+    protected AbstractDataProvider<?> dataValue() {
+        AbstractDataProvider<?> d = dataToEmbed();
+        if(d == null) {
+            if(data.length > 1) {
+                d = data[1];
+            } else if(data.length > 0) {
+                d = data[0];
+            }
+        }
+        return d;
+    }
+
+    /**
+     * Get the index to get the real data value of this chart. (In special charts, the actual data value at a data
+     * point may at an index different from 0).
+     *
+     * @return Data value index.
+     */
+    protected int dataValueIndex() {
+        return -1;
+    }
+
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
         if(colors != null) {
+            ComponentPart.addComma(sb);
             sb.append("\"color\":[");
             for(int i = 0; i < colors.length; i++) {
                 if(i > 0) {
@@ -121,11 +154,11 @@ public class Chart extends AbstractPart implements Component {
                 }
                 sb.append(colors[i]);
             }
-            sb.append("],");
+            sb.append(']');
         }
         AbstractDataProvider<?> dataToEmbed = dataToEmbed();
         if(dataToEmbed != null) {
-            sb.append("\"data\":").append(dataToEmbed.getSerial()).append(',');
+            ComponentPart.encode(sb, "data", dataToEmbed.getSerial());
         }
         ComponentPart.encode(sb, "type", type());
         if(coordinateSystem != null) {
@@ -134,9 +167,7 @@ public class Chart extends AbstractPart implements Component {
                 if(axes != null && !axes.isEmpty()) {
                     for (Axis a : axes) {
                         aw = a.wrap(coordinateSystem);
-                        if (aw.getSerial() > 0) {
-                            sb.append(",\"").append(a.axisName()).append("Index\":").append(aw.getSerial());
-                        }
+                        ComponentPart.encode(sb, a.axisName() + "Index", aw.getRenderingIndex());
                     }
                 }
             } else {
@@ -144,50 +175,48 @@ public class Chart extends AbstractPart implements Component {
                 coordinateSystem.axes.forEach(a -> axisClasses.add(a.getClass()));
                 axisClasses.forEach(ac -> coordinateSystem.axes(ac).map(a -> a.wrap(coordinateSystem)).
                         min(Comparator.comparing(ComponentPart::getSerial)).ifPresent(w -> {
-                            if(w.getSerial() > 0) {
-                                sb.append(",\"").append(((Axis.AxisWrapper)w).axis.axisName()).append("Index\":").
-                                        append(w.getSerial());
-                            }
-            }));
+                            Axis.AxisWrapper aw = (Axis.AxisWrapper) w;
+                            ComponentPart.encode(sb, aw.axis.axisName() + "Index", aw.getRenderingIndex());
+                        }));
             }
         }
         if(coordinateSystem != null) {
-            String name = coordinateSystem.systemName();
-            if(name != null) {
-                ComponentPart.addComma(sb);
-                ComponentPart.encode(sb, "coordinateSystem", name);
-            }
+            ComponentPart.encode(sb, "coordinateSystem", coordinateSystem.systemName());
         }
-        propertyMap.values().forEach(p -> {
-            ComponentPart.addComma(sb);
-            sb.append('\"').append(getPropertyName(p)).append("\":{");
-            ComponentPart.encodeProperty(sb, p);
-            sb.append("}");
-        });
+        propertyMap.values().forEach(p -> ComponentPart.encode(sb, getPropertyName(p), p));
         if(label != null) {
-            sb.append(",\"label\":{");
             label.chart = this;
-            ComponentPart.encodeProperty(sb, label);
+            ComponentPart.encode(sb, getLabelName(), label);
+        }
+        ComponentPart.encode(sb, "itemStyle", itemStyle);
+        if(dataToEmbed == null) {
+            ComponentPart.addComma(sb);
+            sb.append("\"encode\":{");
+            String[] axes = null;
+            if(coordinateSystem != null) {
+                axes = coordinateSystem.axesData();
+            }
+            if(axes == null) {
+                axes = type.getAxes();
+            }
+            for(int i = 0; i < axes.length; i++) {
+                if(i > 0) {
+                    sb.append(',');
+                }
+                sb.append('"').append(axes[i]).append("\":\"d").append(data[i].getSerial()).append("\"");
+            }
             sb.append('}');
         }
-        if(dataToEmbed != null) {
-            return;
-        }
-        sb.append(",\"encode\":{");
-        String[] axes = null;
-        if(coordinateSystem != null) {
-            axes = coordinateSystem.axesData();
-        }
-        if(axes == null) {
-            axes = type.getAxes();
-        }
-        for(int i = 0; i < axes.length; i++) {
-            if(i > 0) {
-                sb.append(',');
-            }
-            sb.append('"').append(axes[i]).append("\":\"d").append(data[i].getSerial()).append("\"");
-        }
-        sb.append('}');
+        ComponentPart.encode(sb, "markArea", markArea);
+    }
+
+    /**
+     * Get the label name for encoding label if exists.
+     *
+     * @return Label name. Default is "label".
+     */
+    protected String getLabelName() {
+        return "label";
     }
 
     @Override
@@ -291,6 +320,21 @@ public class Chart extends AbstractPart implements Component {
             coordinateSystem.addParts(soChart);
         } else {
             soChart.addParts(data);
+            if(markArea != null) {
+                soChart.addParts(markArea.data);
+            }
+        }
+    }
+
+    @Override
+    public void declareData(Set<AbstractDataProvider<?>> dataSet) {
+        dataSet.addAll(Arrays.asList(data));
+        AbstractDataProvider<?> d = dataToEmbed();
+        if(d != null) {
+            dataSet.add(d);
+        }
+        if(markArea != null) {
+            dataSet.add(markArea.data);
         }
     }
 
@@ -470,6 +514,50 @@ public class Chart extends AbstractPart implements Component {
     }
 
     /**
+     * Get item style. (Not applicable to certain types of charts).
+     *
+     * @param create If passed true, a new style is created if not exists.
+     * @return Item style.
+     */
+    public final ItemStyle getItemStyle(boolean create) {
+        if(itemStyle == null && create) {
+            itemStyle = new ItemStyle();
+        }
+        return itemStyle;
+    }
+
+    /**
+     * Set item style.
+     *
+     * @param itemStyle Style to set.
+     */
+    public void setItemStyle(ItemStyle itemStyle) {
+        this.itemStyle = itemStyle;
+    }
+
+    /**
+     * Get the mark area for the chart. (Not applicable to certain types of charts).
+     *
+     * @param create If passed true, a new {@link MarkArea} is created if not exists.
+     * @return Mark area.
+     */
+    public MarkArea getMarkArea(boolean create) {
+        if(markArea == null && create) {
+            markArea = new MarkArea();
+        }
+        return markArea;
+    }
+
+    /**
+     * Set a customized {@link MarkArea} for this chart.
+     *
+     * @param markArea Mark area to set.
+     */
+    public void setMarkArea(MarkArea markArea) {
+        this.markArea = markArea;
+    }
+
+    /**
      * Value-label that can be customized for a chart.
      *
      * @author Syam
@@ -499,7 +587,7 @@ public class Chart extends AbstractPart implements Component {
          * <p>Format template may contain patterns like {n} where "n" is the index of the axis. So {0} represents
          * the x-axis value and {1} represents the y-axis value for an {@link XYChart}. If 2 y-axes are there,
          * it will be {1} and {2} respectively. There can be many axes and the index value will increase
-         * accordingly. The index indicates is the order in which the axes were added to the chart.</p>
+         * accordingly. The index indicates the order in which the axes were added to the chart.</p>
          * <pre>
          * Examples:
          * "{0}, {1}" => Produces labels like "Rice 20" where "Rice" is the x-value and 20 is the y-value.
@@ -544,7 +632,7 @@ public class Chart extends AbstractPart implements Component {
      */
     public static class LabelPosition {
 
-        private boolean left = false, right = false, top = false, bottom = false;
+        private boolean left = false, right = false, top = false, bottom = false, center = false;
         private Size x, y;
 
         /**
@@ -556,7 +644,7 @@ public class Chart extends AbstractPart implements Component {
         public void at(Size x, Size y) {
             this.x = x;
             this.y = y;
-            left = right = top = bottom = false;
+            left = right = top = bottom = center = false;
         }
 
         /**
@@ -568,6 +656,7 @@ public class Chart extends AbstractPart implements Component {
             x = y = null;
             left = true;
             right = false;
+            center = false;
             return this;
         }
 
@@ -580,6 +669,7 @@ public class Chart extends AbstractPart implements Component {
             x = y = null;
             left = false;
             right = true;
+            center = false;
             return this;
         }
 
@@ -592,6 +682,7 @@ public class Chart extends AbstractPart implements Component {
             x = y = null;
             top = true;
             bottom = false;
+            center = false;
             return this;
         }
 
@@ -604,6 +695,20 @@ public class Chart extends AbstractPart implements Component {
             x = y = null;
             top = false;
             bottom = true;
+            center = false;
+            return this;
+        }
+
+        /**
+         * Set the label position to the center. (Applicable to certain types of charts such as {@link PieChart}).
+         *
+         * @return Self reference.
+         */
+        public LabelPosition center() {
+            x = y = null;
+            top = false;
+            bottom = false;
+            center = true;
             return this;
         }
 
@@ -631,6 +736,9 @@ public class Chart extends AbstractPart implements Component {
 
         @Override
         public String toString() {
+            if(center) {
+                return "center";
+            }
             if(x != null && y != null) {
                 if(set(x)) {
                     x = null;

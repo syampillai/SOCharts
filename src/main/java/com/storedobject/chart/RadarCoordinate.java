@@ -109,6 +109,7 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
+        ComponentPart.addComma(sb);
         sb.append("\"indicator\":[");
         final AtomicBoolean first = new AtomicBoolean(true);
         axisIndicators.stream().forEach(category -> {
@@ -119,11 +120,12 @@ public class RadarCoordinate extends CoordinateSystem implements HasPolarPropert
             }
             sb.append("{\"name\":").append(ComponentPart.escape(category)).append('}');
         });
-        sb.append("],\"startAngle\":").append(startingAngle);
+        sb.append(']');
+        ComponentPart.encode(sb, "startAngle", startingAngle);
         if(circular) {
-            sb.append(",\"shape\":\"circle\"");
+            ComponentPart.encode(sb, "shape", "circle");
         }
-        ComponentPart.encodeProperty(sb, color);
+        ComponentPart.encode(sb, null, color);
     }
 
     @Override

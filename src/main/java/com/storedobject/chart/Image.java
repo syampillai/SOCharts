@@ -92,12 +92,12 @@ public class Image extends Shape {
 
         @Override
         public void encodeJSON(StringBuilder sb) {
-            ComponentPart.encode(sb, "image", imageURL, true);
+            ComponentPart.encode(sb, "image", imageURL);
             if(width != null && width.doubleValue() > 0) {
-                ComponentPart.encode(sb, "width", width, true);
+                ComponentPart.encode(sb, "width", width);
             }
             if(height != null && height.doubleValue() > 0) {
-                ComponentPart.encode(sb, "height", height, true);
+                ComponentPart.encode(sb, "height", height);
             }
         }
     }

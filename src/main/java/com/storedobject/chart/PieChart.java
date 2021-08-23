@@ -64,7 +64,7 @@ public class PieChart extends SelfPositioningChart implements HasPolarProperty {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        ComponentPart.encodeProperty(sb, polarProperty);
+        ComponentPart.encode(sb, null, polarProperty);
     }
 
     @Override

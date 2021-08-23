@@ -144,7 +144,7 @@ public class Color extends AbstractColor {
     }
 
     private static boolean isHex(int c) {
-        return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
+        return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f'));
     }
 
     /**

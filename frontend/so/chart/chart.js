@@ -123,6 +123,36 @@ export class SOChart extends LitElement {
     _stuff(obj) {
         this._stuffData(obj);
         this._stuffDataSet(obj);
+        this._stuffFunc(obj);
+        this._stuffFuncP(obj);
+    }
+
+    _stuffFunc(obj) {
+        var o;
+        for(let k in obj) {
+            o = obj[k];
+            if(typeof o === 'object') {
+                if(typeof o.function === 'object') {
+                    obj[k] = new Function(o.function.params, o.function.body);
+                } else {
+                    this._stuffFunc(o);
+                }
+            }
+        }
+    }
+
+    _stuffFuncP(obj) {
+        var o;
+        for(let k in obj) {
+            o = obj[k];
+            if(typeof o === 'object') {
+                if(typeof o.functionP === 'object') {
+                    obj[k] = p => this._formatter(p, o.functionP.body);
+                } else {
+                    this._stuffFuncP(o);
+                }
+            }
+        }
     }
 
     _stuffData(obj) {
@@ -176,15 +206,64 @@ export class SOChart extends LitElement {
     }
 
     _containsData(obj) {
+        return this._containsTag(obj, "data");
+    }
+
+    _containsTag(obj, tag) {
         var o;
         for(let k in obj) {
-            if(k === "data") return true;
+            if(k === tag) return true;
             o = obj[k];
             if(typeof o === 'object') {
                 if(this._containsData(o)) return true;
             }
         }
         return false;
+    }
+
+    _formatter(p, v) {
+        let s = "", len = v.length;
+        for(let i = 0; i < len; i++) {
+            let o = v[i];
+            if(typeof o === 'string') {
+                s = s + o;
+            } else {
+                let k = p.dataIndex;
+                if(k == null) {
+                    k = p[0].dataIndex;
+                    if(k == null) {
+                        continue;
+                    }
+                }
+                let d;
+                if(typeof o === 'object') {
+                    d = this.data["d" + o[0]];
+                    if(d == null) {
+                        continue;
+                    }
+                    d = d[k];
+                    if(d == null) {
+                        continue;
+                    }
+                    d = d[o[1]];
+                    if(d == null) {
+                        continue;
+                    }
+                    s = s + d;
+                } else {
+                    d = this.data["d" + o];
+                    if(d == null) {
+                        continue;
+                    }
+                    d = d[k];
+                    if(d == null) {
+                        continue;
+                    }
+                    s = s + d;
+                }
+            }
+        }
+        return s;
     }
 }
 

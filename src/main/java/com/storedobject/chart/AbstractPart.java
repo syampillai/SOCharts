@@ -42,25 +42,19 @@ public abstract class AbstractPart implements ComponentPart {
 
     @Override
     public void encodeJSON(StringBuilder sb) {
-        String name = getName();
-        if(name != null) {
-            ComponentPart.addComma(sb);
-            ComponentPart.encode(sb, "name", name);
-            sb.append(',');
-        }
-        sb.append("\"id\":").append(id);
+        ComponentPart.encode(sb, "name", getName());
+        ComponentPart.encode(sb, "id", id);
         if(this instanceof HasPosition) {
-            ComponentPart.encodeProperty(sb, ((HasPosition)this).getPosition(false));
+            ComponentPart.encode(sb, null, ((HasPosition)this).getPosition(false));
         }
         if(this instanceof HasPadding) {
-            ComponentPart.encodeProperty(sb, ((HasPadding)this).getPadding(false));
+            ComponentPart.encode(sb, null, ((HasPadding)this).getPadding(false));
         }
         if(this instanceof HasPolarProperty) {
-            ComponentPart.encodeProperty(sb, ((HasPolarProperty) this).getPolarProperty(false));
+            ComponentPart.encode(sb, null, ((HasPolarProperty) this).getPolarProperty(false));
         }
-        sb.append(',');
         if(z >= 0) {
-            sb.append("\"z\":").append(z).append(',');
+            ComponentPart.encode(sb, "z", z);
         }
     }
 

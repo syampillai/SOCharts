@@ -33,9 +33,7 @@ public abstract class AbstractStyle implements ComponentProperty {
             color.encodeJSON(sb);
         }
         encode(sb, "opacity", Math.min(100, opacity) / 100.0);
-        if(shadow != null) {
-            ComponentPart.encodeProperty(sb, shadow);
-        }
+        ComponentPart.encode(sb, null, shadow);
     }
 
     static void encode(StringBuilder sb, String name, Object value) {

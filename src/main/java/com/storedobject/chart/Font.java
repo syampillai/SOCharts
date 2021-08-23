@@ -207,7 +207,7 @@ public class Font {
 
         // 0: xx-small, 1:x-small, 2:small, 3:medium, 4:large, 5:x-large, 6:xx-large, 7:xxx-large, 8: smaller, 9: larger
         private final int size;
-        // Based on - 0: name, 1: percentage, 2: pixels, 3: point, 4: em, 5: rem
+        // Based on - 0: name, 1: percentage, 2: pixels, 3: point, 4: em, 5: rem, 6: just number
         private final int type;
 
         private Size(int size, int type) {
@@ -237,6 +237,10 @@ public class Font {
 
         public static Size rem(double rem) {
             return new Size(rem, 5);
+        }
+
+        public static Size number(int number) {
+            return new Size(number, 6);
         }
 
         public static Size medium() {
@@ -321,6 +325,9 @@ public class Font {
                     break;
                 case 5:
                     suffix = "rem";
+                    break;
+                case 6:
+                    return "" + size;
             }
             String s = "" + (size / 1000);
             int r = size % 1000;

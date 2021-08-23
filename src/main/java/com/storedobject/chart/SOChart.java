@@ -24,9 +24,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -75,7 +73,7 @@ public class SOChart extends LitComponent implements HasSize {
             new ComponentEncoder("radar", RadarCoordinate.class),
             new ComponentEncoder("grid", RectangularCoordinate.class),
             new ComponentEncoder("series", Chart.class),
-            new ComponentEncoder("dataZoom", DataZoom.class),
+            new ComponentEncoder("dataZoom", AbstractDataZoom.class),
             new ComponentEncoder("visualMap", VisualMap.class),
             new ComponentEncoder("graphic", Shape.class),
     };
@@ -300,9 +298,9 @@ public class SOChart extends LitComponent implements HasSize {
      * layout for the first time).
      * <p>Note: If this is not the first update, data changes will not be transmitted to the client. So, if you
      * really want to update the whole data too, you should use the {@link #update(boolean)} method with the parameter
-     * set to <code>false</code>. However, it better to transmit data separately via
-     * {@link #updateData(AbstractDataProvider)} or use the {@link DataChannel} for updating data once the first
-     * rendering was already done.</p>
+     * set to <code>false</code>. However, it better to transmit data separately via one of the data update methods
+     * ({@link #updateData(AbstractDataProvider...)} and {@link #updateData(HasData...)}) or use the
+     * {@link DataChannel} for updating data once the first rendering was already done.</p>
      *
      * @throws ChartException When any of the component is not valid.
      * @throws Exception If the JSON customizer raises any exception.
@@ -344,7 +342,6 @@ public class SOChart extends LitComponent implements HasSize {
             return;
         }
         for(Component c: components) {
-            c.validate();
             c.setSerial(-2);
         }
         parts.clear();
@@ -378,7 +375,6 @@ public class SOChart extends LitComponent implements HasSize {
             data.removeIf(ad -> ad.getSerial() == d.getSerial());
         }
         for(ComponentPart c: parts) {
-            c.validate();
             c.setSerial(-2);
         }
         parts.addAll(components);
@@ -405,6 +401,12 @@ public class SOChart extends LitComponent implements HasSize {
                     }
                 }
             }
+        }
+        for(Component c: components) {
+            c.validate();
+        }
+        for(ComponentPart c: parts) {
+            c.validate();
         }
         parts.sort(Comparator.comparing(ComponentPart::getSerial));
         StringBuilder sb = new StringBuilder();
@@ -485,9 +487,37 @@ public class SOChart extends LitComponent implements HasSize {
      * @param data Data to be updated.
      * @throws Exception if custom error is raised by {@link #customizeDataJSON(String, AbstractDataProvider)}.
      */
-    public void updateData(AbstractDataProvider<?> data) throws Exception {
-        if(data.getSerial() > 0) {
-            updateData("update", data);
+    public void updateData(AbstractDataProvider<?>... data) throws Exception {
+        if(data != null) {
+            for(AbstractDataProvider<?> d: data) {
+                if(d != null) {
+                    if(d.getSerial() > 0) {
+                        updateData("update", d);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Update the chart with modified data from the data providers of a given set of data owners.
+     *
+     * @param dataOwners Data owners whose data to be updated.
+     * @throws Exception if custom error is raised by {@link #customizeDataJSON(String, AbstractDataProvider)}.
+     */
+    public void updateData(HasData... dataOwners) throws Exception {
+        if(dataOwners != null) {
+            Set<AbstractDataProvider<?>> dataSet = new HashSet<>();
+            for(HasData hd: dataOwners) {
+                if(hd != null) {
+                    hd.declareData(dataSet);
+                }
+            }
+            for(AbstractDataProvider<?> d: dataSet) {
+                if(d != null && d.getSerial() > 0) {
+                    updateData("update", d);
+                }
+            }
         }
     }
 
@@ -518,7 +548,7 @@ public class SOChart extends LitComponent implements HasSize {
         }
 
         private void encode(StringBuilder sb, List<? extends ComponentPart> components) {
-            boolean first = true;
+            int renderingIndex = 0;
             int serial = -2;
             for (ComponentPart c: components) {
                 if(partType.isAssignableFrom(c.getClass())) {
@@ -528,9 +558,9 @@ public class SOChart extends LitComponent implements HasSize {
                     if(c.getSerial() == serial) {
                         continue;
                     }
+                    c.setRenderingIndex(renderingIndex);
                     serial = c.getSerial();
-                    if(first) {
-                        first = false;
+                    if(renderingIndex == 0) {
                         if(sb.length() > 1) {
                             sb.append(',');
                         }
@@ -539,13 +569,14 @@ public class SOChart extends LitComponent implements HasSize {
                     } else {
                         sb.append(',');
                     }
+                    ++renderingIndex;
                     sb.append('{');
                     c.encodeJSON(sb);
                     ComponentPart.removeComma(sb);
                     sb.append('}');
                 }
             }
-            if(!first) {
+            if(renderingIndex > 0) {
                 sb.append(']');
             }
         }
@@ -632,7 +663,7 @@ public class SOChart extends LitComponent implements HasSize {
         public void encodeJSON(StringBuilder sb) {
             TextStyle.OuterProperties op = new TextStyle.OuterProperties();
             textStyle.save(op);
-            ComponentPart.encodeProperty(sb, textStyle);
+            ComponentPart.encode(sb, null, textStyle);
         }
 
         @Override

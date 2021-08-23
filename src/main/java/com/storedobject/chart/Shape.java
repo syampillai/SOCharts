@@ -34,9 +34,9 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        ComponentPart.encode(sb, "type", getType(), false);
-        ComponentPart.encode(sb, "invisible", !show, true);
-        ComponentPart.encode(sb, "draggable", draggable, true);
+        ComponentPart.encode(sb, "type", getType());
+        ComponentPart.encode(sb, "invisible", !show);
+        ComponentPart.encode(sb, "draggable", draggable);
         if(style != null) {
             sb.append(",\"style\":{");
             style.encodeJSON(sb);
@@ -72,7 +72,7 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
             sb.append('"').append(name).append("\":").append(value);
             return;
         }
-        ComponentPart.encode(sb, name, value, true);
+        ComponentPart.encode(sb, name, value);
     }
 
     /**
@@ -196,18 +196,16 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
         @Override
         public void encodeJSON(StringBuilder sb) {
             if(fillColor != null) {
-                ComponentPart.encode(sb, "fill", fillColor, true);
+                ComponentPart.encode(sb, "fill", fillColor);
             }
             if(strokeColor != null) {
-                ComponentPart.encode(sb, "stroke", strokeColor, true);
+                ComponentPart.encode(sb, "stroke", strokeColor);
             }
-            ComponentPart.encode(sb, "lineWidth", lineWidth == null ? 1 : lineWidth, true);
+            ComponentPart.encode(sb, "lineWidth", lineWidth == null ? 1 : lineWidth);
             if(extra != null) {
                 extra.encodeJSON(sb);
             }
-            if(shadow != null) {
-                ComponentPart.encodeProperty(sb, shadow);
-            }
+            ComponentPart.encode(sb, null, shadow);
         }
 
         /**

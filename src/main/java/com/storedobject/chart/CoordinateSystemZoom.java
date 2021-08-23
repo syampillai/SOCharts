@@ -31,10 +31,10 @@ public class CoordinateSystemZoom extends AbstractDataZoom {
      * Constructor.
      *
      * @param coordinateSystem Coordinate system.
-     * @param axis Axis list.
+     * @param axes Axis list.
      */
-    public CoordinateSystemZoom(CoordinateSystem coordinateSystem, Axis... axis) {
-        super("inside", coordinateSystem, axis);
+    public CoordinateSystemZoom(CoordinateSystem coordinateSystem, Axis... axes) {
+        super("inside", coordinateSystem, axes);
     }
 
     @Override
@@ -42,15 +42,15 @@ public class CoordinateSystemZoom extends AbstractDataZoom {
         super.encodeJSON(sb);
         sb.append(",\"disabled\":").append(!enabled);
         if(zoomOnMouseWheel != null) {
-            ComponentPart.encode(sb, "zoomOnMouseWheel", zoomOnMouseWheel, true);
+            ComponentPart.encode(sb, "zoomOnMouseWheel", zoomOnMouseWheel);
             zoomOnMouseWheel = null;
         }
         if(moveOnMouseWheel != null) {
-            ComponentPart.encode(sb, "moveOnMouseWheel", moveOnMouseWheel, true);
+            ComponentPart.encode(sb, "moveOnMouseWheel", moveOnMouseWheel);
             moveOnMouseWheel = null;
         }
         if(moveOnMouseMove != null) {
-            ComponentPart.encode(sb, "moveOnMouseMove", moveOnMouseMove, true);
+            ComponentPart.encode(sb, "moveOnMouseMove", moveOnMouseMove);
             moveOnMouseMove = null;
         }
     }

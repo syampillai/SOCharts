@@ -34,12 +34,7 @@ public class Area extends VisibleProperty {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        if(style != null) {
-            ComponentPart.addComma(sb);
-            sb.append("\"areaStyle\":{");
-            ComponentPart.encodeProperty(sb, style);
-            sb.append('}');
-        }
+        ComponentPart.encode(sb, "areaStyle", style);
     }
 
     /**

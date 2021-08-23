@@ -2,9 +2,12 @@ package com.storedobject.chart;
 
 import com.storedobject.helper.ID;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
+/**
+ * Define features to visually highlight portions of the chart.
+ * Note: Beta version, not fully tested and the API is not yet finalized.
+ *
+ * @author Syam
+ */
 public class VisualMap implements Component, HasPosition {
 
     private int serial;
@@ -53,34 +56,26 @@ public class VisualMap implements Component, HasPosition {
 
     @Override
     public void encodeJSON(StringBuilder sb) {
-        sb.append("\"id\":").append(id);
-        ComponentPart.encode(sb, "calculable", calculable, true);
-        ComponentPart.encode(sb, "type", continuous ? "continuous" : "piecewise", true);
+        ComponentPart.encode(sb, "id", id);
+        ComponentPart.encode(sb, "calculable", calculable);
+        ComponentPart.encode(sb, "type", continuous ? "continuous" : "piecewise");
         if(chart != null) {
-            ComponentPart.encode(sb, "seriesIndex", chart.getSerial(), true);
+            ComponentPart.encode(sb, "seriesIndex", chart.getSerial());
             if(min == null) {
-                encode(sb, "min", chart.getMin());
+                ComponentPart.encode(sb, "min", chart.getMin());
             }
             if(max == null) {
-                encode(sb, "max", chart.getMax());
+                ComponentPart.encode(sb, "max", chart.getMax());
             }
         }
         if(min != null) {
-            encode(sb, "min", min);
+            ComponentPart.encode(sb, "min", min);
         }
         if(min != null) {
-            encode(sb, "max", max);
+            ComponentPart.encode(sb, "max", max);
         }
-        ComponentPart.encode(sb, "orient", vertical ? "vertical" : "horizontal", true);
-        if(position != null) {
-            ComponentPart.encodeProperty(sb, position);
-        }
-    }
-
-    private void encode(StringBuilder sb, String tag, Object m) {
-        if(m instanceof Number || m instanceof LocalDate || m instanceof LocalDateTime) {
-            ComponentPart.encode(sb, tag, m, true);
-        }
+        ComponentPart.encode(sb, "orient", vertical ? "vertical" : "horizontal");
+        ComponentPart.encode(sb, null, position);
     }
 
     /**

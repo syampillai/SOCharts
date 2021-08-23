@@ -95,10 +95,10 @@ public class Alignment implements ComponentProperty {
     @Override
     public void encodeJSON(StringBuilder sb) {
         if(justify != null) {
-            ComponentPart.encode(sb, p("align"), justify, true);
+            ComponentPart.encode(sb, p("align"), justify);
         }
         if(align != null) {
-            ComponentPart.encode(sb, p("verticalAlign"), align, true);
+            ComponentPart.encode(sb, p("verticalAlign"), align);
         }
         prefix = null;
     }

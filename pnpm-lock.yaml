@@ -9,14 +9,14 @@ dependencies:
   '@vaadin/vaadin-checkbox': 2.5.1
   '@vaadin/vaadin-combo-box': 5.4.7
   '@vaadin/vaadin-context-menu': 4.5.0
-  '@vaadin/vaadin-core-shrinkwrap': 14.6.7
+  '@vaadin/vaadin-core-shrinkwrap': 14.6.8
   '@vaadin/vaadin-custom-field': 1.3.1
   '@vaadin/vaadin-date-picker': 4.4.1
   '@vaadin/vaadin-date-time-picker': 1.4.0
   '@vaadin/vaadin-details': 1.2.0
   '@vaadin/vaadin-dialog': 2.5.2
   '@vaadin/vaadin-form-layout': 2.3.0
-  '@vaadin/vaadin-grid': 5.7.14
+  '@vaadin/vaadin-grid': 5.7.15
   '@vaadin/vaadin-icons': 4.3.2
   '@vaadin/vaadin-item': 2.3.0
   '@vaadin/vaadin-list-box': 1.4.0
@@ -33,7 +33,7 @@ dependencies:
   '@vaadin/vaadin-tabs': 3.2.0
   '@vaadin/vaadin-text-field': 2.8.5
   '@vaadin/vaadin-time-picker': 2.4.0
-  '@vaadin/vaadin-upload': 4.4.1
+  '@vaadin/vaadin-upload': 4.4.2
   '@webcomponents/webcomponentsjs': 2.5.0
   construct-style-sheets-polyfill: 2.4.16
   echarts: 5.1.2
@@ -1256,7 +1256,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-oGsNaWbM6RisY1LkyWYtwnw+DtSRSpkFDbemEOtkYezj+Hhsd9+07LqILaUU4pB0zPaRq+uq+2tKba/TL3t23g==
-  /@vaadin/vaadin-core-shrinkwrap/14.6.7:
+  /@vaadin/vaadin-core-shrinkwrap/14.6.8:
     dependencies:
       '@polymer/iron-a11y-announcer': 3.0.2
       '@polymer/iron-a11y-keys-behavior': 3.0.1
@@ -1286,7 +1286,7 @@ packages:
       '@vaadin/vaadin-dialog': 2.5.2
       '@vaadin/vaadin-element-mixin': 2.4.2
       '@vaadin/vaadin-form-layout': 2.3.0
-      '@vaadin/vaadin-grid': 5.7.14
+      '@vaadin/vaadin-grid': 5.7.15
       '@vaadin/vaadin-icons': 4.3.2
       '@vaadin/vaadin-item': 2.3.0
       '@vaadin/vaadin-list-box': 1.4.0
@@ -1306,12 +1306,12 @@ packages:
       '@vaadin/vaadin-text-field': 2.8.5
       '@vaadin/vaadin-themable-mixin': 1.6.2
       '@vaadin/vaadin-time-picker': 2.4.0
-      '@vaadin/vaadin-upload': 4.4.1
+      '@vaadin/vaadin-upload': 4.4.2
       '@vaadin/vaadin-usage-statistics': 2.1.0
       '@webcomponents/shadycss': 1.8.0
     dev: false
     resolution:
-      integrity: sha512-DvXYInRC4pi5ARCAhx95t2bFHvEsWkGuFa+H1viHCH5rKbD8v75OW++julQk2IWkyU9cQbq1U7l1GxdZ7+caew==
+      integrity: sha512-tWyhWg6g2bbMce0nnC5ATQka7ywf6Y7SqdWkmF7z2KXQPSbC0rINEkLJWU9XQDMWkj5Q3bpXgCZm/4mP4XRoGA==
   /@vaadin/vaadin-custom-field/1.3.1:
     dependencies:
       '@polymer/polymer': 3.2.0
@@ -1399,7 +1399,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-uEmTtJRT7TokIaXMwO96PZ9CLSosfgGKLv3RtC/IltDeH+K2nmmaEcmlcteAOevCyXGShA4fwHp9MoODSPZv1Q==
-  /@vaadin/vaadin-grid/5.7.14:
+  /@vaadin/vaadin-grid/5.7.15:
     dependencies:
       '@polymer/iron-a11y-announcer': 3.0.2
       '@polymer/iron-a11y-keys-behavior': 3.0.1
@@ -1414,7 +1414,7 @@ packages:
       '@vaadin/vaadin-themable-mixin': 1.6.2
     dev: false
     resolution:
-      integrity: sha512-VCtzWEGRroj64wWQNbc5qdlz/S7iPvrFDTHQZ8OWq6AwchTrqbtuu7B2fikgojv8rnspxstXFKj92z7qFfqX3w==
+      integrity: sha512-sabVjBatIW3FupjM2le1wYWGISEKjmKElHNSwN1UJP2OcDLos9L5BPFbQbYl76xV05nOK12i+u5sr0iTQkJZGw==
   /@vaadin/vaadin-icons/4.3.2:
     dependencies:
       '@polymer/iron-icon': 3.0.1
@@ -1617,7 +1617,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-HMl1cK2IH3aqkvnJ2MB8ABmMt6ezte4Qfx95UbzuES9+QBM6lFMdigcbCLT+I7MXN5syMXUbD10hoZ3heu59cw==
-  /@vaadin/vaadin-upload/4.4.1:
+  /@vaadin/vaadin-upload/4.4.2:
     dependencies:
       '@polymer/polymer': 3.2.0
       '@vaadin/vaadin-button': 2.4.0
@@ -1628,7 +1628,7 @@ packages:
       '@vaadin/vaadin-themable-mixin': 1.6.2
     dev: false
     resolution:
-      integrity: sha512-2ghzKd7AhdUAQ1SmXTeplNYpQ/q2Zx8WFzLj3l3BGpOTd4pmW204SvqBlBf1k0gxF+4gehV5xtEMqih4TQDuHg==
+      integrity: sha512-Ag1GvetdRU6vr9JCeUtvKvmZThVHY6nE/SmCSMGyEu+7uHunYdm7BBkHEQUFiJ94ukhBCuctp4FhIU3noco1dg==
   /@vaadin/vaadin-usage-statistics/2.1.0:
     dependencies:
       '@vaadin/vaadin-development-mode-detector': 2.0.4
@@ -7499,14 +7499,14 @@ specifiers:
   '@vaadin/vaadin-checkbox': 2.5.1
   '@vaadin/vaadin-combo-box': 5.4.7
   '@vaadin/vaadin-context-menu': 4.5.0
-  '@vaadin/vaadin-core-shrinkwrap': 14.6.7
+  '@vaadin/vaadin-core-shrinkwrap': 14.6.8
   '@vaadin/vaadin-custom-field': 1.3.1
   '@vaadin/vaadin-date-picker': 4.4.1
   '@vaadin/vaadin-date-time-picker': 1.4.0
   '@vaadin/vaadin-details': 1.2.0
   '@vaadin/vaadin-dialog': 2.5.2
   '@vaadin/vaadin-form-layout': 2.3.0
-  '@vaadin/vaadin-grid': 5.7.14
+  '@vaadin/vaadin-grid': 5.7.15
   '@vaadin/vaadin-icons': 4.3.2
   '@vaadin/vaadin-item': 2.3.0
   '@vaadin/vaadin-list-box': 1.4.0
@@ -7523,7 +7523,7 @@ specifiers:
   '@vaadin/vaadin-tabs': 3.2.0
   '@vaadin/vaadin-text-field': 2.8.5
   '@vaadin/vaadin-time-picker': 2.4.0
-  '@vaadin/vaadin-upload': 4.4.1
+  '@vaadin/vaadin-upload': 4.4.2
   '@webcomponents/webcomponentsjs': ^2.2.10
   chokidar: ^3.5.0
   compression-webpack-plugin: 4.0.1

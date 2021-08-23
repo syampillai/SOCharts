@@ -16,32 +16,29 @@
 
 package com.storedobject.chart;
 
+import java.util.stream.Stream;
+
 /**
- * Represents an abstract {@link ComponentPart} with some common base properties.
+ * A basic data provider that can be extended to create customized internal data providers.
  *
  * @author Syam
  */
-public abstract class VisiblePart extends AbstractPart {
+public abstract class BasicDataProvider<T> implements AbstractDataProvider<T>, InternalDataProvider {
 
-    boolean show = true;
+    private int serial = -1;
 
-    /**
-     * Show this part.
-     */
-    public void show() {
-        show = true;
-    }
-
-    /**
-     * Hide this part.
-     */
-    public void hide() {
-        show = false;
+    @Override
+    public DataType getDataType() {
+        return DataType.OBJECT;
     }
 
     @Override
-    public void encodeJSON(StringBuilder sb) {
-        super.encodeJSON(sb);
-        ComponentPart.encode(sb, "show", show);
+    public final void setSerial(int serial) {
+        this.serial = serial;
+    }
+
+    @Override
+    public final int getSerial() {
+        return serial;
     }
 }

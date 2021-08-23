@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright 2019-2021 Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -16,32 +16,19 @@
 
 package com.storedobject.chart;
 
+import java.util.Set;
+
 /**
- * Represents an abstract {@link ComponentPart} with some common base properties.
+ * Interface to denote that a {@link ComponentPart} owns some data.
  *
  * @author Syam
  */
-public abstract class VisiblePart extends AbstractPart {
-
-    boolean show = true;
+public interface HasData {
 
     /**
-     * Show this part.
+     * Declare the data set owned by this {@link ComponentPart} by adding it to the {@link Set} provided.
+     *
+     * @param dataSet Set to which all the data owned by this {@link ComponentPart} needs to be added.
      */
-    public void show() {
-        show = true;
-    }
-
-    /**
-     * Hide this part.
-     */
-    public void hide() {
-        show = false;
-    }
-
-    @Override
-    public void encodeJSON(StringBuilder sb) {
-        super.encodeJSON(sb);
-        ComponentPart.encode(sb, "show", show);
-    }
+    void declareData(Set<AbstractDataProvider<?>> dataSet);
 }

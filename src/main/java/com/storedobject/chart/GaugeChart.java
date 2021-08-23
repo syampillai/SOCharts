@@ -16,6 +16,9 @@
 
 package com.storedobject.chart;
 
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 /**
@@ -23,13 +26,13 @@ import java.util.stream.Stream;
  *
  * @author Syam
  */
-public class GaugeChart extends Chart implements HasPolarProperty {
+public class GaugeChart extends SelfPositioningChart implements HasPolarProperty {
 
-    private final Needle[] needles;
     private int startAngle = Integer.MIN_VALUE, endAngle = Integer.MIN_VALUE, divisions = Integer.MIN_VALUE;
     private Number min = Integer.MIN_VALUE, max = Integer.MIN_VALUE;
     private PolarProperty polarProperty;
     private final NeedleData data;
+    private AxisLine axisLine;
 
     /**
      * Constructor with a single needle for the gauge.
@@ -45,7 +48,7 @@ public class GaugeChart extends Chart implements HasPolarProperty {
      */
     public GaugeChart(String valueName) {
         this(1);
-        needles[0].setName(valueName);
+        data.needles[0].setName(valueName);
     }
 
     /**
@@ -54,16 +57,19 @@ public class GaugeChart extends Chart implements HasPolarProperty {
      * @param needles Number of needles for the gauge.
      */
     public GaugeChart(int needles) {
-        super(ChartType.Gauge);
-        if(needles <= 0) {
-            needles = 1;
+        this(new Needle[needles <= 0 ? 1 : needles]);
+    }
+
+    private GaugeChart(Needle[] needles) {
+        this(new NeedleData(needles));
+        for(int needle = 0; needle < needles.length; needle++) {
+            needles[needle] = new Needle();
         }
-        this.needles = new Needle[needles];
-        for(needles = 0; needles < this.needles.length; needles++) {
-            this.needles[needles] = new Needle();
-        }
-        data = new NeedleData();
-        setData(data);
+    }
+
+    private GaugeChart(NeedleData needleData) {
+        super(ChartType.Gauge,false, needleData);
+        this.data = needleData;
     }
 
     @Override
@@ -86,7 +92,7 @@ public class GaugeChart extends Chart implements HasPolarProperty {
      * @return Value.
      */
     public Number getValue() {
-        return needles[0].getValue();
+        return data.needles[0].getValue();
     }
 
     /**
@@ -96,8 +102,8 @@ public class GaugeChart extends Chart implements HasPolarProperty {
      * @param needle Needle index.
      */
     public void setValue(Number value, int needle) {
-        if(needle >= 0 && needle < needles.length) {
-            needles[needle].setValue(value);
+        if(needle >= 0 && needle < data.needles.length) {
+            data.needles[needle].setValue(value);
         }
     }
 
@@ -108,7 +114,7 @@ public class GaugeChart extends Chart implements HasPolarProperty {
      * @return Value.
      */
     public Number getValue(int needle) {
-        return needle >= 0 && needle < needles.length ? needles[needle].getValue() : null;
+        return needle >= 0 && needle < data.needles.length ? data.needles[needle].getValue() : null;
     }
 
     /**
@@ -117,18 +123,44 @@ public class GaugeChart extends Chart implements HasPolarProperty {
      * @return Number of needles.
      */
     public int getNumberOfNeedles() {
-        return needles.length;
+        return data.needles.length;
+    }
+
+    @Override
+    protected String getLabelName() {
+        return "axisLabel";
     }
 
     @Override
     public void encodeJSON(StringBuilder sb) {
+        Label label = getLabel(false);
+        if(label != null) {
+            label.chart = this;
+        }
+        String formatter = label == null ? null : label.getFormatter();
+        String f = formatter == null ? null : label.getFormatterValue();
+        if(formatter != null) {
+            label.setFormatter(null);
+        }
         super.encodeJSON(sb);
-        ComponentPart.encodeProperty(sb, polarProperty);
+        ComponentPart.encode(sb, null, polarProperty);
         encode(sb, "startAngle", startAngle);
         encode(sb, "endAngle", endAngle);
         encode(sb, "min", min);
         encode(sb, "max", max);
         encode(sb, "splitNumber", divisions);
+        sb.append(",\"detail\":{\"fontSize\":12,\"valueAnimation\":true,\"color\":\"auto\"");
+        if(label != null) {
+            if(f != null) {
+                sb.append(",\"formatter\":").append(ComponentPart.escape(f));
+            }
+        }
+        sb.append('}');
+        if(formatter != null) {
+            label.setFormatter(formatter);
+        }
+        ComponentPart.encode(sb, "axisLine", axisLine);
+        sb.append(",\"pointer\":{\"itemStyle\":{\"color\":\"auto\"}}");
     }
 
     private void encode(StringBuilder sb, String name, Number value) {
@@ -253,9 +285,14 @@ public class GaugeChart extends Chart implements HasPolarProperty {
         }
     }
 
-    private class NeedleData implements AbstractDataProvider<Needle>, InternalDataProvider {
+    private static class NeedleData implements AbstractDataProvider<Needle> {
 
-        private int serial = 0;
+        private final Needle[] needles;
+        private int serial = -1;
+
+        private NeedleData(Needle[] needles) {
+            this.needles = needles;
+        }
 
         @Override
         public Stream<Needle> stream() {
@@ -281,5 +318,99 @@ public class GaugeChart extends Chart implements HasPolarProperty {
         public void encode(StringBuilder sb, Needle value) {
             value.encodeJSON(sb);
         }
+    }
+
+    public static class AxisLine extends VisibleProperty {
+
+        private boolean roundCap;
+        private final AxisLineStyle style = new AxisLineStyle();
+
+        @Override
+        public void encodeJSON(StringBuilder sb) {
+            super.encodeJSON(sb);
+            ComponentPart.encode(sb, "roundCap", roundCap);
+            ComponentPart.encode(sb, "lineStyle", style);
+        }
+
+        public final LineStyle getStyle() {
+            return style;
+        }
+    }
+
+    private static class AxisLineStyle extends LineStyle {
+
+        private final Map<Integer, AbstractColor> zones = new TreeMap<>();
+
+        @Override
+        public void encodeJSON(StringBuilder sb) {
+            super.encodeJSON(sb);
+            if(zones.isEmpty()) {
+                return;
+            }
+            ComponentPart.addComma(sb);
+            sb.append("\"color\":[");
+            AtomicBoolean first = new AtomicBoolean(true);
+            zones.keySet().forEach(k -> {
+                if(first.get()) {
+                    first.set(false);
+                } else {
+                    sb.append(',');
+                }
+                sb.append('[').append(k / 100.0).append(',').append(zones.get(k)).append(']');
+            });
+            sb.append(']');
+        }
+
+        void addZone(int zone, AbstractColor color) {
+            zone = Math.max(0, zone);
+            zone = Math.min(zone, 100);
+            zones.put(zone, color);
+        }
+    }
+
+    /**
+     * Add a zone to the dial that should show in a different color. You can add multiple zones and each zone should
+     * specify the percentage of the dial to which a given color can be used. So, if you want to show the first 20% in
+     * "yellow", the next 50% in "green" and the last 30% in "red", you should call this method as follows:
+     * <pre>
+     *     addDialZone(20, new Color("yellow")); // First 20%
+     *     addDialZone(70, new Color("green")); // Next 50% (that means, show up to 20 + 50 = 70%)
+     *     addDialZone(100, new Color("red")); // Last 30% (that means, show up to 20 + 50 + 30 = 100%)
+     * </pre>
+     *
+     * @param percentage Percentage of the dial to which the given color should be used.
+     * @param color Color.
+     */
+    public void addDialZone(int percentage, AbstractColor color) {
+        if(percentage <= 0) {
+            return;
+        }
+        if(color == null) {
+            color = Color.TRANSPARENT;
+        }
+        getAxisLine(true).style.addZone(percentage, color);
+    }
+
+    /**
+     * Get the axis line for this gauge.
+     *
+     * @param create If passed true, it will be created if not exists.
+     * @return Axis Line instance
+     */
+    public AxisLine getAxisLine(boolean create) {
+        if(axisLine == null && create) {
+            axisLine = new AxisLine();
+        }
+        return axisLine;
+    }
+
+    /**
+     * Get the axis label for this gauge.
+     *
+     * @param create If passed true, it will be created if not exists.
+     * @return Label instance
+     */
+    public Label getAxisLabel(boolean create) {
+        return getLabel(create);
     }
 }
