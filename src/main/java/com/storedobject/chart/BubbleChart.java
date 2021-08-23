@@ -189,11 +189,12 @@ public class BubbleChart extends Chart {
     }
 
     private void tooltip() {
-        List<Object> parts = getTooltip(true).parts;
+        Tooltip tooltip = getTooltip(true);
+        List<Object> parts = tooltip.parts;
         parts.clear();
-        parts.add(valuePrefix);
-        parts.add(this);
-        parts.add(valueSuffix);
+        tooltip.append(valuePrefix);
+        tooltip.append(this);
+        tooltip.append(valueSuffix);
     }
 
     /**
