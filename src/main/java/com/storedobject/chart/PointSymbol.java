@@ -22,46 +22,50 @@ package com.storedobject.chart;
  * @author Syam
  */
 public class PointSymbol implements ComponentProperty {
-
     private PointSymbolType type = PointSymbolType.CIRCLE;
     private boolean show = true;
     String size;
     private boolean hoverAnimation = true;
+    private String url;
+    private String svgPath;
+    private Boolean isURL = true;
 
-    /**
-     * Constructor.
-     */
+
     public PointSymbol() {
+        this.url = "";
+        this.svgPath = "";
     }
 
-    /**
-     * Show the symbol.
-     */
+    public void setUrl(String url) {
+        this.setType(PointSymbolType.NONE);
+        this.isURL = true;
+        this.url = String.format("image://%s", url);
+    }
+
+    public String getCustomSymbol() {
+        return this.isURL ? this.url : this.svgPath;
+    }
+    public void setSvgPath(String svgPath) {
+        this.setType(PointSymbolType.NONE);
+        this.isURL = false;
+        this.svgPath = String.format("path://%s", svgPath);
+    }
+
     public void show() {
         show = true;
     }
 
-    /**
-     * Hide the symbol.
-     */
+
     public void hide() {
         show = false;
     }
 
-    /**
-     * Set the point symbol that decides how the points will be drawn.
-     *
-     * @param pointSymbolType Point symbol.
-     */
+
     public void setType(PointSymbolType pointSymbolType) {
         this.type = pointSymbolType;
     }
 
-    /**
-     * Set size of the point symbol.
-     *
-     * @param size Size in pixels.
-     */
+
     public void setSize(int size) {
         if(size <= 0) {
             this.size = null;
@@ -70,12 +74,6 @@ public class PointSymbol implements ComponentProperty {
         }
     }
 
-    /**
-     * Set size of the point symbol.
-     *
-     * @param width Width in pixels.
-     * @param height Height in pixels.
-     */
     public void setSize(int width, int height) {
         if(width > 0 && height > 0) {
             this.size = "[" + width + "," + height + "]";
@@ -88,19 +86,15 @@ public class PointSymbol implements ComponentProperty {
         }
     }
 
-    /**
-     * Animate on hover.
-     *
-     * @param hoverAnimation True/false.
-     */
     public void setHoverAnimation(boolean hoverAnimation) {
         this.hoverAnimation = hoverAnimation;
     }
 
     @Override
     public void encodeJSON(StringBuilder sb) {
+        String t = this.type != PointSymbolType.NONE ? this.type.toString() : this.getCustomSymbol();
         ComponentPart.encode(sb, "showSymbol", show);
-        ComponentPart.encode(sb,"symbol", type);
+        ComponentPart.encode(sb,"symbol", t);
         if(size != null) {
             ComponentPart.addComma(sb);
             sb.append("\"symbolSize\":").append(size);
