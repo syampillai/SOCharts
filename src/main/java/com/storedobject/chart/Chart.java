@@ -50,6 +50,16 @@ public class Chart extends AbstractPart implements Component, HasData {
     private final Map<Class<? extends ComponentProperty>, ComponentProperty> propertyMap = new HashMap<>();
     private final Map<Class<? extends ComponentProperty>, String> propertyNameMap = new HashMap<>();
     private MarkArea markArea;
+    private final HashMap<SOEvent, Runnable> events = new HashMap<>();
+
+    @Override
+    public HashMap<SOEvent, Runnable> getEvents() {
+        return this.events;
+    }
+
+    public void addEvent(SOEvent key, Runnable value) {
+        this.events.put(key, value);
+    }
 
     /**
      * Create a {@link ChartType#Line} chart.

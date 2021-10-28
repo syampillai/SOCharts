@@ -19,6 +19,7 @@ package com.storedobject.chart;
 import com.storedobject.helper.ID;
 import com.storedobject.helper.LitComponent;
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -86,11 +87,24 @@ public class SOChart extends LitComponent implements HasSize {
     private AbstractColor defaultBackground;
     private DefaultTextStyle defaultTextStyle;
 
+    private HashMap<SOEvent, Runnable> events = new HashMap<>();
+
+
+    @ClientCallable
+    public void runEvent(String event, String target) {
+        this.events.get(new SOEvent(event, target)).run();
+    }
     /**
      * Constructor.
      */
     public SOChart() {
         getElement().setProperty("idChart", "sochart" + ID.newID());
+//        SOEvent event1 = new SOEvent("click", "1");
+//        SOEvent event2 = new SOEvent("click", "2");
+//        this.events.put(event1, () -> System.out.println("Something is right here node 1"));
+//        this.events.put(event2, () -> System.out.println("Something is right here node 2"));
+//        executeJS("addEvent", event1.getEvent(), event1.getTarget());
+//        executeJS("addEvent", event2.getEvent(), event2.getTarget());
     }
 
     @Override
@@ -251,6 +265,13 @@ public class SOChart extends LitComponent implements HasSize {
             for(Component c: components) {
                 if(c != null) {
                     this.components.add(c);
+                    HashMap<SOEvent, Runnable> cEvents = (HashMap<SOEvent, Runnable>) c.getEvents();
+                    if (cEvents != null) {
+                        this.events.putAll(cEvents);
+                        for (SOEvent key : this.events.keySet()) {
+                            executeJS("addEvent", key.getEvent(), key.getTarget());
+                        }
+                    }
                 }
             }
         }
