@@ -72,6 +72,10 @@ public enum ChartType {
      * Heatmap.
      */
     Heatmap(new String[] {}, true),
+    /**
+     * Graph.
+     */
+    Graph(new String[]{}, false),
     ;
 
     private final String[] axes;

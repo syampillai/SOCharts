@@ -16,6 +16,8 @@
 
 package com.storedobject.chart;
 
+import java.util.HashMap;
+
 /**
  * <p>
  * Chart component. Chart components can be added to the {@link SOChart} for rendering using
@@ -43,5 +45,9 @@ public interface Component extends ComponentPart {
      * @param soChart Chart to which components to be added.
      */
     default void addParts(SOChart soChart) {
+    }
+
+    default HashMap<?, ?> getEvents() {
+        return null;
     }
 }

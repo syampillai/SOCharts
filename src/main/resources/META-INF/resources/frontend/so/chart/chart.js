@@ -81,10 +81,10 @@ export class SOChart extends LitElement {
         }
         this.events.forEach(event => {
             this.chart.on(event.event, {name: event.data}, params => {
-               console.log(event.event);
-               console.log(event.data);
-               this.$server.runEvent(event.event, event.data);
-           })
+                console.log(event.event);
+                console.log(event.data);
+                this.$server.runEvent(event.event, event.data);
+            })
         });
         this.chart.setOption(json);
 
