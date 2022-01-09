@@ -54,7 +54,7 @@ import java.util.*;
  *
  * @author Syam
  */
-@NpmPackage(value = "echarts", version = "5.1.2")
+@NpmPackage(value = "echarts", version = "5.2.2")
 @Tag("so-chart")
 @JsModule("./so/chart/chart.js")
 public class SOChart extends LitComponent implements HasSize {
@@ -87,7 +87,7 @@ public class SOChart extends LitComponent implements HasSize {
     private AbstractColor defaultBackground;
     private DefaultTextStyle defaultTextStyle;
 
-    private HashMap<SOEvent, Runnable> events = new HashMap<>();
+    private final HashMap<SOEvent, Runnable> events = new HashMap<>();
 
 
     @ClientCallable
@@ -120,7 +120,7 @@ public class SOChart extends LitComponent implements HasSize {
     }
 
     /**
-     * Get the list of default colors. A list is returned and you may add any number of
+     * Get the list of default colors. A list is returned, and you may add any number of
      * colors to that list. Those colors will be used sequentially and circularly. However, please note that
      * if the list contains less than 11 colors, more colors will be added to it automatically from the
      * following to make the count 11:<BR>
@@ -169,7 +169,7 @@ public class SOChart extends LitComponent implements HasSize {
     /**
      * Get the default tooltip. You can customize it.
      *
-     * @return THe default tooltip. Will return null it it was disabled via {@link #disableDefaultTooltip()}.
+     * @return THe default tooltip. Will return null if it was disabled via {@link #disableDefaultTooltip()}.
      */
     public Tooltip getDefaultTooltip() {
         return tooltip;
@@ -186,7 +186,7 @@ public class SOChart extends LitComponent implements HasSize {
     /**
      * Get the default legend. You can customize it.
      *
-     * @return THe default legend. Will return null it it was disabled via {@link #disableDefaultLegend()}.
+     * @return THe default legend. Will return null if it was disabled via {@link #disableDefaultLegend()}.
      */
     public Legend getDefaultLegend() {
         return legend;
@@ -265,6 +265,7 @@ public class SOChart extends LitComponent implements HasSize {
             for(Component c: components) {
                 if(c != null) {
                     this.components.add(c);
+                    @SuppressWarnings("unchecked")
                     HashMap<SOEvent, Runnable> cEvents = (HashMap<SOEvent, Runnable>) c.getEvents();
                     if (cEvents != null) {
                         this.events.putAll(cEvents);

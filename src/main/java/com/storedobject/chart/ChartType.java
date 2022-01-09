@@ -53,7 +53,7 @@ public enum ChartType {
      */
     Radar(new String[] {}),
     /**
-     * Guage.
+     * Gauge.
      */
     Gauge(new String[] {}, false),
     /**
