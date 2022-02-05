@@ -1,6 +1,4 @@
 cd
-rm jdk
-ln -s jdkServer jdk
 cd ~/IdeaProjects/SOCharts
 cd src/main
 rm -fr resources
@@ -13,5 +11,3 @@ mkdir -p zipTarget
 rm -f zipTarget/*.zip
 cp target/*.zip zipTarget
 cd
-rm jdk
-ln -s jdkLatest jdk
