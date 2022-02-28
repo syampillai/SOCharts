@@ -632,6 +632,25 @@ public abstract class Axis extends VisibleProperty {
          */
         public void setFormatter(String formatter) {
             this.formatter = formatter;
+            this.doNotEscapeFormat = false;
+        }
+
+        /**
+         * Set a Javascript function as the label formatter. Only the body of the Javascript function needs to be
+         * set. Two parameters, (value, index), are passed to the function - value: The value at that axis-tick, index:
+         * The index at that axis-tick. The function should return the label to be displayed.
+         * <p>Example: For displaying a rounded numeric value (rounded to 2 decimals places) in a numeric axis,
+         * you may do something like:</p>
+         * <pre>
+         *     setFormatterFunction("return value.toFixed(2);");
+         * </pre>
+         *
+         * @param function The body of the Javascript function.
+         */
+        public void setFormatterFunction(String function) {
+            this.formatter = "{\"function\":{\"params\":\"value,index\",\"body\":"
+                    + ComponentPart.escape(function) + "}}";
+            this.doNotEscapeFormat = true;
         }
     }
 

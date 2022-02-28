@@ -11,8 +11,18 @@ public abstract class Label extends AbstractLabel {
 
     private int rotation = Integer.MIN_VALUE;
     private boolean inside = false;
+    /**
+     * The formatter string.
+     */
     protected String formatter;
+    /**
+     * The format parser that converts the formatter string to the real JSON value.
+     */
     protected Function<String, String> formatParser;
+    /**
+     * Check whether to "escape" the formatted JSON value or not.
+     */
+    protected boolean doNotEscapeFormat = false;
 
     /**
      * Constructor.
@@ -67,7 +77,10 @@ public abstract class Label extends AbstractLabel {
         if(formatter != null) {
             String f = getFormatterValue();
             if(f != null) {
-                sb.append(",\"formatter\":").append(ComponentPart.escape(f));
+                if(!doNotEscapeFormat) {
+                    f = ComponentPart.escape(f);
+                }
+                sb.append(",\"formatter\":").append(f);
             }
         }
     }
