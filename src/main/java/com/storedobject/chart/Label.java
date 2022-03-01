@@ -49,7 +49,7 @@ public abstract class Label extends AbstractLabel {
     }
 
     /**
-     * Check if the label is drawn inside or outside of the part.
+     * Check if the label is drawn inside or outside the part.
      *
      * @return True if inside.
      */
@@ -77,9 +77,6 @@ public abstract class Label extends AbstractLabel {
         if(formatter != null) {
             String f = getFormatterValue();
             if(f != null) {
-                if(!doNotEscapeFormat) {
-                    f = ComponentPart.escape(f);
-                }
                 sb.append(",\"formatter\":").append(f);
             }
         }
@@ -91,7 +88,11 @@ public abstract class Label extends AbstractLabel {
      * @return Encoded value of the formatter string.
      */
     String getFormatterValue() {
-        return formatParser == null ? formatter : formatParser.apply(formatter);
+        String f = formatParser == null ? formatter : formatParser.apply(formatter);
+        if(!doNotEscapeFormat) {
+            f = ComponentPart.escape(f);
+        }
+        return f;
     }
 
     /**

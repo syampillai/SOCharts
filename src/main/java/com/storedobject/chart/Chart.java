@@ -17,6 +17,8 @@
 package com.storedobject.chart;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * <p>
@@ -50,6 +52,7 @@ public class Chart extends AbstractPart implements Component, HasData {
     private final Map<Class<? extends ComponentProperty>, ComponentProperty> propertyMap = new HashMap<>();
     private final Map<Class<? extends ComponentProperty>, String> propertyNameMap = new HashMap<>();
     private MarkArea markArea;
+    private SOChart soChart;
     private final HashMap<SOEvent, Runnable> events = new HashMap<>();
 
     @Override
@@ -325,6 +328,7 @@ public class Chart extends AbstractPart implements Component, HasData {
 
     @Override
     public void addParts(SOChart soChart) {
+        this.soChart = soChart;
         if(coordinateSystem != null) {
             soChart.addParts(coordinateSystem);
             coordinateSystem.addParts(soChart);
@@ -333,6 +337,9 @@ public class Chart extends AbstractPart implements Component, HasData {
             if(markArea != null) {
                 soChart.addParts(markArea.data);
             }
+        }
+        if(label != null && label.labels != null) {
+            soChart.addData(label.labels);
         }
     }
 
@@ -574,6 +581,8 @@ public class Chart extends AbstractPart implements Component, HasData {
      */
     public static class Label extends com.storedobject.chart.Label {
 
+        private AbstractDataProvider<?> labels;
+
         /**
          * Chart associated with this label.
          */
@@ -598,6 +607,10 @@ public class Chart extends AbstractPart implements Component, HasData {
          * the x-axis value and {1} represents the y-axis value for an {@link XYChart}. If 2 y-axes are there,
          * it will be {1} and {2} respectively. There can be many axes and the index value will increase
          * accordingly. The index indicates the order in which the axes were added to the chart.</p>
+         * <p>You could also use {D:data name} to specify any data set so that the labels will be taken from the data
+         * set specified. This mechanism is useful when you have a confusing set of axes and could not precisely
+         * determine the index number of the axis. Also, please see if you can use
+         * {@link #setLabelProvider(AbstractDataProvider)} instead of this.</p>
          * <pre>
          * Examples:
          * "{0}, {1}" => Produces labels like "Rice 20" where "Rice" is the x-value and 20 is the y-value.
@@ -609,6 +622,7 @@ public class Chart extends AbstractPart implements Component, HasData {
          * @param formatter Label formatter to be set.
          */
         public void setFormatter(String formatter) {
+            this.labels = null;
             this.formatter = formatter;
         }
 
@@ -616,7 +630,36 @@ public class Chart extends AbstractPart implements Component, HasData {
             for(int i = 0; i < chart.data.length; i++) {
                 f = f.replace("{" + i + "}", "{@d" + chart.data[i].getSerial() + "}");
             }
+            SOChart soChart = chart.soChart;
+            if(soChart != null) {
+                for(AbstractDataProvider<?> data: soChart.dataSet()) {
+                    f = f.replace("{D:" + data.getName() + "}", "{@d" + data.getSerial() + "}");
+                }
+            }
             return f.replace("{chart}", "{a}");
+        }
+
+        /**
+         * Instead of specifying the format for the label via {@link #setFormatter(String)}, it is possible to
+         * set the labels directly from an {@link AbstractDataProvider} using this method. Such an
+         * {@link AbstractDataProvider} may be created from the one or more of the {@link AbstractDataProvider}s
+         * involved via one of the create methods: {@link AbstractDataProvider#create(DataType, Function)} or
+         * {@link AbstractDataProvider#create(DataType, BiFunction)}
+         *
+         * @param labels Labels to be set from the elements of this data provider. (Typically a {@link CategoryData} is
+         *               used).
+         */
+        public void setLabelProvider(AbstractDataProvider<?> labels) {
+            this.formatter = ""; // Set to a non-null value.
+            this.labels = labels;
+        }
+
+        @Override
+        String getFormatterValue() {
+            if(labels != null) {
+                formatter = "{D:" + labels.getName() + "}";
+            }
+            return super.getFormatterValue();
         }
 
         /**

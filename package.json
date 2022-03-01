@@ -10,14 +10,14 @@
     "@vaadin/vaadin-checkbox": "2.5.1",
     "@vaadin/vaadin-combo-box": "5.4.12",
     "@vaadin/vaadin-context-menu": "4.6.0",
-    "@vaadin/vaadin-core-shrinkwrap": "14.8.3",
+    "@vaadin/vaadin-core-shrinkwrap": "14.8.4",
     "@vaadin/vaadin-custom-field": "1.3.1",
     "@vaadin/vaadin-date-picker": "4.4.2",
     "@vaadin/vaadin-date-time-picker": "1.4.0",
     "@vaadin/vaadin-details": "1.2.0",
     "@vaadin/vaadin-dialog": "2.6.0",
     "@vaadin/vaadin-form-layout": "2.3.0",
-    "@vaadin/vaadin-grid": "5.9.2",
+    "@vaadin/vaadin-grid": "5.9.3",
     "@vaadin/vaadin-icons": "4.3.2",
     "@vaadin/vaadin-item": "2.3.0",
     "@vaadin/vaadin-list-box": "1.4.0",
@@ -33,7 +33,7 @@
     "@vaadin/vaadin-select": "2.4.2",
     "@vaadin/vaadin-split-layout": "4.3.0",
     "@vaadin/vaadin-tabs": "3.2.0",
-    "@vaadin/vaadin-text-field": "2.9.0",
+    "@vaadin/vaadin-text-field": "2.9.1",
     "@vaadin/vaadin-time-picker": "2.4.0",
     "@vaadin/vaadin-upload": "4.4.3",
     "@webcomponents/webcomponentsjs": "^2.2.10",
@@ -43,7 +43,6 @@
     "lit-html": "1.4.1"
   },
   "devDependencies": {
-    "@babel/core": "7.16.7",
     "babel-loader": "8.2.2",
     "chokidar": "^3.5.0",
     "compression-webpack-plugin": "4.0.1",
@@ -77,14 +76,14 @@
       "@vaadin/vaadin-checkbox": "2.5.1",
       "@vaadin/vaadin-combo-box": "5.4.12",
       "@vaadin/vaadin-context-menu": "4.6.0",
-      "@vaadin/vaadin-core-shrinkwrap": "14.8.3",
+      "@vaadin/vaadin-core-shrinkwrap": "14.8.4",
       "@vaadin/vaadin-custom-field": "1.3.1",
       "@vaadin/vaadin-date-picker": "4.4.2",
       "@vaadin/vaadin-date-time-picker": "1.4.0",
       "@vaadin/vaadin-details": "1.2.0",
       "@vaadin/vaadin-dialog": "2.6.0",
       "@vaadin/vaadin-form-layout": "2.3.0",
-      "@vaadin/vaadin-grid": "5.9.2",
+      "@vaadin/vaadin-grid": "5.9.3",
       "@vaadin/vaadin-icons": "4.3.2",
       "@vaadin/vaadin-item": "2.3.0",
       "@vaadin/vaadin-list-box": "1.4.0",
@@ -100,7 +99,7 @@
       "@vaadin/vaadin-select": "2.4.2",
       "@vaadin/vaadin-split-layout": "4.3.0",
       "@vaadin/vaadin-tabs": "3.2.0",
-      "@vaadin/vaadin-text-field": "2.9.0",
+      "@vaadin/vaadin-text-field": "2.9.1",
       "@vaadin/vaadin-time-picker": "2.4.0",
       "@vaadin/vaadin-upload": "4.4.3",
       "@webcomponents/webcomponentsjs": "^2.2.10",
@@ -110,7 +109,6 @@
       "lit-html": "1.4.1"
     },
     "devDependencies": {
-      "@babel/core": "7.16.7",
       "babel-loader": "8.2.2",
       "chokidar": "^3.5.0",
       "compression-webpack-plugin": "4.0.1",
@@ -130,6 +128,6 @@
       "webpack-dev-server": "3.11.0",
       "webpack-merge": "4.2.2"
     },
-    "hash": "8d6e3751c8b3ddec5833eabc3473f84f97d7629d544b4bba76f946506a8446e4"
+    "hash": "b2022e14e8246959c66bc1c5bf97a7a40162f72d13e4884269062f056b6ab944"
   }
 }

@@ -26,6 +26,7 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -80,13 +81,14 @@ public class SOChart extends LitComponent implements HasSize {
     };
     private final List<Component> components = new ArrayList<>();
     private final List<ComponentPart> parts = new ArrayList<>();
+    private final List<AbstractDataProvider<?>> dataSet = new ArrayList<>();
+    private final List<AbstractDataProvider<?>> extraData = new ArrayList<>();
     private Legend legend = new Legend();
     private Tooltip tooltip = new Tooltip();
     private boolean neverUpdated = true;
     private DefaultColors defaultColors;
     private AbstractColor defaultBackground;
     private DefaultTextStyle defaultTextStyle;
-
     private final HashMap<SOEvent, Runnable> events = new HashMap<>();
 
 
@@ -256,6 +258,38 @@ public class SOChart extends LitComponent implements HasSize {
     }
 
     /**
+     * Add data to the chart. This method is normally not required to be used because the {@link Chart}s that are
+     * added will automatically add its respective data too. This is used only when some extra data other that is
+     * used in the {@link Chart}s directly for some other display purposes.
+     *
+     * @param data Data to add.
+     */
+    public void addData(AbstractDataProvider<?> data) {
+        if(!extraData.contains(data)) {
+            extraData.add(data);
+        }
+    }
+
+    /**
+     * Remove extra data added via {@link #addData(AbstractDataProvider)}.
+     *
+     * @param data Data to remove.
+     */
+    public void removeData(AbstractDataProvider<?> data) {
+        extraData.remove(data);
+    }
+
+    /**
+     * Get all the data involved in this chart component. This is for internal use only and will be available while
+     * rendering the chart only.
+     *
+     * @return Data involved in this chart..
+     */
+    List<AbstractDataProvider<?>> dataSet() {
+        return dataSet;
+    }
+
+    /**
      * Add components to the chart. (Chart will not be updated unless {@link #update()} method is called).
      *
      * @param components Components to add.
@@ -370,7 +404,8 @@ public class SOChart extends LitComponent implements HasSize {
         for(Component c: components) {
             c.addParts(this);
         }
-        List<AbstractDataProvider<?>> data = new ArrayList<>(), dataSet = new ArrayList<>();
+        List<AbstractDataProvider<?>> data = new ArrayList<>();
+        dataSet.clear();
         parts.stream().filter(p -> p instanceof AbstractDataProvider).map(p -> (AbstractDataProvider<?>)p)
                 .forEach(data::add);
         parts.removeIf(p -> p instanceof AbstractDataProvider);
@@ -395,6 +430,23 @@ public class SOChart extends LitComponent implements HasSize {
                 initData(d);
             }
             data.removeIf(ad -> ad.getSerial() == d.getSerial());
+            extraData.removeIf(ad -> ad.getSerial() == d.getSerial());
+        }
+        for(AbstractDataProvider<?> extra: extraData) {
+            dataSet.add(extra);
+            if(skipData) {
+                if(extra.getSerial() <= 0) {
+                    extra.validate();
+                    extra.setSerial(dserial++);
+                    initData(extra);
+                }
+            } else {
+                if(extra.getSerial() <= 0) {
+                    extra.validate();
+                    extra.setSerial(dserial++);
+                }
+                initData(extra);
+            }
         }
         for(ComponentPart c: parts) {
             c.setSerial(-2);
@@ -454,6 +506,7 @@ public class SOChart extends LitComponent implements HasSize {
         }
         sb.append('}');
         executeJS("updateChart", !skipData, customizeJSON(sb.toString()));
+        dataSet.clear();
         parts.clear();
         defaultColors = null;
         defaultBackground = null;

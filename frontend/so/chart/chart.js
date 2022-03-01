@@ -87,7 +87,6 @@ export class SOChart extends LitElement {
            })
         });
         this.chart.setOption(json);
-
     }
 
     clearData() {
@@ -137,6 +136,7 @@ export class SOChart extends LitElement {
         this._stuffDataSet(obj);
         this._stuffFunc(obj);
         this._stuffFuncP(obj);
+        this._stuffFuncDV(obj);
     }
 
     _stuffFunc(obj) {
@@ -162,6 +162,20 @@ export class SOChart extends LitElement {
                     obj[k] = p => this._formatter(p, o.functionP.body);
                 } else {
                     this._stuffFuncP(o);
+                }
+            }
+        }
+    }
+
+    _stuffFuncDV(obj) {
+        var o;
+        for(let k in obj) {
+            o = obj[k];
+            if(typeof o === 'object') {
+                if(typeof o.functionDV === 'object') {
+                    obj[k] = (value, index) => this.data["d" + o.functionDV.serial][index];
+                } else {
+                    this._stuffFuncDV(o);
                 }
             }
         }

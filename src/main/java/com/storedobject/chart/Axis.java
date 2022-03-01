@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Abstract representation of an axis.
@@ -69,6 +71,7 @@ public abstract class Axis extends VisibleProperty {
     private GridAreas gridAreas;
     private Pointer pointer;
     private CategoryData data;
+    SOChart soChart;
 
     /**
      * Constructor.
@@ -510,11 +513,13 @@ public abstract class Axis extends VisibleProperty {
 
         private Boolean showMaxLabel, showMinLabel;
         private int interval = Integer.MIN_VALUE;
+        private AbstractDataProvider<?> labels;
 
         /**
          * Constructor.
          */
         public Label() {
+            formatParser = this::format;
         }
 
         @Override
@@ -596,7 +601,7 @@ public abstract class Axis extends VisibleProperty {
         }
 
         /**
-         * Set the label formatter.
+         * Set the label formatter. Also see{@link #setLabelProvider(AbstractDataProvider)}.
          * <pre>
          * Example (numeric values):
          * "{value} kg" => Produces labels like "20 kg"
@@ -636,6 +641,32 @@ public abstract class Axis extends VisibleProperty {
         }
 
         /**
+         * Instead of specifying the format for the label via {@link #setFormatter(String)} or
+         * via {@link #setFormatterFunction(String)}, it is possible to
+         * set the labels directly from an {@link AbstractDataProvider} using this method. Such an
+         * {@link AbstractDataProvider} may be created from the one or more of the {@link AbstractDataProvider}s
+         * involved via one of the create methods: {@link AbstractDataProvider#create(DataType, Function)} or
+         * {@link AbstractDataProvider#create(DataType, BiFunction)}
+         *
+         * @param labels Labels to be set from the elements of this data provider. (Typically a {@link CategoryData} is
+         *               used).
+         */
+        public void setLabelProvider(AbstractDataProvider<?> labels) {
+            this.formatter = ""; // Set to a non-null value
+            this.doNotEscapeFormat = true;
+            this.labels = labels;
+        }
+
+        /**
+         * Get the labels set for generating the labels.
+         *
+         * @return Labels if set, otherwise, null.
+         */
+        AbstractDataProvider<?> getLabels() {
+            return labels;
+        }
+
+        /**
          * Set a Javascript function as the label formatter. Only the body of the Javascript function needs to be
          * set. Two parameters, (value, index), are passed to the function - value: The value at that axis-tick, index:
          * The index at that axis-tick. The function should return the label to be displayed.
@@ -648,9 +679,15 @@ public abstract class Axis extends VisibleProperty {
          * @param function The body of the Javascript function.
          */
         public void setFormatterFunction(String function) {
-            this.formatter = "{\"function\":{\"params\":\"value,index\",\"body\":"
-                    + ComponentPart.escape(function) + "}}";
+            this.formatter = ComponentPart.encodeFunction(function, "value", "index");
             this.doNotEscapeFormat = true;
+        }
+
+        private String format(String f) {
+            if(labels == null) {
+                return f;
+            }
+            return "{\"functionDV\":{\"serial\":" + labels.getSerial() + "}}";
         }
     }
 
