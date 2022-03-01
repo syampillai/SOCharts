@@ -52,6 +52,8 @@ public class Chart extends AbstractPart implements Component, HasData {
     private final Map<Class<? extends ComponentProperty>, ComponentProperty> propertyMap = new HashMap<>();
     private final Map<Class<? extends ComponentProperty>, String> propertyNameMap = new HashMap<>();
     private MarkArea markArea;
+    private boolean animation;
+    private Emphasis emphasis;
     private SOChart soChart;
     private final HashMap<SOEvent, Runnable> events = new HashMap<>();
 
@@ -221,6 +223,8 @@ public class Chart extends AbstractPart implements Component, HasData {
             sb.append('}');
         }
         ComponentPart.encode(sb, "markArea", markArea);
+        ComponentPart.encode(sb, "animation", animation);
+        ComponentPart.encode(sb, "emphasis", emphasis);
     }
 
     /**
@@ -575,6 +579,45 @@ public class Chart extends AbstractPart implements Component, HasData {
     }
 
     /**
+     * Set animation off/on. By default, it's on.
+     * @param animation True/false.
+     */
+    public void setAnimation(boolean animation) {
+        this.animation = animation;
+    }
+
+    /**
+     * Is animation is currently on?
+     *
+     * @return True/false.
+     */
+    public final boolean isAnimation() {
+        return animation;
+    }
+
+    /**
+     * Get the Emphasis effect of the chart.
+     *
+     * @param create If passed true, a new {@link Emphasis} effect is created if not exists.
+     * @return Emphasis.
+     */
+    public Emphasis getEmphasis(boolean create) {
+        if(emphasis == null && create) {
+            emphasis = new Emphasis();
+        }
+        return emphasis;
+    }
+
+    /**
+     * Set an Emphasis effect to this chart.
+     *
+     * @param emphasis Emphasis effect to set.
+     */
+    public void setEmphasis(Emphasis emphasis) {
+        this.emphasis = emphasis;
+    }
+
+    /**
      * Value-label that can be customized for a chart.
      *
      * @author Syam
@@ -828,6 +871,118 @@ public class Chart extends AbstractPart implements Component, HasData {
                 return s;
             }
             return ",\"position\":\"" + s.substring(0, 1).toLowerCase() + s.substring(1) + "\"";
+        }
+    }
+
+    /**
+     * Class to represent the Emphasis effect.
+     *
+     * @author Syam
+     */
+    public static class Emphasis implements ComponentProperty {
+
+        /**
+         * Definition of the "fading out" of other elements when emphasising.
+         *
+         * @author Syam
+         */
+        public enum FADE_OUT {
+
+            /**
+             * Do not fade out
+             */
+            NONE("none"),
+            /**
+             * All except the focused item.
+             */
+            ALL_OTHERS("self"),
+            /**
+             * All other charts.
+             */
+            OTHERS("series");
+
+            private final String code;
+
+            FADE_OUT(String code) {
+                this.code = code;
+            }
+
+            @Override
+            public String toString() {
+                return code;
+            }
+        }
+
+        /**
+         * Definition of how the "fade out" is spread across the elements.
+         *
+         * @author Syam
+         */
+        public enum FADE_OUT_SCOPE {
+
+            /**
+             * Local (within the current coordinate system).
+             */
+            LOCAL("coordinateSystem"),
+            /**
+             * Onn the current chart only.
+             */
+            CHART("series"),
+            /**
+             * Global (in all charts).
+             */
+            GLOBAL("global");
+
+            private final String code;
+
+            FADE_OUT_SCOPE(String code) {
+                this.code = code;
+            }
+
+            @Override
+            public String toString() {
+                return code;
+            }
+        }
+        private FADE_OUT fadeOut;
+        private FADE_OUT_SCOPE fadeOutScope;
+        private boolean disabled = false;
+
+        /**
+         * Disable/enable the emphasis effect.
+         *
+         * @param disabled True/false.
+         */
+        public void setDisabled(boolean disabled) {
+            this.disabled = disabled;
+        }
+
+        /**
+         * Specify how other elements will be faded out when emphasising an element.
+         *
+         * @param fadeOut Fade out.
+         */
+        public void setFadeOut(FADE_OUT fadeOut) {
+            this.fadeOut = fadeOut;
+        }
+
+        /**
+         * Set the scope of the fade out.
+         *
+         * @param fadeOutScope Fade out scope.
+         */
+        public void setFadeOutScope(FADE_OUT_SCOPE fadeOutScope) {
+            this.fadeOutScope = fadeOutScope;
+        }
+
+        @Override
+        public void encodeJSON(StringBuilder sb) {
+            ComponentPart.encode(sb, "disabled", disabled);
+            if(disabled) {
+                return;
+            }
+            ComponentPart.encode(sb, "focus", fadeOut);
+            ComponentPart.encode(sb, "blurScope", fadeOutScope);
         }
     }
 }
