@@ -1193,7 +1193,7 @@ public abstract class Axis extends VisibleProperty {
         @Override
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
-            sb.append(",\"precision\":").append(precision);
+            sb.append(",\"precision\":");
             if(precision >= 0) {
                 sb.append(precision);
             } else {
