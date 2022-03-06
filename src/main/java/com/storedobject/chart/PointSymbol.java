@@ -45,6 +45,7 @@ public class PointSymbol implements ComponentProperty {
     public String getCustomSymbol() {
         return this.isURL ? this.url : this.svgPath;
     }
+
     public void setSvgPath(String svgPath) {
         this.setType(PointSymbolType.NONE);
         this.isURL = false;

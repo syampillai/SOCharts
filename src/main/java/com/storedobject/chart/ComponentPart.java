@@ -18,6 +18,8 @@ package com.storedobject.chart;
 
 import com.storedobject.helper.ID;
 
+import java.util.Arrays;
+
 /**
  * Represents a part used by chart {@link Component}s.
  *
@@ -148,6 +150,24 @@ public interface ComponentPart extends ComponentProperty {
             body += ';';
         }
         sb.append("],\"body\":").append(escape(body)).append("}}");
+    }
+
+    /**
+     * Helper method: Encode a generic function as a string.
+     * @param body Body of the function.
+     * @param params Parameters.
+     * @return Encoded value.
+     */
+    static String encodeFunction(String body, String... params) {
+        StringBuilder s = new StringBuilder("{\"function\":{\"params\":\"");
+        for(int i = 0; i < params.length; i++) {
+            if(i > 0) {
+                s.append(',');
+            }
+            s.append(params[i]);
+        }
+        s.append("\",\"body\":").append(escape(body)).append("}}");
+        return s.toString();
     }
 
     /**

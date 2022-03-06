@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * <p>Representation of data as a {@link java.util.List}. The type of data can be anything that can be used
+ * Representation of data as a {@link java.util.List}. The type of data can be anything that can be used
  * for charting. In charting, we need to distinguish between "numeric", "date/time", "categories" and "logarithmic"
  * values types (See {@link DataType}).
  *

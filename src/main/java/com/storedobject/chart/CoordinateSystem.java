@@ -124,6 +124,7 @@ public abstract class CoordinateSystem extends VisiblePart implements Component,
             }
         }
         for(Axis axis: axes) {
+            axis.soChart = soChart;
             soChart.addParts(wrap(axis));
         }
     }

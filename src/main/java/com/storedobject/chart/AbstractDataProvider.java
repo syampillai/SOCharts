@@ -21,7 +21,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -65,6 +68,11 @@ public interface AbstractDataProvider<T> extends ComponentPart {
     DataType getDataType();
 
     @Override
+    default String getName() {
+        return "Data " + getSerial();
+    }
+
+    @Override
     default void encodeJSON(StringBuilder sb) {
         sb.append('[');
         AtomicBoolean first = new AtomicBoolean(true);
@@ -101,7 +109,7 @@ public interface AbstractDataProvider<T> extends ComponentPart {
      * Get the minimum value from this data. This is used by certain components such as {@link VisualMap}
      * to automatically find out the minimum value of a value-based chart.
      * <p>The default implementation tries to use the {@link Comparator} returned by the {@link #getComparator()} method
-     * to determine the this value. If no {@link Comparator} is available, <code>null</code> will be returned.</p>
+     * to determine this value. If no {@link Comparator} is available, <code>null</code> will be returned.</p>
      *
      * @return Minimum value of the data.
      */
@@ -117,7 +125,7 @@ public interface AbstractDataProvider<T> extends ComponentPart {
      * Get the maximum value from this data. This is used by certain components such as {@link VisualMap}
      * to automatically find out the minimum value of a value-based chart.
      * <p>The default implementation tries to use the {@link Comparator} returned by the {@link #getComparator()} method
-     * to determine the this value. If no {@link Comparator} is available, <code>null</code> will be returned.</p>
+     * to determine this value. If no {@link Comparator} is available, <code>null</code> will be returned.</p>
      *
      * @return Minimum value of the data.
      */
@@ -154,5 +162,56 @@ public interface AbstractDataProvider<T> extends ComponentPart {
             }
             return new BigDecimal(n1.toString()).compareTo(new BigDecimal(n2.toString()));
         }
+    }
+
+    /**
+     * Create another data set by applying a mapping function to this data set. (Each item and its index are passed to
+     * the mapping function).
+     *
+     * @param convertedType Converted type.
+     * @param mappingFunction Mapping function.
+     * @param <D> Type of data in the target data set.
+     * @return A new data set with values mapped from this data set.
+     */
+    default <D> AbstractDataProvider<D> create(DataType convertedType, BiFunction<T, Integer, D> mappingFunction) {
+        return new AbstractDataProvider<>() {
+
+            private int serial = -1;
+
+            @Override
+            public Stream<D> stream() {
+                AtomicInteger index = new AtomicInteger(0);
+                return AbstractDataProvider.this.stream()
+                        .map(item -> mappingFunction.apply(item, index.getAndIncrement()));
+            }
+
+            @Override
+            public DataType getDataType() {
+                return convertedType;
+            }
+
+            @Override
+            public void setSerial(int serial) {
+                this.serial = serial;
+            }
+
+            @Override
+            public int getSerial() {
+                return serial;
+            }
+        };
+    }
+
+    /**
+     * Create another data set by applying a mapping function to this data set. (Each item is passed to
+     * the mapping function).
+     *
+     * @param convertedType Converted type.
+     * @param mappingFunction Mapping function.
+     * @param <D> Type of data in the target data set.
+     * @return A new data set with values mapped from this data set.
+     */
+    default <D> AbstractDataProvider<D> create(DataType convertedType, Function<T, D> mappingFunction) {
+        return create(convertedType, (item, index) -> mappingFunction.apply(item));
     }
 }

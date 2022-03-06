@@ -69,8 +69,7 @@ public class Tooltip extends VisiblePart implements Component {
                 } else {
                     sb.append(',');
                 }
-                if(p instanceof String) {
-                    String s = (String) p;
+                if(p instanceof String s) {
                     s = s.replace("\n", "<br>");
                     sb.append(ComponentPart.escape(s));
                 } else if(p instanceof AbstractDataProvider) { // Data

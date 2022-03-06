@@ -24,7 +24,7 @@ export class SOChart extends LitElement {
         super();
         this.idChart = null;
         this.data = {};
-        this.dataOptions = "";
+        this.allOptions = "";
         this.minw = "5vw";
         this.minh = "5vw";
         this.maxw = "6000px";
@@ -69,10 +69,9 @@ export class SOChart extends LitElement {
     }
 
     updateChart(full, options) {
+        console.log("REC => " + options);
         if(full) {
-            this.dataOptions = JSON.parse(options);
-            this._trimToData(this.dataOptions);
-            this.dataOptions = JSON.stringify(this.dataOptions);
+            this.allOptions = options;
         }
         var json = JSON.parse(options);
         this._stuff(json);
@@ -87,7 +86,6 @@ export class SOChart extends LitElement {
            })
         });
         this.chart.setOption(json);
-
     }
 
     clearData() {
@@ -98,7 +96,7 @@ export class SOChart extends LitElement {
         if(typeof serial !== 'undefined') {
             this.initData(serial, data);
         }
-        var json = JSON.parse(this.dataOptions);
+        var json = JSON.parse(this.allOptions);
         this._stuff(json);
         this.chart.setOption(json);
     }
@@ -190,47 +188,6 @@ export class SOChart extends LitElement {
         for(let k in obj.source) {
             obj.source[k] = this.data["d" + obj.source[k]];
         }
-    }
-
-    _trimToData(obj) {
-        var removed = true;
-        var o;
-        while(removed) {
-            removed = false;
-            for(let k in obj) {
-                if(k === "dataset" || k === 'data' || k === 'id') continue;
-                o = obj[k];
-                if(typeof o === 'object') {
-                    if(this._containsData(o)) {
-                        this._trimToData(o);
-                    } else {
-                        delete obj[k];
-                        removed = true;
-                        break;
-                    }
-                } else {
-                    delete obj[k];
-                    removed = true;
-                    break;
-                }
-            }
-        }
-    }
-
-    _containsData(obj) {
-        return this._containsTag(obj, "data");
-    }
-
-    _containsTag(obj, tag) {
-        var o;
-        for(let k in obj) {
-            if(k === tag) return true;
-            o = obj[k];
-            if(typeof o === 'object') {
-                if(this._containsData(o)) return true;
-            }
-        }
-        return false;
     }
 
     _formatter(p, v) {

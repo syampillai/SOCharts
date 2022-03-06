@@ -11,8 +11,18 @@ public abstract class Label extends AbstractLabel {
 
     private int rotation = Integer.MIN_VALUE;
     private boolean inside = false;
+    /**
+     * The formatter string.
+     */
     protected String formatter;
+    /**
+     * The format parser that converts the formatter string to the real JSON value.
+     */
     protected Function<String, String> formatParser;
+    /**
+     * Check whether to "escape" the formatted JSON value or not.
+     */
+    protected boolean doNotEscapeFormat = false;
 
     /**
      * Constructor.
@@ -39,7 +49,7 @@ public abstract class Label extends AbstractLabel {
     }
 
     /**
-     * Check if the label is drawn inside or outside of the part.
+     * Check if the label is drawn inside or outside the part.
      *
      * @return True if inside.
      */
@@ -67,7 +77,7 @@ public abstract class Label extends AbstractLabel {
         if(formatter != null) {
             String f = getFormatterValue();
             if(f != null) {
-                sb.append(",\"formatter\":").append(ComponentPart.escape(f));
+                sb.append(",\"formatter\":").append(f);
             }
         }
     }
@@ -78,7 +88,11 @@ public abstract class Label extends AbstractLabel {
      * @return Encoded value of the formatter string.
      */
     String getFormatterValue() {
-        return formatParser == null ? formatter : formatParser.apply(formatter);
+        String f = formatParser == null ? formatter : formatParser.apply(formatter);
+        if(!doNotEscapeFormat) {
+            f = ComponentPart.escape(f);
+        }
+        return f;
     }
 
     /**

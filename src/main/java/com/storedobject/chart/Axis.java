@@ -69,6 +69,7 @@ public abstract class Axis extends VisibleProperty {
     private GridAreas gridAreas;
     private Pointer pointer;
     private CategoryData data;
+    SOChart soChart;
 
     /**
      * Constructor.
@@ -587,6 +588,7 @@ public abstract class Axis extends VisibleProperty {
 
         /**
          * Set the interval between labels.
+         * <p>Important Note: This is applicable only for {@link DataType#CATEGORY}.</p>
          *
          * @param interval 0 means all labels, 1 means every alternate labels, 2 means every 2nd labels and so on.
          *                 A special value of -1 means labelling will be determined automatically to eliminate overlap.
@@ -632,6 +634,25 @@ public abstract class Axis extends VisibleProperty {
          */
         public void setFormatter(String formatter) {
             this.formatter = formatter;
+            this.doNotEscapeFormat = false;
+        }
+
+        /**
+         * Set a Javascript function as the label formatter. Only the body of the Javascript function needs to be
+         * set. Two parameters, (value, index), are passed to the function - value: The value at that axis-tick, index:
+         * The index is the axis-tick index (index is of not much use since it is not the index of the data). The
+         * function should return the label to be displayed.
+         * <p>Example: For displaying a rounded numeric value (rounded to 2 decimals places) in a numeric axis,
+         * you may do something like:</p>
+         * <pre>
+         *     setFormatterFunction("return value.toFixed(2);");
+         * </pre>
+         *
+         * @param function The body of the Javascript function.
+         */
+        public void setFormatterFunction(String function) {
+            this.formatter = ComponentPart.encodeFunction(function, "value", "index");
+            this.doNotEscapeFormat = true;
         }
     }
 
@@ -1137,7 +1158,7 @@ public abstract class Axis extends VisibleProperty {
         @Override
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
-            sb.append(",\"precision\":").append(precision);
+            sb.append(",\"precision\":");
             if(precision >= 0) {
                 sb.append(precision);
             } else {
@@ -1150,7 +1171,7 @@ public abstract class Axis extends VisibleProperty {
          *
          * @return Precision (Number of digits). A value of -1 means it will be determined automatically).
          */
-        public int getPrecision() {
+        public final int getPrecision() {
             return precision;
         }
 
