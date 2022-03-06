@@ -143,7 +143,7 @@ public class GraphChart extends Chart {
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
         ComponentPart.addComma(sb);
-        ComponentPart.encode(sb, "layout", this.getLayout());
+        componentPart.encode(sb, "layout", this.getLayout());
         ComponentPart.encode(sb, "roam", this.isRoam());
         ComponentPart.encode(sb, "draggable", this.isDraggable());
         ComponentPart.encode(sb, "autoCurveness", this.isAutoCurveness());
