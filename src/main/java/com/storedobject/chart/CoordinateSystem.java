@@ -125,13 +125,6 @@ public abstract class CoordinateSystem extends VisiblePart implements Component,
         }
         for(Axis axis: axes) {
             axis.soChart = soChart;
-            Axis.Label label = axis.getLabel(false);
-            if(label != null) {
-                AbstractDataProvider<?> labels = label.getLabels();
-                if(labels != null) {
-                    soChart.addData(labels);
-                }
-            }
             soChart.addParts(wrap(axis));
         }
     }

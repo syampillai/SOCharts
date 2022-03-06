@@ -39,7 +39,7 @@ import java.util.function.Function;
  *
  * @author Syam
  */
-public class Chart extends AbstractPart implements Component, HasData {
+public class Chart extends AbstractPart implements Component, HasData, HasAnimation, HasEmphasis {
 
     List<Axis> axes;
     private ChartType type = ChartType.Line;
@@ -52,7 +52,7 @@ public class Chart extends AbstractPart implements Component, HasData {
     private final Map<Class<? extends ComponentProperty>, ComponentProperty> propertyMap = new HashMap<>();
     private final Map<Class<? extends ComponentProperty>, String> propertyNameMap = new HashMap<>();
     private MarkArea markArea;
-    private boolean animation;
+    private Animation animation;
     private Emphasis emphasis;
     private SOChart soChart;
     private final HashMap<SOEvent, Runnable> events = new HashMap<>();
@@ -223,8 +223,6 @@ public class Chart extends AbstractPart implements Component, HasData {
             sb.append('}');
         }
         ComponentPart.encode(sb, "markArea", markArea);
-        ComponentPart.encode(sb, "animation", animation);
-        ComponentPart.encode(sb, "emphasis", emphasis);
     }
 
     /**
@@ -578,21 +576,17 @@ public class Chart extends AbstractPart implements Component, HasData {
         this.markArea = markArea;
     }
 
-    /**
-     * Set animation off/on. By default, it's on.
-     * @param animation True/false.
-     */
-    public void setAnimation(boolean animation) {
-        this.animation = animation;
+    @Override
+    public Animation getAnimation(boolean create) {
+        if(create && animation == null) {
+            animation = new Animation();
+        }
+        return animation;
     }
 
-    /**
-     * Is animation is currently on?
-     *
-     * @return True/false.
-     */
-    public final boolean isAnimation() {
-        return animation;
+    @Override
+    public void setAnimation(Animation animation) {
+        this.animation = animation;
     }
 
     /**
@@ -601,6 +595,7 @@ public class Chart extends AbstractPart implements Component, HasData {
      * @param create If passed true, a new {@link Emphasis} effect is created if not exists.
      * @return Emphasis.
      */
+    @Override
     public Emphasis getEmphasis(boolean create) {
         if(emphasis == null && create) {
             emphasis = new Emphasis();
@@ -613,8 +608,11 @@ public class Chart extends AbstractPart implements Component, HasData {
      *
      * @param emphasis Emphasis effect to set.
      */
-    public void setEmphasis(Emphasis emphasis) {
-        this.emphasis = emphasis;
+    @Override
+    public void setEmphasis(com.storedobject.chart.Emphasis emphasis) {
+        if(emphasis instanceof Emphasis e) {
+            this.emphasis = e;
+        }
     }
 
     /**
@@ -879,7 +877,7 @@ public class Chart extends AbstractPart implements Component, HasData {
      *
      * @author Syam
      */
-    public static class Emphasis implements ComponentProperty {
+    public static class Emphasis extends com.storedobject.chart.Emphasis {
 
         /**
          * Definition of the "fading out" of other elements when emphasising.
@@ -914,7 +912,7 @@ public class Chart extends AbstractPart implements Component, HasData {
         }
 
         /**
-         * Definition of how the "fade out" is spread across the elements.
+         * Definition of how the "fade out" is spread across other elements.
          *
          * @author Syam
          */
@@ -925,7 +923,7 @@ public class Chart extends AbstractPart implements Component, HasData {
              */
             LOCAL("coordinateSystem"),
             /**
-             * Onn the current chart only.
+             * On the current chart only.
              */
             CHART("series"),
             /**
@@ -946,16 +944,6 @@ public class Chart extends AbstractPart implements Component, HasData {
         }
         private FADE_OUT fadeOut;
         private FADE_OUT_SCOPE fadeOutScope;
-        private boolean disabled = false;
-
-        /**
-         * Disable/enable the emphasis effect.
-         *
-         * @param disabled True/false.
-         */
-        public void setDisabled(boolean disabled) {
-            this.disabled = disabled;
-        }
 
         /**
          * Specify how other elements will be faded out when emphasising an element.
@@ -976,11 +964,8 @@ public class Chart extends AbstractPart implements Component, HasData {
         }
 
         @Override
-        public void encodeJSON(StringBuilder sb) {
-            ComponentPart.encode(sb, "disabled", disabled);
-            if(disabled) {
-                return;
-            }
+        protected void encodeProperty(StringBuilder sb) {
+            super.encodeProperty(sb);
             ComponentPart.encode(sb, "focus", fadeOut);
             ComponentPart.encode(sb, "blurScope", fadeOutScope);
         }

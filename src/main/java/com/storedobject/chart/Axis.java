@@ -23,8 +23,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Abstract representation of an axis.
@@ -513,13 +511,11 @@ public abstract class Axis extends VisibleProperty {
 
         private Boolean showMaxLabel, showMinLabel;
         private int interval = Integer.MIN_VALUE;
-        private AbstractDataProvider<?> labels;
 
         /**
          * Constructor.
          */
         public Label() {
-            formatParser = this::format;
         }
 
         @Override
@@ -592,6 +588,7 @@ public abstract class Axis extends VisibleProperty {
 
         /**
          * Set the interval between labels.
+         * <p>Important Note: This is applicable only for {@link DataType#CATEGORY}.</p>
          *
          * @param interval 0 means all labels, 1 means every alternate labels, 2 means every 2nd labels and so on.
          *                 A special value of -1 means labelling will be determined automatically to eliminate overlap.
@@ -601,7 +598,7 @@ public abstract class Axis extends VisibleProperty {
         }
 
         /**
-         * Set the label formatter. Also see{@link #setLabelProvider(AbstractDataProvider)}.
+         * Set the label formatter.
          * <pre>
          * Example (numeric values):
          * "{value} kg" => Produces labels like "20 kg"
@@ -641,35 +638,10 @@ public abstract class Axis extends VisibleProperty {
         }
 
         /**
-         * Instead of specifying the format for the label via {@link #setFormatter(String)} or
-         * via {@link #setFormatterFunction(String)}, it is possible to
-         * set the labels directly from an {@link AbstractDataProvider} using this method. Such an
-         * {@link AbstractDataProvider} may be created from the one or more of the {@link AbstractDataProvider}s
-         * involved via one of the create methods: {@link AbstractDataProvider#create(DataType, Function)} or
-         * {@link AbstractDataProvider#create(DataType, BiFunction)}
-         *
-         * @param labels Labels to be set from the elements of this data provider. (Typically a {@link CategoryData} is
-         *               used).
-         */
-        public void setLabelProvider(AbstractDataProvider<?> labels) {
-            this.formatter = ""; // Set to a non-null value
-            this.doNotEscapeFormat = true;
-            this.labels = labels;
-        }
-
-        /**
-         * Get the labels set for generating the labels.
-         *
-         * @return Labels if set, otherwise, null.
-         */
-        AbstractDataProvider<?> getLabels() {
-            return labels;
-        }
-
-        /**
          * Set a Javascript function as the label formatter. Only the body of the Javascript function needs to be
          * set. Two parameters, (value, index), are passed to the function - value: The value at that axis-tick, index:
-         * The index at that axis-tick. The function should return the label to be displayed.
+         * The index is the axis-tick index (index is of not much use since it is not the index of the data). The
+         * function should return the label to be displayed.
          * <p>Example: For displaying a rounded numeric value (rounded to 2 decimals places) in a numeric axis,
          * you may do something like:</p>
          * <pre>
@@ -681,13 +653,6 @@ public abstract class Axis extends VisibleProperty {
         public void setFormatterFunction(String function) {
             this.formatter = ComponentPart.encodeFunction(function, "value", "index");
             this.doNotEscapeFormat = true;
-        }
-
-        private String format(String f) {
-            if(labels == null) {
-                return f;
-            }
-            return "{\"functionDV\":{\"serial\":" + labels.getSerial() + "}}";
         }
     }
 
@@ -1206,7 +1171,7 @@ public abstract class Axis extends VisibleProperty {
          *
          * @return Precision (Number of digits). A value of -1 means it will be determined automatically).
          */
-        public int getPrecision() {
+        public final int getPrecision() {
             return precision;
         }
 

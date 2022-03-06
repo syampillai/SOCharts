@@ -53,6 +53,12 @@ public abstract class AbstractPart implements ComponentPart {
         if(this instanceof HasPolarProperty) {
             ComponentPart.encode(sb, null, ((HasPolarProperty) this).getPolarProperty(false));
         }
+        if(this instanceof HasAnimation) {
+            ComponentPart.encode(sb, null, ((HasAnimation)this).getAnimation(false));
+        }
+        if(this instanceof HasEmphasis) {
+            ComponentPart.encode(sb, "emphasis", ((HasEmphasis)this).getEmphasis(false));
+        }
         if(z >= 0) {
             ComponentPart.encode(sb, "z", z);
         }
