@@ -16,21 +16,14 @@
 
 package com.storedobject.chart;
 
-import java.util.stream.Stream;
-
 /**
- * A basic data provider that can be extended to create customized internal data providers.
+ * A basic data provider that can be extended to create customized data providers.
  *
  * @author Syam
  */
-public abstract class BasicDataProvider<T> implements AbstractDataProvider<T>, InternalDataProvider {
+public abstract class BasicDataProvider<T> implements AbstractDataProvider<T> {
 
     private int serial = -1;
-
-    @Override
-    public DataType getDataType() {
-        return DataType.OBJECT;
-    }
 
     @Override
     public final void setSerial(int serial) {

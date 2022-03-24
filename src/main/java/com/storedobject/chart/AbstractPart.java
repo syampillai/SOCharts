@@ -36,6 +36,7 @@ public abstract class AbstractPart implements ComponentPart {
      *
      * @return Unique Id.
      */
+    @Override
     public final long getId() {
         return id;
     }
@@ -44,20 +45,20 @@ public abstract class AbstractPart implements ComponentPart {
     public void encodeJSON(StringBuilder sb) {
         ComponentPart.encode(sb, "name", getName());
         ComponentPart.encode(sb, "id", id);
-        if(this instanceof HasPosition) {
-            ComponentPart.encode(sb, null, ((HasPosition)this).getPosition(false));
+        if(this instanceof HasPosition h) {
+            ComponentPart.encode(sb, null, h.getPosition(false));
         }
-        if(this instanceof HasPadding) {
-            ComponentPart.encode(sb, null, ((HasPadding)this).getPadding(false));
+        if(this instanceof HasPadding h) {
+            ComponentPart.encode(sb, null, h.getPadding(false));
         }
-        if(this instanceof HasPolarProperty) {
-            ComponentPart.encode(sb, null, ((HasPolarProperty) this).getPolarProperty(false));
+        if(this instanceof HasPolarProperty h) {
+            ComponentPart.encode(sb, null, h.getPolarProperty(false));
         }
-        if(this instanceof HasAnimation) {
-            ComponentPart.encode(sb, null, ((HasAnimation)this).getAnimation(false));
+        if(this instanceof HasAnimation h) {
+            ComponentPart.encode(sb, null, h.getAnimation(false));
         }
-        if(this instanceof HasEmphasis) {
-            ComponentPart.encode(sb, "emphasis", ((HasEmphasis)this).getEmphasis(false));
+        if(this instanceof HasEmphasis h) {
+            ComponentPart.encode(sb, "emphasis", h.getEmphasis(false));
         }
         if(z >= 0) {
             ComponentPart.encode(sb, "z", z);
@@ -86,9 +87,10 @@ public abstract class AbstractPart implements ComponentPart {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AbstractPart that = (AbstractPart) o;
-        return id == that.id;
+        if(!(o instanceof AbstractPart ap)) {
+            return false;
+        }
+        return id == ap.id;
     }
 
     @Override

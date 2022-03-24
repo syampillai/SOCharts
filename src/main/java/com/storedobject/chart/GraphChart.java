@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 
 
 public class GraphChart extends Chart {
@@ -184,7 +183,7 @@ public class GraphChart extends Chart {
     }
 
 
-    private class NodeDataProvider extends BasicDataProvider<Node> {
+    private class NodeDataProvider extends BasicInternalDataProvider<Node> {
 
         @Override
         public Stream<Node> stream() {

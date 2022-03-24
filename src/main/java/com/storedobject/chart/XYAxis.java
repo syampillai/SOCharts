@@ -62,7 +62,7 @@ public abstract class XYAxis extends Axis {
     }
 
     /**
-     * Is this displayed on the opposite side (For example, an X axis is normally displayed at the bottom but
+     * Is this displayed on the opposite side (For example, an X axis is normally displayed at the bottom, but
      * we can also display it at the top).
      *
      * @return True or false.

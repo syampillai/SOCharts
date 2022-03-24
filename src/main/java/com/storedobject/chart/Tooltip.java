@@ -18,6 +18,7 @@ package com.storedobject.chart;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Tooltip to display.
@@ -27,7 +28,7 @@ import java.util.List;
  *
  * @author Syam
  */
-public class Tooltip extends VisiblePart implements Component {
+public class Tooltip extends VisiblePart implements Component, HasData {
 
     /**
      * Type of tooltips.
@@ -167,5 +168,17 @@ public class Tooltip extends VisiblePart implements Component {
     public Tooltip append(Chart chart) {
         parts.add(chart);
         return this;
+    }
+
+    @Override
+    public void declareData(Set<AbstractDataProvider<?>> dataSet) {
+        parts.stream().filter(p -> p instanceof AbstractDataProvider).map(p -> (AbstractDataProvider<?>)p)
+                .forEach(dataSet::add);
+    }
+
+    @Override
+    public void addParts(SOChart soChart) {
+        parts.stream().filter(p -> p instanceof AbstractDataProvider).map(p -> (AbstractDataProvider<?>)p)
+                .forEach(soChart::addData);
     }
 }

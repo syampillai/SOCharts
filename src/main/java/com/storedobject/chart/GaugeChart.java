@@ -320,7 +320,7 @@ public class GaugeChart extends SelfPositioningChart implements HasPolarProperty
         }
     }
 
-    public static class AxisLine extends VisibleProperty {
+    public static class AxisLine extends VisiblePart {
 
         private boolean roundCap;
         private final AxisLineStyle style = new AxisLineStyle();

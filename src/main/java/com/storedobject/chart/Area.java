@@ -21,7 +21,7 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public class Area extends VisibleProperty {
+public class Area extends VisiblePart {
 
     private AreaStyle style;
 

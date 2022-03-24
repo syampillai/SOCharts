@@ -148,7 +148,7 @@ public class HeatmapChart extends Chart {
         }
     }
 
-    private class HD extends BasicDataProvider<Object> {
+    private class HD extends BasicInternalDataProvider<Object> {
 
         @Override
         public Stream<Object> stream() {

@@ -84,7 +84,7 @@ public class Size {
             return size + add;
         }
         if(size >= -100) {
-            add += -size;
+            add -= size;
             if(add > 100) {
                 add = 100;
             }
@@ -152,8 +152,12 @@ public class Size {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Size size1 = (Size) o;
         return size == size1.size;
     }

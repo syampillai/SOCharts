@@ -16,8 +16,6 @@
 
 package com.storedobject.chart;
 
-import com.storedobject.helper.ID;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,10 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author Syam
  */
-public abstract class AbstractDataZoom implements Component {
+public abstract class AbstractDataZoom extends AbstractPart implements Component {
 
-    private int serial;
-    private final long id = ID.newID();
     private final String type;
     private final List<Axis> axes = new ArrayList<>();
     private final CoordinateSystem coordinateSystem;
@@ -45,6 +41,7 @@ public abstract class AbstractDataZoom implements Component {
     private int minSpan = Integer.MIN_VALUE, maxSpan = Integer.MAX_VALUE;
     private Object minSpanValue, maxSpanValue;
     private boolean zoomLock;
+    private boolean showDetail = true;
 
     /**
      * Constructor.
@@ -57,11 +54,6 @@ public abstract class AbstractDataZoom implements Component {
         this.type = type;
         this.coordinateSystem = coordinateSystem;
         addAxis(axes);
-    }
-
-    @Override
-    public final long getId() {
-        return id;
     }
 
     /**
@@ -101,7 +93,7 @@ public abstract class AbstractDataZoom implements Component {
 
     @Override
     public void encodeJSON(StringBuilder sb) {
-        sb.append("\"id\":").append(id);
+        super.encodeJSON(sb);
         ComponentPart.encode(sb, "type", type);
         Set<Class<?>> axisClasses = new HashSet<>();
         axes.forEach(a -> axisClasses.add(a.getClass()));
@@ -120,20 +112,14 @@ public abstract class AbstractDataZoom implements Component {
         });
         if(filterMode != Integer.MAX_VALUE) {
             sb.append(",\"filterMode\":\"");
-            switch (filterMode) {
-                case 0:
-                    sb.append("none");
-                    break;
-                case 1:
-                    sb.append("empty");
-                    break;
-                case 2:
-                    sb.append("weakFilter");
-                    break;
-                case 3:
+            switch(filterMode) {
+                case 0 -> sb.append("none");
+                case 1 -> sb.append("empty");
+                case 2 -> sb.append("weakFilter");
+                case 3 -> {
                     sb.append("filter");
                     filterMode = Integer.MAX_VALUE;
-                    break;
+                }
             }
             sb.append("\"");
         }
@@ -181,16 +167,16 @@ public abstract class AbstractDataZoom implements Component {
             ComponentPart.encode(sb, "maxValueSpan", maxSpanValue);
         }
         ComponentPart.encode(sb, "zoomLock", zoomLock);
+        ComponentPart.encode(sb, "showDetail", showDetail);
     }
 
-    @Override
-    public final int getSerial() {
-        return serial;
-    }
-
-    @Override
-    public final void setSerial(int serial) {
-        this.serial = serial;
+    /**
+     * Show details when dragging.
+     *
+     * @param showDetail True/false.
+     */
+    public void setShowDetail(boolean showDetail) {
+        this.showDetail = showDetail;
     }
 
     /**

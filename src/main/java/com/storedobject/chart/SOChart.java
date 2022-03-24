@@ -26,7 +26,6 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * <p>
@@ -79,6 +78,7 @@ public class SOChart extends LitComponent implements HasSize {
             new ComponentEncoder("visualMap", VisualMap.class),
             new ComponentEncoder("graphic", Shape.class),
     };
+    private final List<ComponentGroup> componentGroups = new ArrayList<>();
     private final List<Component> components = new ArrayList<>();
     private final List<ComponentPart> parts = new ArrayList<>();
     private final List<AbstractDataProvider<?>> dataSet = new ArrayList<>();
@@ -91,11 +91,11 @@ public class SOChart extends LitComponent implements HasSize {
     private DefaultTextStyle defaultTextStyle;
     private final HashMap<SOEvent, Runnable> events = new HashMap<>();
 
-
     @ClientCallable
     public void runEvent(String event, String target) {
         this.events.get(new SOEvent(event, target)).run();
     }
+
     /**
      * Constructor.
      */
@@ -290,6 +290,37 @@ public class SOChart extends LitComponent implements HasSize {
     }
 
     /**
+     * Add component groups.
+     *
+     * @param componentGroups Component groups to add.
+     */
+    public void add(ComponentGroup... componentGroups) {
+        if(componentGroups != null) {
+            for(ComponentGroup componentGroup: componentGroups) {
+                if(componentGroup != null) {
+                    this.componentGroups.add(componentGroup);
+                }
+            }
+        }
+    }
+
+    /**
+     * Remove component groups.
+     *
+     * @param componentGroups Component groups to remove.
+     */
+    public void remove(ComponentGroup... componentGroups) {
+        if(componentGroups != null) {
+            for(ComponentGroup componentGroup: componentGroups) {
+                if(componentGroup != null) {
+                    this.componentGroups.remove(componentGroup);
+                    componentGroup.removeParts(this);
+                }
+            }
+        }
+    }
+
+    /**
      * Add components to the chart. (Chart will not be updated unless {@link #update()} method is called).
      *
      * @param components Components to add.
@@ -300,7 +331,7 @@ public class SOChart extends LitComponent implements HasSize {
                 if(c != null) {
                     this.components.add(c);
                     @SuppressWarnings("unchecked")
-                    HashMap<SOEvent, Runnable> cEvents = (HashMap<SOEvent, Runnable>) c.getEvents();
+                    Map<SOEvent, Runnable> cEvents = (HashMap<SOEvent, Runnable>) c.getEvents();
                     if (cEvents != null) {
                         this.events.putAll(cEvents);
                         for (SOEvent key : this.events.keySet()) {
@@ -393,22 +424,29 @@ public class SOChart extends LitComponent implements HasSize {
         if(!skipData) {
             executeJS("clearData");
         }
+        for(ComponentGroup cg: componentGroups) {
+            cg.validate();
+            cg.addParts(this);
+        }
         if(components.isEmpty()) {
             clear();
             return;
         }
-        for(Component c: components) {
-            c.setSerial(-2);
+        for(Component component: components) {
+            component.validate();
         }
+        components.forEach(c -> c.setSerial(-2));
         parts.clear();
-        for(Component c: components) {
-            c.addParts(this);
-        }
+        components.forEach(c -> c.addParts(this));
         List<AbstractDataProvider<?>> data = new ArrayList<>();
         dataSet.clear();
         parts.stream().filter(p -> p instanceof AbstractDataProvider).map(p -> (AbstractDataProvider<?>)p)
                 .forEach(data::add);
         parts.removeIf(p -> p instanceof AbstractDataProvider);
+        Set<AbstractDataProvider<?>> collectData = new HashSet<>();
+        parts.stream().filter(p -> p instanceof HasData).map(p -> (HasData)p).forEach(p -> p.declareData(collectData));
+        collectData.removeIf(Objects::isNull);
+        data.addAll(collectData);
         int dserial = data.stream().mapToInt(ComponentPart::getSerial).max().orElse(1);
         dserial = Math.max(dserial, 1);
         while(!data.isEmpty()) {
@@ -603,6 +641,11 @@ public class SOChart extends LitComponent implements HasSize {
         executeJS(command + "Data", data);
     }
 
+    /**
+     * Component encoder. (For internal use only).
+     *
+     * @author Syam
+     */
     static class ComponentEncoder {
 
         final String label;
@@ -657,11 +700,20 @@ public class SOChart extends LitComponent implements HasSize {
         }
     }
 
+    /**
+     * Get the default color used by the chart component.
+     *
+     * @param index Index of the color.
+     * @return Color.
+     */
+    public static Color getDefaultColor(int index) {
+        return new Color(DefaultColors.colors[index % DefaultColors.colors.length]);
+    }
+
     private static class DefaultColors extends ArrayList<AbstractColor> implements ComponentPart {
 
         private static final String[] colors = new String[] {
-                "0000ff",
-                "c23531", "2f4554", "61a0a8", "d48265", "91c7ae", "749f83",
+                "0000ff", "c23531", "2f4554", "61a0a8", "d48265", "91c7ae", "749f83",
                 "ca8622", "bda29a", "6e7074", "546570", "c4ccd3"
         };
         private int serial;

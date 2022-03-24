@@ -48,7 +48,7 @@ public abstract class CirclePart extends Shape {
      *
      * @param center Center.
      */
-    public void setCenterX(Point center) {
+    public void setCenter(Point center) {
         this.center = center;
     }
 

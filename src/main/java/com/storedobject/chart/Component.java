@@ -40,7 +40,7 @@ public interface Component extends ComponentPart {
 
     /**
      * Add parts of this component to the chart. This will be invoked if the component was already added
-     * to the chart and it is about to be rendered.
+     * to the chart, and it is about to be rendered.
      *
      * @param soChart Chart to which components to be added.
      */

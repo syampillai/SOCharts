@@ -13,15 +13,16 @@ package com.storedobject.chart;
  */
 public abstract class Shape extends AbstractPart implements Component, HasPosition {
 
-    private static final Color DEFAULT_STROKE = new Color("black");
+    private static final Color DEFAULT_COLOR = new Color("black");
     private Position position;
+    private Point positionXY;
     private Style style;
     private boolean draggable = false;
     private boolean show = true;
 
     public Shape() {
-        getStyle(true).setFillColor(Color.TRANSPARENT);
-        style.setStrokeColor(DEFAULT_STROKE);
+        getStyle(true).setFillColor(DEFAULT_COLOR);
+        style.setStrokeColor(DEFAULT_COLOR);
     }
 
     /**
@@ -35,6 +36,9 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
         ComponentPart.encode(sb, "type", getType());
+        if(positionXY != null) {
+            encodePoint(sb, positionXY);
+        }
         ComponentPart.encode(sb, "invisible", !show);
         ComponentPart.encode(sb, "draggable", draggable);
         if(style != null) {
@@ -56,8 +60,7 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
         if(value == null) {
             return;
         }
-        if(value instanceof Object[]) {
-            Object[] o = (Object[]) value;
+        if(value instanceof Object[] o) {
             Object oo;
             StringBuilder s = new StringBuilder();
             for(int i = 0; i < o.length; i++) {
@@ -89,6 +92,20 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
         }
         encode(sb, nameX, point.x);
         encode(sb, nameY, point.y);
+    }
+
+    /**
+     * Helper method: Encode a {@link Point}. Names of the X value and Y value will be "x" and "y" respectively.
+     *
+     * @param sb Encoded JSON string to be appended to this.
+     * @param point Point to be encoded.
+     */
+    protected static void encodePoint(StringBuilder sb, Point point) {
+        if(point == null) {
+            return;
+        }
+        encode(sb, "x", point.x);
+        encode(sb, "y", point.y);
     }
 
     /**
@@ -146,6 +163,9 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
         if(position == null && create) {
             position = new Position();
         }
+        if(!create && positionXY != null) {
+            return null;
+        }
         return position;
     }
 
@@ -157,6 +177,29 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
     @Override
     public void setPosition(Position position) {
         this.position = position;
+    }
+
+    /**
+     * Set the X and Y positions of this shape in the coordinate system.
+     * <p>Note: If X and Y positions are set this way, other position details set through
+     * {@link #getPosition(boolean)} and/or {@link #setPosition(Position)} are ignored.</p>
+     *
+     * @param positionXY XY position in pixels.
+     */
+    public void setPosition(Point positionXY) {
+        this.positionXY = positionXY;
+    }
+
+    /**
+     * Set the X and Y positions of this shape in the coordinate system.
+     * <p>Note: If X and Y positions are set this way, other position details set through
+     * {@link #getPosition(boolean)} and/or {@link #setPosition(Position)} are ignored.</p>
+     *
+     * @param positionX X position in pixels.
+     * @param positionY Y position in pixels.
+     */
+    public void setPosition(Number positionX, Number positionY) {
+        this.positionXY = new Point(positionX, positionY);
     }
 
     /**
@@ -196,10 +239,10 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
         @Override
         public void encodeJSON(StringBuilder sb) {
             if(fillColor != null) {
-                ComponentPart.encode(sb, "fill", fillColor);
+                ComponentPart.encode(sb, "fill", fillColor.toString());
             }
             if(strokeColor != null) {
-                ComponentPart.encode(sb, "stroke", strokeColor);
+                ComponentPart.encode(sb, "stroke", strokeColor.toString());
             }
             ComponentPart.encode(sb, "lineWidth", lineWidth == null ? 1 : lineWidth);
             if(extra != null) {

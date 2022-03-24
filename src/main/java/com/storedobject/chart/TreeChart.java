@@ -127,7 +127,7 @@ public class TreeChart extends Chart implements HasPosition {
         this.orientation = orientation;
     }
 
-    private class TD extends BasicDataProvider<Object> {
+    private class TD extends BasicInternalDataProvider<Object> {
 
         @Override
         public Stream<Object> stream() {

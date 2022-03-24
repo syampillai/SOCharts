@@ -74,7 +74,7 @@ public abstract class AbstractChart extends Chart {
     @Override
     public void validate() throws ChartException {
         super.validate();
-        if(axesBased) {
+        if(axesBased && dataToEmbed() == null) {
             AbstractDataProvider<?>[] d = getData();
             for(int i = 0; i < d.length; i++) {
                 if(d[i] == null) {

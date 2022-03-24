@@ -75,7 +75,7 @@ public enum ChartType {
     /**
      * Graph.
      */
-    Graph(new String[]{}, false),
+    Graph(new String[] {}, false),
     ;
 
     private final String[] axes;

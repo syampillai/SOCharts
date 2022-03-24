@@ -29,7 +29,7 @@ import java.util.Objects;
  *
  * @author Syam
  */
-public abstract class Axis extends VisibleProperty {
+public abstract class Axis extends VisiblePart {
 
     /**
      * Definition of pointer types.
@@ -91,8 +91,12 @@ public abstract class Axis extends VisibleProperty {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Axis axis = (Axis) o;
         return id == axis.id;
     }
@@ -136,7 +140,7 @@ public abstract class Axis extends VisibleProperty {
         return value;
     }
 
-    void validate() throws ChartException{
+    public void validate() throws ChartException{
         if(dataType == null) {
             String name = getName();
             if(name == null) {
@@ -153,6 +157,10 @@ public abstract class Axis extends VisibleProperty {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
+        encodeWrapped(sb);
+    }
+
+    private void encodeWrapped(StringBuilder sb) {
         if(data != null) {
             sb.append(",\"data\":").append(data.getSerial());
         }
@@ -825,7 +833,7 @@ public abstract class Axis extends VisibleProperty {
         }
     }
 
-    public static class Line extends VisibleProperty {
+    public static class Line extends VisiblePart {
 
         private LineStyle style;
 
@@ -984,7 +992,7 @@ public abstract class Axis extends VisibleProperty {
      *
      * @author Syam
      */
-    public static class Pointer extends VisibleProperty {
+    public static class Pointer extends VisiblePart {
 
         private PointerType type;
         private Boolean snap;
@@ -1190,7 +1198,7 @@ public abstract class Axis extends VisibleProperty {
      *
      * @author Syam
      */
-    public static class PointerHandle extends VisibleProperty {
+    public static class PointerHandle extends VisiblePart {
 
         private int width = -1, height = -1, gap = -1;
         private Shadow shadow;
@@ -1342,10 +1350,9 @@ public abstract class Axis extends VisibleProperty {
      *
      * @author Syam
      */
-    static class AxisWrapper implements ComponentPart {
+    static class AxisWrapper extends AbstractPart {
 
-        private int serial, renderingIndex = -1;
-        private final long id = ID.newID();
+        private int renderingIndex = -1;
         final Axis axis;
         private final CoordinateSystem coordinateSystem;
 
@@ -1381,31 +1388,21 @@ public abstract class Axis extends VisibleProperty {
         }
 
         @Override
-        public final long getId() {
-            return id;
-        }
-
-        @Override
         public void encodeJSON(StringBuilder sb) {
-            sb.append("\"id\":").append(id).append(',');
+            super.encodeJSON(sb);
+            int z = axis.getZ();
+            if(z >= 0) {
+                ComponentPart.encode(sb, "z", z);
+            }
             for(SOChart.ComponentEncoder ce: SOChart.encoders) {
                 if(coordinateSystem.getClass() != ce.partType) {
                     continue;
                 }
-                sb.append('"').append(ce.label).append("Index\":").append(coordinateSystem.getSerial()).append(',');
+                ComponentPart.addComma(sb);
+                sb.append('"').append(ce.label).append("Index\":").append(coordinateSystem.getSerial());
                 break;
             }
-            axis.encodeJSON(sb);
-        }
-
-        @Override
-        public final int getSerial() {
-            return serial;
-        }
-
-        @Override
-        public final void setSerial(int serial) {
-            this.serial = serial;
+            axis.encodeWrapped(sb);
         }
 
         @Override

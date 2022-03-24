@@ -17,30 +17,14 @@
 package com.storedobject.chart;
 
 /**
- * Represents a common base for {@link ComponentProperty} with visibility as a property.
+ * A basic data provider that can be extended to create customized internal data providers.
  *
  * @author Syam
  */
-public abstract class VisibleProperty implements ComponentProperty {
-
-    boolean show = true;
-
-    /**
-     * Show this part.
-     */
-    public void show() {
-        show = true;
-    }
-
-    /**
-     * Hide this part.
-     */
-    public void hide() {
-        show = false;
-    }
+public abstract class BasicInternalDataProvider<T> extends BasicDataProvider<T> implements InternalData<T> {
 
     @Override
-    public void encodeJSON(StringBuilder sb) {
-        sb.append("\"show\":").append(show);
+    public DataType getDataType() {
+        return DataType.OBJECT;
     }
 }

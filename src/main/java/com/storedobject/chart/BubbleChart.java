@@ -233,7 +233,7 @@ public class BubbleChart extends Chart {
         }
     }
 
-    private class BD extends BasicDataProvider<Object> {
+    private class BD extends BasicInternalDataProvider<Object> {
 
         @Override
         public Stream<Object> stream() {

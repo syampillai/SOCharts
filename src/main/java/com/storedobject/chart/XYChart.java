@@ -65,16 +65,6 @@ public abstract class XYChart extends AbstractChart {
         if(stackName != null) {
             ComponentPart.encode(sb, "stack", stackName);
         }
-        /*
-        int axisIndex = axes.size() > 0 ? coordinateSystem.getAxisIndex(axes.get(0)) : -1;
-        if(axisIndex >= 0) {
-            ComponentPart.encode(sb, "xAxisIndex", axisIndex);
-        }
-        axisIndex = axes.size() > 1 ? coordinateSystem.getAxisIndex(axes.get(1)) : -1;
-        if(axisIndex >= 0) {
-            ComponentPart.encode(sb, "yAxisIndex", axisIndex);
-        }
-         */
     }
 
     /**

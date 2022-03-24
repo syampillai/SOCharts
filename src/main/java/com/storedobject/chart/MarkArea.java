@@ -23,7 +23,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /**
- * Mark area. Used to define style for one or more individual areas in many charts.
+ * Mark area. Used to define style for one or more individual areas in many charts. use
+ * {@link Chart#getMarkArea(boolean)} to get the {@link MarkArea} of the chart.
  * Examples: {@link LineChart}, {@link ScatterChart}, {@link PieChart} etc.
  *
  * @author Syam
@@ -277,7 +278,7 @@ public class MarkArea implements ComponentProperty, HasData {
         }
     }
 
-    private class Data extends BasicDataProvider<Object> {
+    private class Data extends BasicInternalDataProvider<Object> {
 
         @Override
         public Stream<Object> stream() {

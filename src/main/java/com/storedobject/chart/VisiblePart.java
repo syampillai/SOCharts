@@ -44,4 +44,8 @@ public abstract class VisiblePart extends AbstractPart {
         super.encodeJSON(sb);
         ComponentPart.encode(sb, "show", show);
     }
+
+    @Override
+    public void validate() throws ChartException {
+    }
 }

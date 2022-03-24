@@ -22,13 +22,17 @@ import java.util.function.Function;
 
 /**
  * <p>
- * Chart. Since this is a concrete class, this may be directly used for creating a chart of a particular {@link ChartType}.
- * It has got the flexibility that the {@link ChartType} can be changed at any time using {@link #setType(ChartType)} method.
+ * Chart. Since this is a concrete class, this may be directly used for creating a chart of a particular
+ * {@link ChartType}. It has got the flexibility that the {@link ChartType} can be changed at any time using
+ * {@link #setType(ChartType)} method.
  * However, there are concrete derivatives of this class such as {@link PieChart}, {@link NightingaleRoseChart} etc.
  * where more chart-specific methods are available and data for the chart is checked more accurately for errors. If
  * the data set for the chart is of invalid type, system tries to do its best to adapt that data but the chart may not
  * appear if the data conversion fails.
  * </p>
+ * <p>Custom Charts: Any chart may be converted to a custom chart by setting up an item renderer to render the each
+ * data point. The item renderer can be specified via {@link #setCustomRenderer(String)}. However, please note that
+ * only a few custom renderers are currently available.</p>
  * <p>
  * Positioning of charts within the display area of {@link SOChart}: Most charts need a {@link CoordinateSystem} to
  * plot on and all {@link CoordinateSystem}s support positioning (Please see
@@ -43,6 +47,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
 
     List<Axis> axes;
     private ChartType type = ChartType.Line;
+    private String custom;
     private Label label;
     private ItemStyle itemStyle;
     private String name;
@@ -111,7 +116,31 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         return data;
     }
 
+    /**
+     * <p>Set a custom renderer for this chart. Each renderer can be used on certain type of charts only, may require
+     * special data requirements and you may have to encode the rendering values. Following are the currently supported
+     * renderers:</p>
+     * <pre>
+     * (1) "HBand": Horizontal bands. Applicable to XY charts.
+     * Data Point: [y-value, start, end, color], encode { x: 1, y: 0 }
+     * (2) "VLine": Single vertical line at a given value. Applicable to XY charts.
+     * Single Data Point: [line at (x-value), text label, color], encode { x: 0, y: -1 }
+     * (3) "HBar": Horizontal bars. Applicable yo XY charts.
+     * Data Point: [y-value, label, start, end, %age completed, bar color]
+     * (4) "VAxisLabel": Label bars for the vertical axis.
+     * Data Point: [y-value, group label, connected, label, sub-label, bar color], encode { x: -1, y: 0 }
+     * </pre>
+     *
+     * @param renderer Name of the renderer.
+     */
+    public void setCustomRenderer(String renderer) {
+        this.custom = renderer;
+    }
+
     private String type() {
+        if(custom != null) {
+            return "custom";
+        }
         String t = type.toString();
         return Character.toLowerCase(t.charAt(0)) + t.substring(1);
     }
@@ -176,6 +205,9 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
             ComponentPart.encode(sb, "data", dataToEmbed.getSerial());
         }
         ComponentPart.encode(sb, "type", type());
+        if(custom != null) {
+            ComponentPart.encode(sb, "renderItem", custom);
+        }
         if(coordinateSystem != null) {
             if(coordinateSystem.axes != axes) {
                 ComponentPart aw;
@@ -336,9 +368,9 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
             coordinateSystem.addParts(soChart);
         } else {
             soChart.addParts(data);
-            if(markArea != null) {
-                soChart.addParts(markArea.data);
-            }
+        }
+        if(markArea != null) {
+            soChart.addParts(markArea.data);
         }
         if(label != null && label.labels != null) {
             soChart.addData(label.labels);
@@ -354,6 +386,10 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         }
         if(markArea != null) {
             dataSet.add(markArea.data);
+        }
+        Tooltip tooltip = getTooltip(false);
+        if(tooltip != null) {
+            tooltip.declareData(dataSet);
         }
     }
 
@@ -379,7 +415,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
      * Plot the chart on a given coordinate system. (Certain chart types such as {@link ChartType#Pie},
      * do not have a coordinate system and thus, this call is not required. Also, instead of using this
      * method, you can use the {@link CoordinateSystem#add(Chart...)} method if you want to plot on the default
-     * set of axes.
+     * set of axes.)
      *
      * @param coordinateSystem Coordinate system on which the chart will be plotted. (If it was plotted on
      *                         another coordinate system, it will be removed from it).
