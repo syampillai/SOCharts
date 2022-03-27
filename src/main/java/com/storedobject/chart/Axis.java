@@ -68,7 +68,7 @@ public abstract class Axis extends VisiblePart {
     private MinorGridLines minorGridLines;
     private GridAreas gridAreas;
     private Pointer pointer;
-    private CategoryData data;
+    private CategoryDataProvider data;
     SOChart soChart;
 
     /**
@@ -150,7 +150,7 @@ public abstract class Axis extends VisiblePart {
         }
     }
 
-    void setData(CategoryData data) {
+    void setData(CategoryDataProvider data) {
         this.data = data;
     }
 
@@ -508,6 +508,15 @@ public abstract class Axis extends VisiblePart {
      */
     public void setPointer(Pointer pointer) {
         this.pointer = pointer;
+    }
+
+    /**
+     * Get the data type of this axis.
+     *
+     * @return Data type.
+     */
+    public DataType getDataType() {
+        return dataType;
     }
 
     /**

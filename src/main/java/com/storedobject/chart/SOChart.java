@@ -265,7 +265,7 @@ public class SOChart extends LitComponent implements HasSize {
      * @param data Data to add.
      */
     public void addData(AbstractDataProvider<?> data) {
-        if(!extraData.contains(data)) {
+        if(data != null && !extraData.contains(data)) {
             extraData.add(data);
         }
     }

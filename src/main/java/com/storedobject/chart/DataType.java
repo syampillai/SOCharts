@@ -78,4 +78,39 @@ public enum DataType {
     public String toString() {
         return "\"" + name + "\"";
     }
+
+    /**
+     * Encode the given value as per the data type for creating the JSON part.
+     *
+     * @param value Value.
+     * @return Encoded value.
+     */
+    public String encode(Object value) {
+        if(this == NUMBER) {
+            return value.toString();
+        }
+        return "\"" + value + "\"";
+    }
+
+    /**
+     * Guess the data type for a given value.
+     *
+     * @param value Value.
+     * @return Data type.
+     */
+    public static DataType guessType(Object value) {
+        if(value instanceof String) {
+            return CATEGORY;
+        }
+        if(value instanceof LocalDateTime) {
+            return TIME;
+        }
+        if(value instanceof LocalDate) {
+            return DATE;
+        }
+        if(value instanceof Number) {
+            return NUMBER;
+        }
+        return OBJECT;
+    }
 }

@@ -256,7 +256,7 @@ export class SOChart extends LitElement {
     // Built-in custom renderers
 
     // Horizontal bar renderer (used by Gantt chart).
-    // Data Point: [Y-value, label, start, end, completed, bar color]
+    // Data Point: [Y-value, label, start, end, completed, bar color, prefix color, non-progress color]
     _renderHBar(params, api) {
         var HEIGHT_RATIO = 0.6;
         var index = api.value(0);
@@ -264,11 +264,20 @@ export class SOChart extends LitElement {
         var start = api.coord([api.value(2), index]);
         var end = api.coord([api.value(3), index]);
         var donePercentage = api.value(4)
-        var color = api.value(5)
+        var color = api.value(5);
+        var prefixColor = api.value(6);
+        var nonProgressColor = api.value(7);
         var barWidth = end[0] - start[0];
-        var barHeight = api.size([0, 1])[1] * HEIGHT_RATIO;
+        var barHeight = api.size([0, 1])[1];
+        var shiftY = 0;
+        if(color === prefixColor) { // Not a Gantt chart
+            shiftY = 0;
+        } else {
+            shiftY = -(barHeight / 2);
+        }
+        barHeight *= HEIGHT_RATIO;
         var x = start[0];
-        var y = (start[1] - barHeight) - (barHeight / 3);
+        var y = start[1] - (barHeight / 2) + shiftY;
         x += 3;
         barWidth -= 3;
         if(barWidth < 0) {
@@ -296,14 +305,20 @@ export class SOChart extends LitElement {
         rectBox = echarts.graphic.clipRectByRect(rectBox, rectSystem);
         var rectPercent;
         if(donePercentage >= 0 && donePercentage < 100) {
-            var completedWidth = barWidth * donePercentage / 100;
+            var completedWidth = (barWidth + 3) * donePercentage / 100;
             rectPercent = {
-                x: x + completedWidth,
+                x: x + completedWidth - 3,
                 y: y,
-                width: barWidth - completedWidth,
+                width: barWidth - completedWidth + 3,
                 height: barHeight / 3
             };
             rectPercent = echarts.graphic.clipRectByRect(rectPercent, rectSystem);
+        }
+        var hideText;
+        if(shiftY == 0) { // Not a Gantt chart
+            hideText = !rectPrefix;
+        } else {
+            hideText = !rectBox;
         }
         return {
             type: 'group',
@@ -311,13 +326,15 @@ export class SOChart extends LitElement {
                 type: 'rect',
                 ignore: !rectPrefix,
                 shape: rectPrefix,
+                z2: 1,
                 style: api.style({
-                    fill: 'black'
+                    fill: prefixColor
                 })
             }, {
                 type: 'rect',
                 ignore: !rectBox,
                 shape: rectBox,
+                z2: 1,
                 style: api.style({
                     fill: color
                 })
@@ -325,13 +342,15 @@ export class SOChart extends LitElement {
                 type: 'rect',
                 ignore: !rectPercent,
                 shape: rectPercent,
+                z2: 2,
                 style: api.style({
-                    fill: 'black',
+                    fill: nonProgressColor,
                     stroke: 'transparent',
                 })
             }, {
                 type: 'text',
-                ignore: !rectBox,
+                ignore: hideText,
+                z2: 2,
                 style: {
                     x: x,
                     y: y + (barHeight / 2),

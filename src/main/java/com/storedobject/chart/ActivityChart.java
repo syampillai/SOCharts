@@ -16,41 +16,41 @@
 package com.storedobject.chart;
 
 /**
- * Gantt chart.
- * <p>An instance of {@link Project} is required as the data for the Gantt chart.</p>
+ * Activity chart is like a {@link GanttChart} but instead of a {@link Project} instance as its data, it uses
+ * an {@link ActivityList} instance as its data.
  * <p>Note: Unlike other charts that are instances of {@link Chart}, Gantt chart is composed of multiple charts and
  * other charting elements put together as a {@link ComponentGroup}. If you want to customize this, there are
  * several methods to get its components from this class and there are methods that can be overridden in the
- * {@link Project} class too.</p>
+ * {@link ActivityList} class too.</p>
  *
  * @author Syam
  */
-public class GanttChart extends AbstractGanttChart {
+public class ActivityChart extends AbstractGanttChart {
 
     /**
      * Constructor.
      *
-     * @param project Project.
+     * @param activityList Activity list.
      */
-    public GanttChart(Project project) {
-        super(project);
+    public ActivityChart(ActivityList activityList) {
+        super(activityList);
     }
 
     /**
-     * Get the task zoom component.
+     * Get the activity zoom component.
      *
-     * @return Task zoom component.
+     * @return Activity zoom component.
      */
-    public DataZoom getTaskAxisZoom() {
+    public DataZoom getActivityAxisZoom() {
         return super.getYAxisZoom();
     }
 
     /**
-     * Get the task axis of this Gantt chart.
+     * Get the activity axis of this Gantt chart.
      *
-     * @return Task axis. (An instance of {@link YAxis}).
+     * @return Activity axis. (An instance of {@link YAxis}).
      */
-    public YAxis getTaskAxis() {
+    public YAxis getActivityAxis() {
         return super.getYAxis();
     }
 }
