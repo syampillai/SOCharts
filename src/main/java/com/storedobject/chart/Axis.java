@@ -16,8 +16,6 @@
 
 package com.storedobject.chart;
 
-import com.storedobject.helper.ID;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -29,7 +27,7 @@ import java.util.Objects;
  *
  * @author Syam
  */
-public abstract class Axis extends VisiblePart {
+public abstract class Axis extends VisiblePart implements Wrapped {
 
     /**
      * Definition of pointer types.
@@ -50,7 +48,6 @@ public abstract class Axis extends VisiblePart {
          */
         NONE
     }
-    private final long id = ID.newID();
     private DataType dataType;
     Map<CoordinateSystem, AxisWrapper> wrappers = new HashMap<>();
     private String name;
@@ -98,12 +95,12 @@ public abstract class Axis extends VisiblePart {
             return false;
         }
         Axis axis = (Axis) o;
-        return id == axis.id;
+        return getId() == axis.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(getId());
     }
 
     String axisName() {
@@ -157,10 +154,6 @@ public abstract class Axis extends VisiblePart {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        encodeWrapped(sb);
-    }
-
-    private void encodeWrapped(StringBuilder sb) {
         if(data != null) {
             sb.append(",\"data\":").append(data.getSerial());
         }
@@ -786,7 +779,7 @@ public abstract class Axis extends VisiblePart {
         }
 
         /**
-         * Check if the tick is drawn inside or outside of the axis.
+         * Check if the tick is drawn inside or outside the axis.
          *
          * @return True if inside.
          */
@@ -1399,10 +1392,6 @@ public abstract class Axis extends VisiblePart {
         @Override
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
-            int z = axis.getZ();
-            if(z >= 0) {
-                ComponentPart.encode(sb, "z", z);
-            }
             for(SOChart.ComponentEncoder ce: SOChart.encoders) {
                 if(coordinateSystem.getClass() != ce.partType) {
                     continue;
@@ -1411,7 +1400,7 @@ public abstract class Axis extends VisiblePart {
                 sb.append('"').append(ce.label).append("Index\":").append(coordinateSystem.getSerial());
                 break;
             }
-            axis.encodeWrapped(sb);
+            axis.encodeJSON(sb);
         }
 
         @Override

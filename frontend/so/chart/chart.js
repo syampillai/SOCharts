@@ -1,13 +1,8 @@
-import { LitElement, html, css, property, customElement } from 'lit-element'
+import { LitElement, html, css } from 'lit'
+import {property, customElement} from 'lit/decorators.js';
 import * as echarts from 'echarts/dist/echarts.min'
 
 export class SOChart extends LitElement {
-
-    render() {
-        return html`<div id="${this.idChart}"
-                         style="min-width:${this.minw};max-width:${this.maxw};width:${this.width};min-height:${this.minh};max-height:${this.maxh};height:${this.height};">
-        </div>`;
-    }
 
     static get properties() {
         return {
@@ -18,6 +13,11 @@ export class SOChart extends LitElement {
             width: { type: String },
             height: { type: String }
         };
+    }
+    render() {
+        return html`<div id="${this.idChart}"
+                         style="min-width:${this.minw};max-width:${this.maxw};width:${this.width};min-height:${this.minh};max-height:${this.maxh};height:${this.height};">
+        </div>`;
     }
 
     constructor() {

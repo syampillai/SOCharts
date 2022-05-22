@@ -54,7 +54,7 @@ import java.util.*;
  *
  * @author Syam
  */
-@NpmPackage(value = "echarts", version = "5.3.0")
+@NpmPackage(value = "echarts", version = "5.3.2")
 @Tag("so-chart")
 @JsModule("./so/chart/chart.js")
 public class SOChart extends LitComponent implements HasSize {
@@ -579,6 +579,7 @@ public class SOChart extends LitComponent implements HasSize {
      * @return Customized JSON string.
      * @throws Exception If any custom error to be notified so that rendering will not happen.
      */
+    @SuppressWarnings("RedundantThrows")
     protected String customizeDataJSON(String json, @SuppressWarnings("unused") AbstractDataProvider<?> data) throws Exception {
         return json;
     }

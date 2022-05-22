@@ -676,8 +676,12 @@ public class ActivityList extends AbstractProject {
     final String getAxisLabel(AbstractTask abstractActivity, int index) {
         ActivityGroup group = ((Activity) abstractActivity).group;
         return "[" + activityGroups.indexOf(group) + ",\"\",0,\""
-                + group.getName() + "\",\"" + getExtraAxisLabel(group) + "\","
+                + nullAsEmpty(group.getName()) + "\",\"" + nullAsEmpty(getExtraAxisLabel(group)) + "\","
                 + group.getColor() + "]";
+    }
+
+    private String nullAsEmpty(String s) {
+        return s == null ? "" : s;
     }
 
     @Override
@@ -688,10 +692,8 @@ public class ActivityList extends AbstractProject {
     @Override
     protected String getTooltipLabel(AbstractTask abstractActivity) {
         Activity activity = (Activity)abstractActivity;
-        String extra = activity.getExtraInfo();
-        if(extra == null || extra.isEmpty()) {
-            extra = "";
-        } else {
+        String extra = nullAsEmpty(activity.getExtraInfo());
+        if(!extra.isEmpty()) {
             extra = "<br>" + extra;
         }
         Function<LocalDateTime, String> timeConverter = getTooltipTimeFormat();

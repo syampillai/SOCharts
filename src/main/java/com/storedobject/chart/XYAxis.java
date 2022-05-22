@@ -25,6 +25,7 @@ public abstract class XYAxis extends Axis {
 
     private boolean opposite = false;
     private int offset = 0;
+    private boolean inverse;
 
     /**
      * Constructor.
@@ -59,6 +60,10 @@ public abstract class XYAxis extends Axis {
             sb.append(',');
             ComponentPart.encode(sb, "offset", offset);
         }
+        if(opposite || offset > 0) {
+            sb.append(",\"axisLine\":{\"onZero\":false}");
+        }
+        sb.append(",\"inverse\":").append(inverse);
     }
 
     /**
@@ -97,5 +102,23 @@ public abstract class XYAxis extends Axis {
      */
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    /**
+     * Invert the axis so that it will run from the opposite end.
+     *
+     * @param inverse True/false.
+     */
+    public void setInverse(boolean inverse) {
+        this.inverse = inverse;
+    }
+
+    /**
+     * Is this axis inverted.
+     *
+     * @return True/false.
+     */
+    public final boolean isInverse() {
+        return inverse;
     }
 }
