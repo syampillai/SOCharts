@@ -32,6 +32,21 @@ export class SOChart extends LitElement {
         this.width = "33vw";
         this.height = "33vh";
         this.events = [];
+        
+        // Keep a reference to pending resize event. We use this to not trigger too many render events on continuous resize
+        this.pendingResizeEvent = null;
+        this.resizeListener = (event) => {
+            if(this.chart && this.chart != null) {
+                // Clear previous pending event (if any) and register a new one. This way only last one will trigger
+                if (this.pendingResizeEvent) {
+                    clearTimeout(this.pendingResizeEvent);
+                }
+                this.pendingResizeEvent = setTimeout(() => {
+                    this.chart.resize();
+                    this.pendingResizeEvent = null;
+                }, 500);
+            }
+        };
     }
 
     addEvent(event, data) {
@@ -41,9 +56,11 @@ export class SOChart extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         this.$server.ready();
+        window.addEventListener("resize", this.resizeListener);
     }
 
     disconnectedCallback() {
+        window.removeEventListener("resize", this.resizeListener);
         super.disconnectedCallback();
         this.destroyChart();
     }
