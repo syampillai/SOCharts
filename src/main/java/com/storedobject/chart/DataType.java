@@ -49,7 +49,7 @@ public enum DataType {
     /**
      * Object values - used by specialized charts.
      */
-    OBJECT("", Object.class);
+    OBJECT("value", Object.class);
 
     private final String name;
     private final Class<?> type;

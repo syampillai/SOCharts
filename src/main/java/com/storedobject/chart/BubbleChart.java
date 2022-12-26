@@ -61,8 +61,8 @@ public class BubbleChart extends Chart {
         }
         RectangularCoordinate rc = (RectangularCoordinate) coordinateSystem;
         rc.validate();
-        rc.axes.get(0).setData((CategoryData) getData()[0]);
-        rc.axes.get(1).setData((CategoryData) getData()[1]);
+        rc.axes.get(0).setData(getData()[0]);
+        rc.axes.get(1).setData(getData()[1]);
     }
 
     @Override

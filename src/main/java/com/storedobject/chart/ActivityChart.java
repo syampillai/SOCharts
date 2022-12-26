@@ -18,7 +18,7 @@ package com.storedobject.chart;
 /**
  * Activity chart is like a {@link GanttChart} but instead of a {@link Project} instance as its data, it uses
  * an {@link ActivityList} instance as its data.
- * <p>Note: Unlike other charts that are instances of {@link Chart}, Gantt chart is composed of multiple charts and
+ * <p>Note: Unlike other charts that are instances of {@link Chart}, Activity chart is composed of multiple charts and
  * other charting elements put together as a {@link ComponentGroup}. If you want to customize this, there are
  * several methods to get its components from this class and there are methods that can be overridden in the
  * {@link ActivityList} class too.</p>

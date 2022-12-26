@@ -17,7 +17,7 @@
 package com.storedobject.chart;
 
 /**
- * Abstract base class for creating specific sub-types of charts that requires one more axes.
+ * Abstract base class for creating specific subtypes of charts that requires more axes.
  *
  * @author Syam
  */

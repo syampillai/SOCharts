@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2020 Syam Pillai
+ *  Copyright Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -43,18 +43,17 @@ public class AbstractData<T> extends ArrayList<T> implements AbstractDataProvide
      */
     @SafeVarargs
     public AbstractData(Class<T> dataClass, T... data) {
-        this(dataType(dataClass), dataClass, data);
+        this(dataType(dataClass), data);
     }
 
     /**
      * Constructor.
      *
      * @param dataType Data type.
-     * @param dataClass Data class.
      * @param data Initial data to add
      */
     @SafeVarargs
-    public AbstractData(DataType dataType, Class<T> dataClass, T... data) {
+    public AbstractData(DataType dataType, T... data) {
         this.dataType = dataType;
         if(data != null) {
             addAll(Arrays.asList(data));

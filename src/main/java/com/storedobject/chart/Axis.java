@@ -65,7 +65,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     private MinorGridLines minorGridLines;
     private GridAreas gridAreas;
     private Pointer pointer;
-    private CategoryDataProvider data;
+    private AbstractDataProvider<?> data;
     SOChart soChart;
 
     /**
@@ -137,6 +137,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         return value;
     }
 
+    @Override
     public void validate() throws ChartException{
         if(dataType == null) {
             String name = getName();
@@ -147,7 +148,13 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
     }
 
-    void setData(CategoryDataProvider data) {
+    /**
+     * Set the data for this axis.
+     * <p>Note: Normally, this is not required to be set unless you are working on a custom chart that is not yet
+     * supported.</p>
+     * @param data Data to be used for this axis.
+     */
+    public void setData(AbstractDataProvider<?> data) {
         this.data = data;
     }
 

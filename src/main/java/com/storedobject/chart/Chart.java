@@ -137,7 +137,14 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         this.custom = renderer;
     }
 
-    private String type() {
+    /**
+     * Get the type-value of the chart. (Example, type-value of the {@link LineChart} is "line"). You must override this
+     * and return the correct chart-type if you are creating your own chart-type that is not yet supported by this
+     * add-on lib,
+     *
+     * @return Chart-type value.
+     */
+    protected String typeValue() {
         if(custom != null) {
             return "custom";
         }
@@ -204,7 +211,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         if(dataToEmbed != null) {
             ComponentPart.encode(sb, "data", dataToEmbed.getSerial());
         }
-        ComponentPart.encode(sb, "type", type());
+        ComponentPart.encode(sb, "type", typeValue());
         if(custom != null) {
             ComponentPart.encode(sb, "renderItem", custom);
         }
@@ -307,6 +314,16 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
                 }
             }
         }
+    }
+
+    /**
+     * Get the coordinate system of this chart.
+     * <p>Note: Some charts like {@link PieChart}, {@link RadarChart} etc. do not have a coordinate system.</p>
+     *
+     * @return Coordinate system.
+     */
+    public CoordinateSystem getCoordinateSystem() {
+        return coordinateSystem;
     }
 
     private String getPropertyName(ComponentProperty property) {
@@ -844,22 +861,13 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
 
         private boolean set(Size size) {
             switch(size.get()) {
-                case -101:
-                    left = true;
-                    break;
-                case -102:
-                case -111:
-                case -112:
-                    top = true;
-                    break;
-                case -103:
-                    right = true;
-                    break;
-                case -113:
-                    bottom = true;
-                    break;
-                default:
+                case -101 -> left = true;
+                case -102, -111, -112 -> top = true;
+                case -103 -> right = true;
+                case -113 -> bottom = true;
+                default -> {
                     return false;
+                }
             }
             return true;
         }

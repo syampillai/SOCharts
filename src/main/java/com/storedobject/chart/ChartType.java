@@ -76,6 +76,10 @@ public enum ChartType {
      * Graph.
      */
     Graph(new String[] {}, false),
+    /**
+     * Candlestick.
+     */
+    Candlestick,
     ;
 
     private final String[] axes;

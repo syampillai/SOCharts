@@ -1,5 +1,5 @@
 /*
- *  Copyright yam Pillai
+ *  Copyright Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -17,26 +17,16 @@
 package com.storedobject.chart;
 
 /**
- * A basic data provider that can be extended to create customized data providers.
- *
- * @author Syam
+ * Data representation for {@link CandlestickChart}.
  */
-public abstract class BasicDataProvider<T> implements AbstractDataProvider<T> {
+public class CandlestickData extends AbstractData<Candlestick> {
 
-    private int serial = -1;
-
-    @Override
-    public final void setSerial(int serial) {
-        this.serial = serial;
-    }
-
-    @Override
-    public final int getSerial() {
-        return serial;
-    }
-
-    @Override
-    public DataType getDataType() {
-        return DataType.OBJECT;
+    /**
+     * Candlestick chart.
+     *
+     * @param data Data points to add.
+     */
+    public CandlestickData(Candlestick... data) {
+        super(Candlestick.class, data);
     }
 }

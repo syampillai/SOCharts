@@ -1,5 +1,5 @@
 /*
- *  Copyright yam Pillai
+ *  Copyright Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -17,26 +17,17 @@
 package com.storedobject.chart;
 
 /**
- * A basic data provider that can be extended to create customized data providers.
+ * A structure to represent a data point in the candlestick chart.
  *
- * @author Syam
+ * @param opening Opening value
+ * @param closing Closing value
+ * @param low Lowe value
+ * @param high High value
  */
-public abstract class BasicDataProvider<T> implements AbstractDataProvider<T> {
-
-    private int serial = -1;
+public record Candlestick(Number opening, Number closing, Number low, Number high) {
 
     @Override
-    public final void setSerial(int serial) {
-        this.serial = serial;
-    }
-
-    @Override
-    public final int getSerial() {
-        return serial;
-    }
-
-    @Override
-    public DataType getDataType() {
-        return DataType.OBJECT;
+    public String toString() {
+        return "[" + opening + "," + closing + "," + low + "," + high + "]";
     }
 }

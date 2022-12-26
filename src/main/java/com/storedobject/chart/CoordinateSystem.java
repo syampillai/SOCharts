@@ -106,6 +106,16 @@ public abstract class CoordinateSystem extends VisiblePart implements Component,
         return axes(axisClass).findAny().isEmpty();
     }
 
+    /**
+     * Return an axis of this coordinate system.
+     * @param index Index of the axis.
+     *
+     * @return Axis at the given index.
+     */
+    public Axis getAxis(int index) {
+        return axes.get(index);
+    }
+
     @Override
     public void validate() throws ChartException {
         for(Axis axis: axes) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2019-2021 Syam Pillai
+ *  Copyright Syam Pillai
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -242,8 +242,8 @@ public interface ComponentPart extends ComponentProperty {
         if(any instanceof Number || any instanceof Boolean) {
             return any.toString();
         }
-        if(string.startsWith("\"") && string.endsWith("\"")) {
-            return string; // Special case - already encoded.
+        if((string.startsWith("\"") && string.endsWith("\"")) || (string.startsWith("[") && string.endsWith("]"))) {
+            return string; // Special cases - already encoded.
         }
         if(string.contains("\"")) {
             string = string.replace("\"", "\\\"");
