@@ -50,7 +50,7 @@ export class SOChart extends LitElement {
     }
 
     addEvent(event, data) {
-        this.events.push({event, data})
+        this.events.push({ event, data })
     }
 
     connectedCallback() {
@@ -86,19 +86,22 @@ export class SOChart extends LitElement {
         this.chart = null;
     }
 
-    updateChart(full, options) {
+    setTheme(theme) {
+        this.destroyChart();
+        this.updateChart(false, this.allOptions, theme);
+    }
+
+    updateChart(full, options, theme) {
         if(full) {
             this.allOptions = options;
         }
         var json = JSON.parse(options);
         this._stuff(json);
         if(!this.chart || this.chart == null) {
-            this.chart = echarts.init(this.shadowRoot.getElementById(this.idChart));
+            this.chart = echarts.init(this.shadowRoot.getElementById(this.idChart), theme);
         }
         this.events.forEach(event => {
-            this.chart.on(event.event, {name: event.data}, params => {
-               console.log(event.event);
-               console.log(event.data);
+            this.chart.on(event.event, { name: event.data }, params => {
                this.$server.runEvent(event.event, event.data);
            })
         });

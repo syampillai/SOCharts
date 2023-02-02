@@ -16,7 +16,7 @@
 
 package com.storedobject.chart;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -47,7 +47,7 @@ public interface Component extends ComponentPart {
     default void addParts(SOChart soChart) {
     }
 
-    default HashMap<?, ?> getEvents() {
+    default Map<SOEvent, Runnable> getEvents() {
         return null;
     }
 }

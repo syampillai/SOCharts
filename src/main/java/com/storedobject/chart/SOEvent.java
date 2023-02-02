@@ -1,20 +1,44 @@
 package com.storedobject.chart;
 
+/**
+ * Represents a chart event.
+ *
+ * @author Asnel Christian (Modified by Syam)
+ */
 public class SOEvent {
-    private String name;
-    private String target;
 
+    private final String name;
+    private final String target;
+
+    /**
+     * Constructor.
+     * @param name Name.
+     * @param target Target.
+     */
     public SOEvent(String name, String target) {
         this.name = name;
         this.target = target;
     }
+
+    /**
+     * Get the event name.
+     *
+     * @return Event name.
+     */
     public String getEvent() {
         return name;
     }
+
+    /**
+     * Get the target.
+     *
+     * @return Target.
+     */
     public String getTarget() {
         return target;
     }
-    public String key() {
+
+    private String key() {
         return String.format("%s%s", this.name, this.target);
     }
 
@@ -25,6 +49,6 @@ public class SOEvent {
 
     @Override
     public boolean equals(Object that){
-        return this.key().equals(((SOEvent)that).key());
+        return that instanceof SOEvent e && this.key().equals(e.key());
     }
 }

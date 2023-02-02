@@ -52,7 +52,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
     public void addParts(SOChart soChart) {
         soChart.disableDefaultLegend();
         soChart.remove(error);
-        soChart.add(getCoordinateSystem());
+        soChart.add(getC());
         try {
             project.validateConstraints();
         } catch(ChartException e) {
@@ -104,7 +104,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
      */
     DataZoom getYAxisZoom() {
         if(taskZoom == null) {
-            taskZoom = new DataZoom(getCoordinateSystem(), getYAxis());
+            taskZoom = new DataZoom(getC(), getYAxis());
             taskZoom.setFilterMode(2);
             taskZoom.setShowDetail(false);
             taskZoom.setZ(7);
@@ -119,7 +119,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
      */
     public DataZoom getTimeAxisZoom() {
         if(timeZoom == null) {
-            timeZoom = new DataZoom(getCoordinateSystem(), getTimeAxis());
+            timeZoom = new DataZoom(getC(), getTimeAxis());
             timeZoom.setFilterMode(2);
             timeZoom.setShowDetail(false);
             timeZoom.setZ(7);
@@ -143,6 +143,10 @@ public abstract class AbstractGanttChart implements ComponentGroup {
             p.setRight(Size.pixels(40));
         }
         return coordinate;
+    }
+
+    private CoordinateSystem getC() {
+        return getCoordinateSystem();
     }
 
     /**
@@ -182,7 +186,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
         private TaskBands() {
             setCustomRenderer("HBand");
             setZ(1);
-            plotOn(getCoordinateSystem());
+            plotOn(getC());
         }
 
         @Override
@@ -208,7 +212,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
             this.data = data;
             setCustomRenderer("VLine");
             setZ(6);
-            plotOn(getCoordinateSystem());
+            plotOn(getC());
         }
 
         @Override
@@ -230,7 +234,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
         private TaskAxisLabels() {
             setCustomRenderer("VAxisLabel");
             setZ(5);
-            plotOn(getCoordinateSystem());
+            plotOn(getC());
         }
 
         @Override
@@ -256,7 +260,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
             setCustomRenderer("HBar");
             setZ(4);
             setName("Tasks");
-            plotOn(getCoordinateSystem(), getTimeAxis(), getYAxis());
+            plotOn(getC(), getTimeAxis(), getYAxis());
             Tooltip tooltip = new Tooltip();
             tooltip.append(project.tooltipLabels());setTooltip(tooltip);
         }
@@ -285,7 +289,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
             this.data = data;
             setZ(2);
             setName("Dependencies");
-            plotOn(getCoordinateSystem(), getTimeAxis(), getYAxis());
+            plotOn(getC(), getTimeAxis(), getYAxis());
         }
 
         @Override

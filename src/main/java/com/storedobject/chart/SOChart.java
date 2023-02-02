@@ -90,9 +90,10 @@ public class SOChart extends LitComponent implements HasSize {
     private AbstractColor defaultBackground;
     private DefaultTextStyle defaultTextStyle;
     private final HashMap<SOEvent, Runnable> events = new HashMap<>();
+    private String theme;
 
     @ClientCallable
-    public void runEvent(String event, String target) {
+    private void runEvent(String event, String target) {
         this.events.get(new SOEvent(event, target)).run();
     }
 
@@ -242,6 +243,16 @@ public class SOChart extends LitComponent implements HasSize {
     }
 
     /**
+     * Set the dark theme.
+     */
+    public void setDarkTheme() {
+        this.theme = "dark";
+        if(!neverUpdated) {
+            executeJS("setTheme", theme);
+        }
+    }
+
+    /**
      * This should be invoked only from {@link Component#addParts(SOChart)} method (That method will be called
      * on each {@link Component} whenever chart is getting updated).
      *
@@ -330,8 +341,7 @@ public class SOChart extends LitComponent implements HasSize {
             for(Component c: components) {
                 if(c != null) {
                     this.components.add(c);
-                    @SuppressWarnings("unchecked")
-                    Map<SOEvent, Runnable> cEvents = (HashMap<SOEvent, Runnable>) c.getEvents();
+                    Map<SOEvent, Runnable> cEvents = c.getEvents();
                     if (cEvents != null) {
                         this.events.putAll(cEvents);
                         for (SOEvent key : this.events.keySet()) {
@@ -543,7 +553,7 @@ public class SOChart extends LitComponent implements HasSize {
             }
         }
         sb.append('}');
-        executeJS("updateChart", !skipData, customizeJSON(sb.toString()));
+        executeJS("updateChart", !skipData, customizeJSON(sb.toString()), theme);
         dataSet.clear();
         parts.clear();
         defaultColors = null;
