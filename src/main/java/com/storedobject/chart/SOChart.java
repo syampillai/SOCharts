@@ -64,7 +64,6 @@ public class SOChart extends LitComponent implements HasSize {
             new ComponentEncoder("textStyle", DefaultTextStyle.class),
             new ComponentEncoder(Title.class),
             new ComponentEncoder(Legend.class),
-            new ComponentEncoder(Toolbox.class),
             new ComponentEncoder(Tooltip.class),
             new ComponentEncoder("angleAxis", AngleAxis.AngleAxisWrapper.class),
             new ComponentEncoder("radiusAxis", RadiusAxis.RadiusAxisWrapper.class),
@@ -77,6 +76,7 @@ public class SOChart extends LitComponent implements HasSize {
             new ComponentEncoder("dataZoom", AbstractDataZoom.class),
             new ComponentEncoder("visualMap", VisualMap.class),
             new ComponentEncoder("graphic", Shape.class),
+            new ComponentEncoder(Toolbox.class),
     };
     private final List<ComponentGroup> componentGroups = new ArrayList<>();
     private final List<Component> components = new ArrayList<>();

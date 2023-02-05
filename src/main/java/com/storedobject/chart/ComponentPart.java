@@ -26,7 +26,7 @@ import com.storedobject.helper.ID;
 public interface ComponentPart extends ComponentProperty {
 
     /**
-     * Set the rendering index of this part. Rendering index is the position of this part in on the chart when it is
+     * Set the rendering index of this part. Rendering index is the position of this part on the chart when it is
      * being rendered. It is up to the part to keep this value if required.
      *
      * @param index Rendering index.

@@ -19,6 +19,8 @@ package com.storedobject.chart;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Toolbox provides certain utilities (Example: "Download the chart display as an image"). Each utility is
@@ -202,6 +204,8 @@ public class Toolbox extends VisiblePart implements Component, HasPosition {
     public final static class Zoom extends ToolboxButton implements Internal {
 
         private String resetCaption = "Reset zoom";
+        private XAxis[] xAxes = null;
+        private YAxis[] yAxes = null;
 
         /**
          * Constructor.
@@ -222,6 +226,28 @@ public class Toolbox extends VisiblePart implements Component, HasPosition {
 
         @Override
         protected void encodeCaptionJSON(StringBuilder sb) {
+            if(xAxes != null) {
+                sb.append(",\"xAxisIndex\":");
+                if(xAxes.length == 0) {
+                    sb.append("false");
+                } else {
+                    sb.append('[')
+                            .append(Stream.of(xAxes).map(a -> "" + a.getRenderingIndex())
+                                    .collect(Collectors.joining(",")))
+                            .append(']');
+                }
+            }
+            if(yAxes != null) {
+                sb.append(",\"yAxisIndex\":");
+                if(yAxes.length == 0) {
+                    sb.append("false");
+                } else {
+                    sb.append('[')
+                            .append(Stream.of(yAxes).map(a -> "" + a.getRenderingIndex())
+                                    .collect(Collectors.joining(",")))
+                            .append(']');
+                }
+            }
             String c = getCaption(), rc = getResetCaption();
             if(c == null && rc == null) {
                 return;
@@ -254,6 +280,28 @@ public class Toolbox extends VisiblePart implements Component, HasPosition {
          */
         public void setResetCaption(String resetCaption) {
             this.resetCaption = resetCaption;
+        }
+
+        /**
+         * Set the applicable {@link XAxis} list while zooming. By default, all the axes are applicable. However, you
+         * may pass the ones you want. If you pass no parameter, that is, <code>setXAxes()</code>, no {@link XAxis} is
+         * applicable.
+         *
+         * @param xAxes {@link XAxis} list.
+         */
+        public void setXAxes(XAxis... xAxes) {
+            this.xAxes = xAxes;
+        }
+
+        /**
+         * Set the applicable {@link YAxis} list while zooming. By default, all the axes are applicable. However, you
+         * may pass the ones you want. If you pass no parameter, that is, <code>setYAxes()</code>, no {@link YAxis} is
+         * applicable.
+         *
+         * @param yAxes {@link YAxis} list.
+         */
+        public void setYAxes(YAxis... yAxes) {
+            this.yAxes = yAxes;
         }
     }
 }

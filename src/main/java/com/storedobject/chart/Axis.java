@@ -65,6 +65,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     private MinorGridLines minorGridLines;
     private GridAreas gridAreas;
     private Pointer pointer;
+    private int renderingIndex;
     private AbstractDataProvider<?> data;
     SOChart soChart;
 
@@ -198,6 +199,16 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         ComponentPart.encode(sb, "minorSplitLine", minorGridLines);
         ComponentPart.encode(sb, "splitArea", gridAreas);
         ComponentPart.encode(sb, "axisPointer", pointer);
+    }
+
+    @Override
+    public void setRenderingIndex(int renderingIndex) {
+        this.renderingIndex = renderingIndex;
+    }
+
+    @Override
+    public int getRenderingIndex() {
+        return renderingIndex;
     }
 
     /**

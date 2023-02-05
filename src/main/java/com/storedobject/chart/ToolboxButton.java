@@ -43,7 +43,7 @@ public abstract class ToolboxButton implements ComponentPart {
     }
 
     /**
-     * Encode caption part here. The default implementation does the needful to handle the return value of
+     * Encode caption part here. The default implementation does what is necessary to handle the return value of
      * {@link #getCaption()}.
      *
      * @param sb Append the encoded stuff to this.
