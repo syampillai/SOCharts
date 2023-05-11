@@ -320,6 +320,11 @@ public class GaugeChart extends SelfPositioningChart implements HasPolarProperty
         }
     }
 
+    /**
+     * Axis line used in {@link GaugeChart}.
+     *
+     * @author Syam
+     */
     public static class AxisLine extends VisiblePart {
 
         private boolean roundCap;

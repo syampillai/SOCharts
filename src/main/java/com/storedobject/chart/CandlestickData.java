@@ -18,8 +18,10 @@ package com.storedobject.chart;
 
 /**
  * Data representation for {@link CandlestickChart}.
+ *
+ * @author Syam
  */
-public class CandlestickData extends AbstractData<Candlestick> {
+public class CandlestickData extends AbstractData<CandlestickData.Candlestick> {
 
     /**
      * Candlestick chart.
@@ -28,5 +30,23 @@ public class CandlestickData extends AbstractData<Candlestick> {
      */
     public CandlestickData(Candlestick... data) {
         super(Candlestick.class, data);
+    }
+
+    /**
+     * A structure to represent a data point in the candlestick chart.
+     *
+     * @author Syam
+     *
+     * @param opening Opening value
+     * @param closing Closing value
+     * @param low Lowe value
+     * @param high High value
+     */
+    public record Candlestick(Number opening, Number closing, Number low, Number high) {
+
+        @Override
+        public String toString() {
+            return "[" + opening + "," + closing + "," + low + "," + high + "]";
+        }
     }
 }

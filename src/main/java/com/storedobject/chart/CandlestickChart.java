@@ -16,6 +16,11 @@
 
 package com.storedobject.chart;
 
+/**
+ * Candlestick chart.
+ *
+ * @author Syam
+ */
 public class CandlestickChart extends XYChart {
 
     private final AbstractDataProvider<?> xData;

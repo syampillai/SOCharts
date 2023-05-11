@@ -2,7 +2,7 @@ package com.storedobject.chart;
 
 /**
  * Shape class that can be added to {@link SOChart}. Positioning of the {@link Shape} on the screen is relative
- * to its parent. The parent could be an instance of the {@link SOChart} if this was added to that instance directly or
+ * to its parent. The parent could be an instance of the {@link SOChart} if this was added to that instance directly, or
  * it could be a {@link ShapeGroup} class if this was added to a {@link ShapeGroup} instance. Positioning can be done by
  * setting appropriate values on the {@link Position} instance of this shape or by setting shape-specific parameters
  * like center coordinate for the {@link CirclePart} shape. When both are specified, values set on the {@link Position}
@@ -20,6 +20,9 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
     private boolean draggable = false;
     private boolean show = true;
 
+    /**
+     * Constructor.
+     */
     public Shape() {
         getStyle(true).setFillColor(DEFAULT_COLOR);
         style.setStrokeColor(DEFAULT_COLOR);
@@ -328,27 +331,57 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
         }
     }
 
+    /**
+     * Representation of a (x, y) point used in shapes.
+     *
+     * @author Syam
+     */
     public static class Point {
 
         Number x, y;
 
+        /**
+         * Constructor.
+         *
+         * @param x X value.
+         * @param y Y value.
+         */
         public Point(Number x, Number y) {
             setX(x);
             setY(y);
         }
 
+        /**
+         * Get the X value.
+         *
+         * @return X value.
+         */
         public final Number getX() {
             return x;
         }
 
+        /**
+         * Set the X value.
+         * @param x X Value.
+         */
         public void setX(Number x) {
             this.x = x;
         }
 
+        /**
+         * Get the Y value.
+         *
+         * @return Y value.
+         */
         public final Number getY() {
             return y;
         }
 
+        /**
+         * Set the Y value.
+         *
+         * @param y Y value.
+         */
         public void setY(Number y) {
             this.y = y;
         }

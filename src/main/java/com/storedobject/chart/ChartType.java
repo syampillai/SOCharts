@@ -80,6 +80,10 @@ public enum ChartType {
      * Candlestick.
      */
     Candlestick,
+    /**
+     * Sankey.
+     */
+    Sankey(new String[] {}, false),
     ;
 
     private final String[] axes;

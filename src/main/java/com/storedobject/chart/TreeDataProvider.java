@@ -106,6 +106,11 @@ public interface TreeDataProvider extends ComponentPart {
         return null;
     }
 
+    /**
+     * Label used within the {@link TreeDataProvider} class.
+     *
+     * @author Syam
+     */
     class Label extends TextStyle {
 
         private boolean show = true;

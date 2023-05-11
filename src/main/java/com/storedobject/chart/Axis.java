@@ -179,11 +179,15 @@ public abstract class Axis extends VisiblePart implements Wrapped {
             ComponentPart.encode(sb, "nameTextStyle", nameTextStyle);
         }
         ComponentPart.encode(sb, "axisLabel", label);
+        min = value(min);
         if(min != null) {
-            sb.append(",\"min\":").append(min);
+            ComponentPart.encode(sb, "min", min);
+            //sb.append(",\"min\":").append(min);
         }
+        max = value(max);
         if(max != null) {
-            sb.append(",\"max\":").append(max);
+            ComponentPart.encode(sb, "max", max);
+            //sb.append(",\"max\":").append(max);
         }
         if(dataType != DataType.CATEGORY) {
             if(divisions > 0) {
@@ -315,7 +319,8 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     /**
      * Set the minimum value for the axis.
      *
-     * @param min Minimum value. (For category axis, it could be just an ordinal number of the category).
+     * @param min Minimum value. (For category axis, it could be just an ordinal number of the category). Note: The type
+     *            of the value must be compatible with the data type of the axis. Otherwise, it will be ignored.
      */
     public void setMin(Number min) {
         this.min = value(min);
@@ -325,15 +330,16 @@ public abstract class Axis extends VisiblePart implements Wrapped {
      * By invoking this method, minimum of the axis will be set as minimum value of the data.
      */
     public void setMinAsMinData() {
-        min = "\"dataMin\"";
+        min = "dataMin";
     }
 
     /**
      * Set maximum value for the axis.
      *
-     * @param max Maximum value. (For category axis, it could be just an ordinal number of the category).
+     * @param max Maximum value. (For category axis, it could be just an ordinal number of the category). Note: The type
+     *            of the value must be compatible with the data type of the axis. Otherwise, it will be ignored.
      */
-    public void setMax(Number max) {
+    public void setMax(Object max) {
         this.max = value(max);
     }
 
@@ -341,7 +347,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
      * By invoking this method, maximum of the axis will be set as maximum value of the data.
      */
     public void setMaxAsMaxData() {
-        max = "\"dataMax\"";
+        max = "dataMax";
     }
 
     /**
@@ -853,6 +859,11 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
     }
 
+    /**
+     * A base class for various type of lines used in axis and coordinate systems.
+     *
+     * @author Syam
+     */
     public static class Line extends VisiblePart {
 
         private LineStyle style;

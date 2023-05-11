@@ -16,30 +16,29 @@
 
 package com.storedobject.chart;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 /**
- * Treemap chart.
+ * Sankey chart.
  *
  * @author Syam
  */
-public class TreemapChart extends SelfPositioningSpecialChart {
+public class SankeyChart extends SelfPositioningSpecialChart {
 
-    private final List<TreeDataProvider> data = new ArrayList<>();
-    private final TD td;
+    private SankeyDataProvider data;
+    private final SD sd;
+    private boolean horizontal = true;
 
     /**
      * Create a tree chart of the set of provided data.
      *
      * @param data Data to be used.
      */
-    public TreemapChart(TreeDataProvider... data) {
-        super(ChartType.Treemap);
-        super.setData(td = new TD());
-        addData(data);
+    public SankeyChart(SankeyDataProvider data) {
+        super(ChartType.Sankey);
+        this.data = data;
+        super.setData(sd = new SD());
     }
 
     @Override
@@ -47,68 +46,67 @@ public class TreemapChart extends SelfPositioningSpecialChart {
     }
 
     /**
-     * Get the list of data associated with this chart.
+     * Get the Sankey data associated with this chart.
      *
-     * @return List of data providers.
+     * @return Sankey data.
      */
-    public List<TreeDataProvider> getTreemapData() {
+    public SankeyDataProvider getSankeyData() {
         return data;
     }
 
     /**
-     * Add data to the chart.
+     * Set the Sankey data associated with this chart.
      *
-     * @param data List of data to add.
+     * @param data Sankey data.
      */
-    public void addData(TreeDataProvider... data) {
-        if(data != null) {
-            this.data.addAll(Arrays.asList(data));
-        }
-    }
-
-    /**
-     * Remove data from the chart.
-     *
-     * @param data List of data to remove.
-     */
-    public void removeData(TreeDataProvider... data) {
-        if(data != null) {
-            this.data.removeAll(Arrays.asList(data));
-        }
-    }
-
-    @Override
-    public void validate() throws ChartException {
-        super.validate();
-        if(data.isEmpty()) {
-            throw new ChartException("No data provided for " + className());
-        }
+    public void setSankeyData(SankeyDataProvider data) {
+        this.data = data;
     }
 
     @Override
     protected AbstractDataProvider<?> dataToEmbed() {
-        return td;
+        return sd;
+    }
+
+    /**
+     * Set the orientation as vertical.
+     */
+    public void setVertical() {
+        horizontal = false;
     }
 
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
+        if(!horizontal) {
+            ComponentPart.encode(sb, "orient", "vertical");
+        }
         ComponentPart.addComma(sb);
-        ComponentPart.encode(sb, "leafDepth", 1);
+        sb.append("\"edges\":[");
+        AtomicBoolean first = new AtomicBoolean(true);
+        data.getEdges().forEach(e -> {
+            if(first.get()) {
+                first.set(false);
+            } else {
+                sb.append(',');
+            }
+            e.encodeJSON(sb);
+        });
+        sb.append(']');
     }
 
-    private class TD implements AbstractDataProvider<Object>, InternalDataProvider {
+    private class SD implements AbstractDataProvider<Object>, InternalDataProvider {
 
         private int serial = -1;
 
         @Override
         public Stream<Object> stream() {
-            return data.stream().map(o -> o);
+            return data.getNodes().map(o -> o);
         }
 
         @Override
         public void encode(StringBuilder sb, Object value) {
-            ((TreeDataProvider)value).encodeJSON(sb);
+            ((SankeyDataProvider.Node)value).encodeJSON(sb);
         }
 
         @Override

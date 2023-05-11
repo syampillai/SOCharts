@@ -270,7 +270,7 @@ public abstract class AbstractProject {
      * @return Trimmed value as a string.
      */
     protected static String trim(double v) {
-        String t = "" + v;
+        String t = String.valueOf(v);
         if(t.endsWith(".0")) {
             t = t.substring(0, t.indexOf('.'));
         }
@@ -441,11 +441,6 @@ public abstract class AbstractProject {
             @Override
             public Stream<Object> stream() {
                 return Stream.of("");
-            }
-
-            @Override
-            public DataType getDataType() {
-                return DataType.OBJECT;
             }
 
             @Override

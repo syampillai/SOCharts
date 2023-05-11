@@ -54,7 +54,7 @@ public class ActivityList extends AbstractProject {
     /**
      * Constructor.
      *
-     * @param durationType Type of duration to be used for this project. (Note: {@link ChronoUnit#ERAS} and
+     * @param durationType Type of duration to be used for this {@link ActivityList}. (Note: {@link ChronoUnit#ERAS} and
      *                     {@link ChronoUnit#FOREVER} are not supported and if used, will be considered as
      *                     {@link ChronoUnit#MILLIS}).
      */
@@ -91,34 +91,34 @@ public class ActivityList extends AbstractProject {
     }
 
     private boolean contains(ProjectActivity instance) {
-        if(instance instanceof Activity task) {
-            if(task.group == null) {
+        if(instance instanceof Activity activity) {
+            if(activity.group == null) {
                 return false;
             }
-            instance = task.group;
+            instance = activity.group;
         }
         return activityGroups.contains((ActivityGroup) instance);
     }
 
     /**
-     * Create and add a {@link ActivityGroup} to the project.
+     * Create and add a {@link ActivityGroup} to the {@link ActivityList}.
      *
-     * @param name Name of the task group.
+     * @param name Name of the activity group.
      * @return Activity group created.
      */
     public ActivityGroup createActivityGroup(String name) {
-        ActivityGroup taskGroup = new ActivityGroup(name);
-        activityGroups.add(0, taskGroup);
-        return taskGroup;
+        ActivityGroup activityGroup = new ActivityGroup(name);
+        activityGroups.add(0, activityGroup);
+        return activityGroup;
     }
 
     /**
-     * Create and add a {@link Activity} to the project.
+     * Create and add a {@link Activity} to the {@link ActivityList}.
      *
-     * @param activityGroup Group to which the task to be added.
-     * @param activityName Name of the task.
+     * @param activityGroup Group to which the {@link Activity} to be added.
+     * @param activityName Name of the {@link Activity}.
      * @param start Start.
-     * @param duration Duration of the task. (Should be grater than 0).
+     * @param duration Duration of the {@link Activity}. (Should be grater than 0).
      * @return Activity created. (Returns <code>null</code> if the {@link ActivityGroup} passed doesn't belong to this).
      */
     public Activity createActivity(ActivityGroup activityGroup, String activityName, LocalDateTime start,
@@ -130,10 +130,10 @@ public class ActivityList extends AbstractProject {
     }
 
     /**
-     * Create and add a {@link Activity} to the project.
+     * Create and add a {@link Activity} to the {@link ActivityList}.
      *
-     * @param activityGroup Group to which the task to be added.
-     * @param activityName Name of the task.
+     * @param activityGroup Group to which the {@link Activity} to be added.
+     * @param activityName Name of the {@link Activity}.
      * @param start Start.
      * @param end End.
      * @return Activity created. (Returns <code>null</code> if the {@link ActivityGroup} passed doesn't belong to this).
@@ -146,12 +146,12 @@ public class ActivityList extends AbstractProject {
         return null;
     }
 
-    private void deleteActivity(Activity task) {
-        if(task == null) {
+    private void deleteActivity(Activity activity) {
+        if(activity == null) {
             return;
         }
         checked = false;
-        task.group.activities.remove(task);
+        activity.group.activities.remove(activity);
     }
 
     private void deleteGroup(ActivityGroup activityGroup) {
@@ -166,28 +166,28 @@ public class ActivityList extends AbstractProject {
     }
 
     /**
-     * Delete {@link ActivityGroup}s from the project. (All tasks and dependencies related to these groups will be
-     * dropped).
+     * Delete {@link ActivityGroup}s from the {@link ActivityList}.
+     * (All {@link Activity}s and dependencies related to these groups will be dropped).
      *
      * @param activityGroups {@link ActivityGroup}s to delete.
      */
     public void delete(ActivityGroup... activityGroups) {
         if(activityGroups != null) {
-            for(ActivityGroup taskGroup: activityGroups) {
-                deleteGroup(taskGroup);
+            for(ActivityGroup activityGroup: activityGroups) {
+                deleteGroup(activityGroup);
             }
         }
     }
 
     /**
-     * Delete {@link Activity}s from the project. (All dependencies related to these activities will be dropped).
+     * Delete {@link Activity}s from the {@link ActivityList}. (All dependencies related to these activities will be dropped).
      *
      * @param activities {@link Activity}s to delete.
      */
     public void delete(Activity... activities) {
         if(activities != null) {
-            for(Activity task: activities) {
-                deleteActivity(task);
+            for(Activity activity: activities) {
+                deleteActivity(activity);
             }
         }
     }
@@ -213,9 +213,9 @@ public class ActivityList extends AbstractProject {
     @Override
     public final LocalDateTime getEnd() {
         LocalDateTime start = getStart(), end = start, e;
-        for(ActivityGroup taskGroup: activityGroups) {
-            for(Activity task: taskGroup.activities) {
-                e = task.getEnd();
+        for(ActivityGroup activityGroup: activityGroups) {
+            for(Activity activity: activityGroup.activities) {
+                e = activity.getEnd();
                 if(e.isAfter(end)) {
                     end = e;
                 }
@@ -234,9 +234,9 @@ public class ActivityList extends AbstractProject {
     }
 
     /**
-     * Get the {@link ActivityGroup} of this project.
+     * Get the {@link ActivityGroup} of this {@link ActivityList}.
      *
-     * @param groupIndex Index of the task group to be retrieved.
+     * @param groupIndex Index of the activity group to be retrieved.
      * @return {@link ActivityGroup}.
      */
     public final ActivityGroup getEventGroup(int groupIndex) {
@@ -253,7 +253,7 @@ public class ActivityList extends AbstractProject {
     }
 
     /**
-     * An abstract base class for the representation of a Activity or Activity Group.
+     * An abstract base class for the representation of an Activity or Activity Group.
      *
      * @author Syam
      */
@@ -264,7 +264,7 @@ public class ActivityList extends AbstractProject {
         /**
          * Constructor.
          *
-         * @param name Name of the task/group.
+         * @param name Name of the activity/group.
          */
         protected ProjectActivity(String name, LocalDateTime start, int duration) {
             setName(name);
@@ -275,7 +275,7 @@ public class ActivityList extends AbstractProject {
         /**
          * Constructor.
          *
-         * @param name Name of the task/group.
+         * @param name Name of the activity/group.
          */
         protected ProjectActivity(String name, LocalDateTime start, LocalDateTime end) {
             setName(name);
@@ -355,7 +355,7 @@ public class ActivityList extends AbstractProject {
          *
          * @param name Name of the activity.
          * @param start Start.
-         * @param duration Duration of the task. (Should be grater than 0).
+         * @param duration Duration of the {@link Activity}. (Should be grater than 0).
          * @return Activity created.
          */
         public Activity createActivity(String name, LocalDateTime start, int duration) {
@@ -442,7 +442,7 @@ public class ActivityList extends AbstractProject {
     }
 
     /**
-     * Represents a task in a project.
+     * Represents an activity in a {@link ActivityList}.
      *
      * @author Syam
      */
@@ -454,10 +454,10 @@ public class ActivityList extends AbstractProject {
         /**
          * Constructor.
          *
-         * @param activityGroup Activity group to which this task belongs to.
+         * @param activityGroup Activity group to which this {@link Activity} belongs to.
          * @param name Name.
          * @param start Start.
-         * @param duration Duration of the task. (A duration of zero denotes a project milestone).
+         * @param duration Duration of the {@link Activity}. (A duration of zero denotes a {@link ActivityList} milestone).
          */
         Activity(ActivityGroup activityGroup, String name, LocalDateTime start, int duration) {
             super(name, trim(start), duration);
@@ -468,7 +468,7 @@ public class ActivityList extends AbstractProject {
         /**
          * Constructor.
          *
-         * @param activityGroup Activity group to which this task belongs to.
+         * @param activityGroup Activity group to which this {@link Activity} belongs to.
          * @param name Name.
          * @param start Start.
          * @param end End.
@@ -557,10 +557,10 @@ public class ActivityList extends AbstractProject {
     }
 
     /**
-     * Get all activity groups of this project.
-     * <p>Note: Null will be returned if the project contains inconsistencies.</p>
+     * Get all activity groups of this {@link ActivityList}.
+     * <p>Note: Null will be returned if the {@link ActivityList} contains inconsistencies.</p>
      *
-     * @return Stream of task groups.
+     * @return Stream of activity groups.
      */
     public Stream<ActivityGroup> streamGroups() {
         try {
@@ -573,10 +573,10 @@ public class ActivityList extends AbstractProject {
 
     /**
      * Get all activities in the given activity group.
-     * <p>Note: Null will be returned if the project contains inconsistencies.</p>
+     * <p>Note: Null will be returned if the {@link ActivityList} contains inconsistencies.</p>
      *
      * @param activityGroup Activity group.
-     * @return Stream of tasks.
+     * @return Stream of {@link Activity}s.
      */
     public Stream<Activity> streamActivities(ActivityGroup activityGroup) {
         try {
@@ -625,21 +625,21 @@ public class ActivityList extends AbstractProject {
             } else {
                 ++activityIndex;
             }
-            ActivityGroup taskGroup = activityGroups.get(groupIndex);
-            while(activityIndex >= taskGroup.activities.size()) {
+            ActivityGroup activityGroup = activityGroups.get(groupIndex);
+            while(activityIndex >= activityGroup.activities.size()) {
                 if(++groupIndex >= activityGroups.size()) {
                     groupIndex = Integer.MIN_VALUE;
                     return false;
                 }
-                taskGroup = activityGroups.get(groupIndex);
-                if(taskGroup.activities.isEmpty()) {
+                activityGroup = activityGroups.get(groupIndex);
+                if(activityGroup.activities.isEmpty()) {
                     continue;
                 }
                 activityIndex = 0;
                 break;
             }
             ++index;
-            next = taskGroup.getActivity(activityIndex);
+            next = activityGroup.getActivity(activityIndex);
             if(activityFilter != null && !activityFilter.test(next)) {
                 next = null;
                 return hasNext();

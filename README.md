@@ -4,3 +4,5 @@ library for using it with [Vaadin Flow](https://vaadin.com). The charts can be u
 just like any other Vaadin components.
 
 Release versions of this addon is available at [Vaadin](https://vaadin.com/directory/component/so-charts).
+
+Please have a look at the examples at [EXAMPLES](https://storedobject.com/examples/?login=AUTO).

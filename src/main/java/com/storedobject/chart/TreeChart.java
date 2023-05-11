@@ -23,10 +23,9 @@ import java.util.stream.Stream;
  *
  * @author Syam
  */
-public class TreeChart extends Chart implements HasPosition {
+public class TreeChart extends SelfPositioningSpecialChart {
 
     private TreeDataProvider data;
-    private Position position;
     private Orientation orientation;
     private final TD td;
 
@@ -50,7 +49,7 @@ public class TreeChart extends Chart implements HasPosition {
     }
 
     @Override
-    public void setData(AbstractDataProvider<?>... data) {
+    public final void setData(AbstractDataProvider<?>... data) {
     }
 
     /**
@@ -90,19 +89,6 @@ public class TreeChart extends Chart implements HasPosition {
         ComponentPart.addComma(sb);
         ComponentPart.encode(sb, "expandAndCollapse", true);
         ComponentPart.encode(sb, null, orientation);
-    }
-
-    @Override
-    public final Position getPosition(boolean create) {
-        if(position == null && create) {
-            position = new Position();
-        }
-        return position;
-    }
-
-    @Override
-    public final void setPosition(Position position) {
-        this.position = position;
     }
 
     /**
