@@ -41,10 +41,19 @@ public abstract class AbstractPart implements ComponentPart {
         return id;
     }
 
+    /**
+     * Whether Id needs to be sent as part of the JSON or not.
+     *
+     * @return True/false.
+     */
+    protected boolean hasId() {
+        return true;
+    }
+
     @Override
     public void encodeJSON(StringBuilder sb) {
         ComponentPart.encode(sb, "name", getName());
-        if(!(this instanceof Wrapped)) {
+        if(hasId() && !(this instanceof Wrapped)) {
             ComponentPart.encode(sb, "id", getId());
         }
         if(this instanceof HasPosition h) {
@@ -62,9 +71,19 @@ public abstract class AbstractPart implements ComponentPart {
         if(this instanceof HasEmphasis h) {
             ComponentPart.encode(sb, "emphasis", h.getEmphasis(false));
         }
+        if(this instanceof HasLabel h) {
+            ComponentPart.encode(sb, getLabelTag(), h.getLabel(false));
+        }
+        if(this instanceof HasItemStyle h) {
+            ComponentPart.encode(sb, "itemStyle", h.getItemStyle(false));
+        }
         if(z >= 0) {
             ComponentPart.encode(sb, "z", z);
         }
+    }
+
+    protected String getLabelTag() {
+        return "label";
     }
 
     /**

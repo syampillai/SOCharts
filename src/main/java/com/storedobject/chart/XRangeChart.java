@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 /**
  * X-range chart. X-range charts are used to visualize a range on the X-axis. It is plotted on a
- * {@link RectangularCoordinate} system a range values on the X-axis with corresponding Y-axis values.
+ * {@link RectangularCoordinate} system a range of values on the X-axis with corresponding Y-axis values.
  * Each X range-value is represented using a horizontal bar. Typically, X-values are of {@link DataType#NUMBER},
  * {@link DataType#DATE} or {@link DataType#TIME} and Y-values are of {@link DataType#CATEGORY}. However, the
  * Y-values could be of other types too.
@@ -175,10 +175,6 @@ public class XRangeChart<X, Y> implements ComponentGroup {
     @Override
     public void removeParts(SOChart soChart) {
         soChart.remove(chart, xZoom, yZoom);
-    }
-
-    @Override
-    public void validate() throws ChartException {
     }
 
     /**
@@ -402,7 +398,7 @@ public class XRangeChart<X, Y> implements ComponentGroup {
             if(!showProgressLabel) {
                 return "";
             }
-            String p = "" + progress;
+            String p = String.valueOf(progress);
             if(p.endsWith(".0")) {
                 p = p.substring(0, p.indexOf('.'));
             }
@@ -424,7 +420,7 @@ public class XRangeChart<X, Y> implements ComponentGroup {
 
         private RChart() {
             setCustomRenderer("HBar");
-            plotOn(getCoordinateSystem(), getXAxis(), getYAxis());
+            plotOn(XRangeChart.this.getCoordinateSystem(), getXAxis(), getYAxis());
             Tooltip tooltip = new Tooltip();
             tooltip.append(new BasicDataProvider<String>() {
 
@@ -460,11 +456,6 @@ public class XRangeChart<X, Y> implements ComponentGroup {
                                 + xAxis.getDataType().encode(d.xUpperValue) + ","
                                 + (progress ? d.progress : 100) + "," + d.color + "," + d.color + ","
                                 + (progress ? "\"black\"" : d.color) + "]");
-                    }
-
-                    @Override
-                    public DataType getDataType() {
-                        return DataType.OBJECT;
                     }
 
                     @Override

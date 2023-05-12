@@ -907,7 +907,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         private String encode(boolean inside) {
             String s = toString();
             if(inside) {
-                s = "Inside" + s;
+                s = "inside" + s;
             }
             if(s.isEmpty()) {
                 return s;
