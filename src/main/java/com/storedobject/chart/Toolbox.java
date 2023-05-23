@@ -232,7 +232,7 @@ public class Toolbox extends VisiblePart implements Component, HasPosition {
                     sb.append("false");
                 } else {
                     sb.append('[')
-                            .append(Stream.of(xAxes).map(a -> "" + a.getRenderingIndex())
+                            .append(Stream.of(xAxes).map(a -> String.valueOf(a.getRenderingIndex()))
                                     .collect(Collectors.joining(",")))
                             .append(']');
                 }
@@ -243,7 +243,7 @@ public class Toolbox extends VisiblePart implements Component, HasPosition {
                     sb.append("false");
                 } else {
                     sb.append('[')
-                            .append(Stream.of(yAxes).map(a -> "" + a.getRenderingIndex())
+                            .append(Stream.of(yAxes).map(a -> String.valueOf(a.getRenderingIndex()))
                                     .collect(Collectors.joining(",")))
                             .append(']');
                 }
@@ -302,6 +302,18 @@ public class Toolbox extends VisiblePart implements Component, HasPosition {
          */
         public void setYAxes(YAxis... yAxes) {
             this.yAxes = yAxes;
+        }
+    }
+
+    public static class DataView extends ToolboxButton implements Internal {
+
+        public DataView() {
+            setCaption("Data View");
+        }
+
+        @Override
+        public String getTag() {
+            return "dataView";
         }
     }
 }

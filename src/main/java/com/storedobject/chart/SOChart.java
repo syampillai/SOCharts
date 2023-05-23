@@ -54,7 +54,7 @@ import java.util.*;
  *
  * @author Syam
  */
-@NpmPackage(value = "echarts", version = "5.4.1")
+@NpmPackage(value = "echarts", version = "5.4.2")
 @Tag("so-chart")
 @JsModule("./so/chart/chart.js")
 public class SOChart extends LitComponent implements HasSize {
@@ -91,6 +91,7 @@ public class SOChart extends LitComponent implements HasSize {
     private DefaultTextStyle defaultTextStyle;
     private final HashMap<SOEvent, Runnable> events = new HashMap<>();
     private String theme;
+    private Language language;
 
     @ClientCallable
     private void runEvent(String event, String target) {
@@ -247,9 +248,30 @@ public class SOChart extends LitComponent implements HasSize {
      */
     public void setDarkTheme() {
         this.theme = "dark";
+        updateThemeAndLocale();
+    }
+
+    /**
+     * Set language.
+     *
+     * @param language {@link Language}.
+     */
+    public void setLanguage(Language language) {
+        this.language = language;
+        updateThemeAndLocale();
+    }
+
+    private void updateThemeAndLocale() {
         if(!neverUpdated) {
-            executeJS("setTheme", theme);
+            executeJS("setThemeAndLocale", theme, language());
         }
+    }
+
+    private String language() {
+        if(language == null) {
+            return null;
+        }
+        return language.toString().replace('_', '-');
     }
 
     /**
@@ -294,7 +316,7 @@ public class SOChart extends LitComponent implements HasSize {
      * Get all the data involved in this chart component. This is for internal use only and will be available while
      * rendering the chart only.
      *
-     * @return Data involved in this chart..
+     * @return Data involved in this chart.
      */
     List<AbstractDataProvider<?>> dataSet() {
         return dataSet;
@@ -553,7 +575,7 @@ public class SOChart extends LitComponent implements HasSize {
             }
         }
         sb.append('}');
-        executeJS("updateChart", !skipData, customizeJSON(sb.toString()), theme);
+        executeJS("updateChart", !skipData, customizeJSON(sb.toString()), theme, language());
         dataSet.clear();
         parts.clear();
         defaultColors = null;

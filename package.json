@@ -105,7 +105,7 @@
     "@vaadin/virtual-list": "23.2.14",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
-    "echarts": "5.4.1",
+    "echarts": "5.4.2",
     "lit": "2.3.1"
   },
   "devDependencies": {
@@ -228,7 +228,7 @@
       "@vaadin/virtual-list": "23.2.14",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
-      "echarts": "5.4.1",
+      "echarts": "5.4.2",
       "lit": "2.3.1"
     },
     "devDependencies": {
@@ -247,6 +247,6 @@
       "workbox-core": "6.5.0",
       "workbox-precaching": "6.5.0"
     },
-    "hash": "af783a6752ec0c7cbb43001bd993936f5f5275079aa31d399a51136c149b17d3"
+    "hash": "5b73b56ecdbd30e3d52da0c98d9af6a5dc6543d9f736de25000f3b4f3dd228c9"
   }
 }

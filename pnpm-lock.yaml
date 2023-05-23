@@ -107,7 +107,7 @@ specifiers:
   async: 3.2.2
   construct-style-sheets-polyfill: 3.1.0
   date-fns: 2.29.3
-  echarts: 5.4.1
+  echarts: 5.4.2
   glob: 7.2.3
   lit: 2.3.1
   mkdirp: 1.0.4
@@ -225,7 +225,7 @@ dependencies:
   '@vaadin/virtual-list': 23.2.14
   construct-style-sheets-polyfill: 3.1.0
   date-fns: 2.29.3
-  echarts: 5.4.1
+  echarts: 5.4.2
   lit: 2.3.1
 
 devDependencies:
@@ -3151,11 +3151,11 @@ packages:
       object-keys: 1.1.1
     dev: true
 
-  /echarts/5.4.1:
-    resolution: {integrity: sha512-9ltS3M2JB0w2EhcYjCdmtrJ+6haZcW6acBolMGIuf01Hql1yrIV01L1aRj7jsaaIULJslEP9Z3vKlEmnJaWJVQ==}
+  /echarts/5.4.2:
+    resolution: {integrity: sha512-2W3vw3oI2tWJdyAz+b8DuWS0nfXtSDqlDmqgin/lfzbkB01cuMEN66KWBlmur3YMp5nEDEEt5s23pllnAzB4EA==}
     dependencies:
       tslib: 2.3.0
-      zrender: 5.4.1
+      zrender: 5.4.3
     dev: false
 
   /ejs/3.1.8:
@@ -4859,8 +4859,8 @@ packages:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
     dev: true
 
-  /zrender/5.4.1:
-    resolution: {integrity: sha512-M4Z05BHWtajY2241EmMPHglDQAJ1UyHQcYsxDNzD9XLSkPDqMq4bB28v9Pb4mvHnVQ0GxyTklZ/69xCFP6RXBA==}
+  /zrender/5.4.3:
+    resolution: {integrity: sha512-DRUM4ZLnoaT0PBVvGBDO9oWIDBKFdAVieNWxWwK0niYzJCMwGchRk21/hsE+RKkIveH3XHCyvXcJDkgLVvfizQ==}
     dependencies:
       tslib: 2.3.0
     dev: false
