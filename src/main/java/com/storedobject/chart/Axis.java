@@ -923,8 +923,8 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         @Override
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
-            ComponentPart.addComma(sb);
             if(interval >= -1) {
+                ComponentPart.addComma(sb);
                 sb.append("\"interval\":");
                 if(interval == -1) {
                     sb.append("\"auto\"");

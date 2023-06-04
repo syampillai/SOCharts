@@ -287,49 +287,50 @@ public class Font {
         public String toString() {
             if(type == 0) {
                 switch(size) {
-                    case 0:
+                    case 0 -> {
                         return "xx-small";
-                    case 1:
+                    }
+                    case 1 -> {
                         return "x-small";
-                    case 2:
+                    }
+                    case 2 -> {
                         return "small";
-                    case 3:
+                    }
+                    case 3 -> {
                         return "medium";
-                    case 4:
+                    }
+                    case 4 -> {
                         return "large";
-                    case 5:
+                    }
+                    case 5 -> {
                         return "x-large";
-                    case 6:
+                    }
+                    case 6 -> {
                         return "xx-large";
-                    case 7:
+                    }
+                    case 7 -> {
                         return "xxx-large";
-                    case 8:
+                    }
+                    case 8 -> {
                         return "smaller";
-                    case 9:
+                    }
+                    case 9 -> {
                         return "larger";
+                    }
                 }
             }
             String suffix = "";
             switch(type) {
-                case 1:
-                    suffix = "%";
-                    break;
-                case 2:
-                    suffix = "px";
-                    break;
-                case 3:
-                    suffix = "pt";
-                    break;
-                case 4:
-                    suffix = "em";
-                    break;
-                case 5:
-                    suffix = "rem";
-                    break;
-                case 6:
-                    return "" + size;
+                case 1 -> suffix = "%";
+                case 2 -> suffix = "px";
+                case 3 -> suffix = "pt";
+                case 4 -> suffix = "em";
+                case 5 -> suffix = "rem";
+                case 6 -> {
+                    return String.valueOf(size);
+                }
             }
-            String s = "" + (size / 1000);
+            String s = String.valueOf(size / 1000);
             int r = size % 1000;
             if(r > 0) {
                 if(r < 10) {
@@ -385,18 +386,14 @@ public class Font {
         @Override
         public String toString() {
             if(weight <= 0) {
-                switch (weight) {
-                    case -3:
-                        return "lighter";
-                    case -2:
-                        return "bolder";
-                    case -1:
-                        return "bold";
-                    default:
-                        return "normal";
-                }
+                return switch(weight) {
+                    case -3 -> "lighter";
+                    case -2 -> "bolder";
+                    case -1 -> "bold";
+                    default -> "normal";
+                };
             }
-            return "" + weight;
+            return String.valueOf(weight);
         }
     }
 
@@ -547,7 +544,7 @@ public class Font {
         }
 
         /**
-         * Add a fall back for this family.
+         * Add a fallback for this family.
          *
          * @param fallbackFamily Fallback family to add.
          */
@@ -561,47 +558,21 @@ public class Font {
 
         @Override
         public String toString() {
-            String s;
-            switch(type) {
-                case 1:
-                    s = "serif";
-                    break;
-                case 2:
-                    s = "sans-serif";
-                    break;
-                case 3:
-                    s = "monospace";
-                    break;
-                case 4:
-                    s = "cursive";
-                    break;
-                case 5:
-                    s = "fantasy";
-                    break;
-                case 6:
-                    s = "system-ui";
-                    break;
-                case 7:
-                    s = "ui-serif";
-                    break;
-                case 8:
-                    s = "ui-sans-serif";
-                    break;
-                case 9:
-                    s = "ui-monospace";
-                    break;
-                case 10:
-                    s = "math";
-                    break;
-                case 11:
-                    s = "emoji";
-                    break;
-                case 12:
-                    s = "fangsong";
-                    break;
-                default:
-                    s = "'" + family + "'";
-            }
+            String s = switch(type) {
+                case 1 -> "serif";
+                case 2 -> "sans-serif";
+                case 3 -> "monospace";
+                case 4 -> "cursive";
+                case 5 -> "fantasy";
+                case 6 -> "system-ui";
+                case 7 -> "ui-serif";
+                case 8 -> "ui-sans-serif";
+                case 9 -> "ui-monospace";
+                case 10 -> "math";
+                case 11 -> "emoji";
+                case 12 -> "fangsong";
+                default -> "'" + family + "'";
+            };
             return plus(s);
         }
 
@@ -732,7 +703,7 @@ public class Font {
 
         @Override
         public String toString() {
-            String s = "" + (value / 1000);
+            String s = String.valueOf(value / 1000);
             int r = value % 1000;
             if(r > 0) {
                 if(r < 10) {

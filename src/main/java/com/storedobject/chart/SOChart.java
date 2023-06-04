@@ -60,8 +60,8 @@ import java.util.*;
 public class SOChart extends LitComponent implements HasSize {
 
     final static ComponentEncoder[] encoders = {
-            new ComponentEncoder("color", DefaultColors.class),
-            new ComponentEncoder("textStyle", DefaultTextStyle.class),
+            new ComponentEncoder("*", DefaultColors.class),
+            new ComponentEncoder("*", DefaultTextStyle.class),
             new ComponentEncoder(Title.class),
             new ComponentEncoder(Legend.class),
             new ComponentEncoder(Tooltip.class),
@@ -570,9 +570,6 @@ public class SOChart extends LitComponent implements HasSize {
         }
         for(ComponentEncoder ce: encoders) {
             ce.encode(sb, parts);
-            if(sb.length() > 1 && sb.charAt(sb.length() - 1) != '\n') {
-                sb.append('\n');
-            }
         }
         sb.append('}');
         executeJS("updateChart", !skipData, customizeJSON(sb.toString()), theme, language());
@@ -713,7 +710,12 @@ public class SOChart extends LitComponent implements HasSize {
                     serial = c.getSerial();
                     if(renderingIndex == 0) {
                         if(sb.length() > 1) {
-                            sb.append(',');
+                            sb.append(",\n");
+                        }
+                        if("*".equals(label)) { // Self-rendering type
+                            ++renderingIndex;
+                            c.encodeJSON(sb);
+                            return; // Only 1 such component is expected.
                         }
                         sb.append('"').append(label).append("\":");
                         sb.append('[');
@@ -823,7 +825,9 @@ public class SOChart extends LitComponent implements HasSize {
         public void encodeJSON(StringBuilder sb) {
             TextStyle.OuterProperties op = new TextStyle.OuterProperties();
             textStyle.save(op);
+            sb.append("\"textStyle\":{");
             ComponentPart.encode(sb, null, textStyle);
+            sb.append('}');
         }
 
         @Override
