@@ -31,6 +31,7 @@ public abstract class AbstractTask {
     private final long id = ID.newID();
     private String name, extraInfo;
     private Color color;
+    private int fontSize = 0, extraFontSize = 0;
     /**
      * Start of the task/group.
      */
@@ -120,6 +121,44 @@ public abstract class AbstractTask {
      */
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    /**
+     * Get the font-size used to render the details
+     *
+     * @return Font-size. Default is 12.
+     */
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    /**
+     * Set the font size used to render the details.
+     *
+     * @param fontSize Font-size to set (in pixels). Default is 12.
+     */
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    /**
+     * Get the font-size used to render the extra information of group (Applicable only if this is a group).
+     *
+     * @return Font-size. Default is 9.
+     */
+    public int getExtraFontSize() {
+        return extraFontSize;
+    }
+
+    /**
+     * Set the font size used to render the extra information of group (Applicable only if this is a group).
+     * <p>Note: You can also set different values for individual groups. See {@link AbstractTask#setFontSize(int)}
+     * </p>
+     *
+     * @param extraFontSize Font-size to set (in pixels). Default is 9.
+     */
+    public void setExtraFontSize(int extraFontSize) {
+        this.extraFontSize = extraFontSize;
     }
 
     /**

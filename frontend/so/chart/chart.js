@@ -276,7 +276,7 @@ export class SOChart extends LitElement {
     // Built-in custom renderers
 
     // Horizontal bar renderer (used by Gantt chart).
-    // Data Point: [Y-value, label, start, end, completed, bar color, prefix color, non-progress color]
+    // Data Point: [Y-value, label, start, end, completed, bar color, prefix color, non-progress color, font-size]
     _renderHBar(params, api) {
         var HEIGHT_RATIO = 0.6;
         var index = api.value(0);
@@ -287,6 +287,7 @@ export class SOChart extends LitElement {
         var color = api.value(5);
         var prefixColor = api.value(6);
         var nonProgressColor = api.value(7);
+        var fontSize = api.value(8);
         var barWidth = end[0] - start[0];
         var barHeight = api.size([0, 1])[1];
         var shiftY = 0;
@@ -380,14 +381,14 @@ export class SOChart extends LitElement {
                     text: label,
                     textVerticalAlign: 'middle',
                     textAlign: 'left',
-                    font: 'bold 12px sans-serif'
+                    font: 'bold ' + fontSize + 'px sans-serif'
                 }
             }]
         };
     }
 
     // Render labels on vertical axis - labels can be connected within the same group too (used by Gantt chart)
-    // Data Point: [Y-value, group label, connected, label, sub-label, bar color]
+    // Data Point: [Y-value, group label, connected, label, sub-label, bar color, font-size, extra-font-size]
     _renderVAxisLabel(params, api) {
         const minY = params.coordSys.y;
         const maxY = minY + params.coordSys.height;
@@ -398,6 +399,8 @@ export class SOChart extends LitElement {
         var label = api.value(3);
         var sublabel = api.value(4);
         var color = api.value(5);
+        var fontSize = api.value(6);
+        var extraFontSize = api.value(7);
         var barHeight = api.size([0, 1])[1];
         var y = api.coord([0, index])[1] - barHeight;
         let ry = y + 0.2 * barHeight, ty1 = y + 0.6 * barHeight, ty2 = y + 0.8 * barHeight, rh = 0.8 * barHeight;
@@ -480,7 +483,7 @@ export class SOChart extends LitElement {
                     textVerticalAlign: 'bottom',
                     textAlign: 'left',
                     textFill: '#FFFFFF',
-                    font: 'bold 12px/1 sans-serif'
+                    font: 'bold ' + fontSize + 'px/1 sans-serif'
                 }
             }, {
                 type: 'text',
@@ -492,7 +495,7 @@ export class SOChart extends LitElement {
                     textAlign: 'left',
                     text: sublabel,
                     textFill: '#FFFFFF',
-                    font: 'bold 9px/1 sans-serif'
+                    font: 'bold ' + extraFontSize + 'px/1 sans-serif'
                 }
             }]
         };

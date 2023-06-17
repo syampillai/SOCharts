@@ -938,7 +938,8 @@ public class Project extends AbstractProject {
         Task task = (Task) abstractTask;
         return "[" + index + ",\"" + getAxisLabel(task.group) + "\","
                 + (task == task.group.tasks.get(task.group.tasks.size() - 1) ? 0 : 1) + ",\""
-                + getAxisLabel(task) + "\",\"" + getExtraAxisLabel(task) + "\"," + task.getColor() + "]";
+                + getAxisLabel(task) + "\",\"" + getExtraAxisLabel(task) + "\"," + task.getColor() + ","
+                + groupFontSize(task) + "," + extraFontSize(task) + "]";
     }
 
     @Override

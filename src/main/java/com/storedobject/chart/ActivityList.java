@@ -677,7 +677,7 @@ public class ActivityList extends AbstractProject {
         ActivityGroup group = ((Activity) abstractActivity).group;
         return "[" + activityGroups.indexOf(group) + ",\"\",0,\""
                 + nullAsEmpty(group.getName()) + "\",\"" + nullAsEmpty(getExtraAxisLabel(group)) + "\","
-                + group.getColor() + "]";
+                + group.getColor() + "," + groupFontSize(group) + "," + extraFontSize(group) + "]";
     }
 
     private String nullAsEmpty(String s) {

@@ -44,6 +44,7 @@ public abstract class AbstractProject {
     private LocalDateTime today;
     private Color todayColor;
     private String bandColorEven, bandColorOdd;
+    private int taskFontSize = 12, groupFontSize = 12, extraFontSize = 9;
 
     /**
      * Constructor.
@@ -302,8 +303,41 @@ public abstract class AbstractProject {
         BiFunction<AbstractTask, Integer, String> func = (t, i) -> "[" + renderingPosition(t, i) + ",\""
                 + getLabel(t) + "\"," + encode(t.renderStart()) + "," + encode(t.getEnd()) + ","
                 + (t.isMilestone() ? 100 : t.getCompleted()) + ","
-                + t.getColor() + ",\"black\",\"black\"]";
+                + t.getColor() + ",\"black\",\"black\"," + taskFontSize(t) + "]";
         return dataProvider(DataType.OBJECT, func);
+    }
+
+    /**
+     * Determine the font-size for the group.
+     *
+     * @param t Task/activity
+     * @return Font-size
+     */
+    int groupFontSize(AbstractTask t) {
+        int f = t.getFontSize();
+        return f <= 0 ? getGroupFontSize() : f;
+    }
+
+    /**
+     * Determine the font-size for the task/activity details.
+     *
+     * @param t Task/activity
+     * @return Font-size
+     */
+    int taskFontSize(AbstractTask t) {
+        int f = t.getFontSize();
+        return f <= 0 ? getTaskFontSize() : f;
+    }
+
+    /**
+     * Determine the font-size for the extra details of the task/activity.
+     *
+     * @param t Task/activity
+     * @return Font-size
+     */
+    int extraFontSize(AbstractTask t) {
+        int f = t.getExtraFontSize();
+        return f <= 0 ? getExtraFontSize() : f;
     }
 
     /**
@@ -564,5 +598,85 @@ public abstract class AbstractProject {
     public void setTaskBandColors(Color bandColorOdd, Color bandColorEven) {
         this.bandColorOdd = bandColorOdd.toString();
         this.bandColorEven = bandColorEven.toString();
+    }
+
+    /**
+     * Get the font-size used to render the extra information of group.
+     *
+     * @return Font-size. Default is 12.
+     */
+    public int getExtraFontSize() {
+        return extraFontSize;
+    }
+
+    /**
+     * Set the font size used to render the extra information of group.
+     * <p>Note: You can also set different values for individual groups. See {@link AbstractTask#setFontSize(int)}
+     * </p>
+     *
+     * @param extraFontSize Font-size to set (in pixels). Default is 9.
+     */
+    public void setExtraFontSize(int extraFontSize) {
+        this.extraFontSize = extraFontSize;
+    }
+
+    /**
+     * Get the font-size used to render the task/activity group.
+     *
+     * @return Font-size. Default is 12.
+     */
+    public int getGroupFontSize() {
+        return groupFontSize;
+    }
+
+    /**
+     * Set the font size used to render the group name.
+     * <p>Note: You can also set different values for individual groups. See {@link AbstractTask#setFontSize(int)}
+     * </p>
+     *
+     * @param groupFontSize Font-size to set (in pixels). Default is 12.
+     */
+    public void setGroupFontSize(int groupFontSize) {
+        this.groupFontSize = groupFontSize <= 0 ? 12 : groupFontSize;
+    }
+
+    /**
+     * Get the font-size used to render the task details
+     *
+     * @return Font-size. Default is 12.
+     */
+    public int getTaskFontSize() {
+        return taskFontSize;
+    }
+
+    /**
+     * Set the font size used to render the task details.
+     * <p>Note: You can also set different values for individual tasks. See {@link AbstractTask#setFontSize(int)}
+     * </p>
+     *
+     * @param taskFontSize Font-size to set (in pixels). Default is 12.
+     */
+    public void setTaskFontSize(int taskFontSize) {
+        this.taskFontSize = taskFontSize <= 0 ? 12 : taskFontSize;
+    }
+
+    /**
+     * Get the font-size used to render the activity details.
+     *
+     * @return Font-size. Default is 12.
+     */
+    public int getActivityFontSize() {
+        return taskFontSize;
+    }
+
+    /**
+     * Set the font size used to render the activity details.
+     * <p>Note: You can also set different values for individual activities. See {@link AbstractTask#setFontSize(int)}
+     * </p>
+     *
+     * @param activityFontSize Font-size to set (in pixels). Default is 12.
+     */
+    public void setActivityFontSize(int activityFontSize) {
+        setTaskFontSize(activityFontSize);
     }
 }
