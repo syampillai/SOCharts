@@ -90,6 +90,7 @@ public interface AbstractDataProvider<T> extends ComponentPart {
     /**
      * Encode a value for this data.
      *
+     * @param sb Encoded value will be appended here.
      * @param value Value to encode.
      */
     default void encode(StringBuilder sb, T value) {
