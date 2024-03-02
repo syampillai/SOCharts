@@ -17,7 +17,7 @@
     "@vaadin/checkbox": "23.2.14",
     "@vaadin/checkbox-group": "23.2.14",
     "@vaadin/combo-box": "23.2.14",
-    "@vaadin/common-frontend": "0.0.17",
+    "@vaadin/common-frontend": "0.0.18",
     "@vaadin/component-base": "23.2.14",
     "@vaadin/confirm-dialog": "23.2.14",
     "@vaadin/context-menu": "23.2.14",
@@ -29,7 +29,6 @@
     "@vaadin/email-field": "23.2.14",
     "@vaadin/field-base": "23.2.14",
     "@vaadin/field-highlighter": "23.2.14",
-    "@vaadin/flow-frontend": "./target/flow-frontend",
     "@vaadin/form-layout": "23.2.14",
     "@vaadin/grid": "23.2.14",
     "@vaadin/horizontal-layout": "23.2.14",
@@ -51,7 +50,7 @@
     "@vaadin/polymer-legacy-adapter": "23.2.14",
     "@vaadin/progress-bar": "23.2.14",
     "@vaadin/radio-group": "23.2.14",
-    "@vaadin/router": "1.7.4",
+    "@vaadin/router": "1.7.5",
     "@vaadin/scroller": "23.2.14",
     "@vaadin/select": "23.2.14",
     "@vaadin/split-layout": "23.2.14",
@@ -105,8 +104,8 @@
     "@vaadin/virtual-list": "23.2.14",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
-    "echarts": "5.4.2",
-    "lit": "2.3.1"
+    "echarts": "5.5.0",
+    "lit": "2.6.1"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "3.1.0",
@@ -117,12 +116,12 @@
     "rollup-plugin-brotli": "3.1.0",
     "strip-css-comments": "5.0.0",
     "transform-ast": "2.4.4",
-    "typescript": "4.7.4",
-    "vite": "v3.1.0",
-    "vite-plugin-checker": "0.4.9",
-    "workbox-build": "6.5.0",
-    "workbox-core": "6.5.0",
-    "workbox-precaching": "6.5.0"
+    "typescript": "4.9.5",
+    "vite": "3.2.7",
+    "vite-plugin-checker": "0.5.4",
+    "workbox-build": "6.5.4",
+    "workbox-core": "6.5.4",
+    "workbox-precaching": "6.5.4"
   },
   "vaadin": {
     "dependencies": {
@@ -141,7 +140,7 @@
       "@vaadin/checkbox": "23.2.14",
       "@vaadin/checkbox-group": "23.2.14",
       "@vaadin/combo-box": "23.2.14",
-      "@vaadin/common-frontend": "0.0.17",
+      "@vaadin/common-frontend": "0.0.18",
       "@vaadin/component-base": "23.2.14",
       "@vaadin/confirm-dialog": "23.2.14",
       "@vaadin/context-menu": "23.2.14",
@@ -174,7 +173,7 @@
       "@vaadin/polymer-legacy-adapter": "23.2.14",
       "@vaadin/progress-bar": "23.2.14",
       "@vaadin/radio-group": "23.2.14",
-      "@vaadin/router": "1.7.4",
+      "@vaadin/router": "1.7.5",
       "@vaadin/scroller": "23.2.14",
       "@vaadin/select": "23.2.14",
       "@vaadin/split-layout": "23.2.14",
@@ -228,8 +227,8 @@
       "@vaadin/virtual-list": "23.2.14",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
-      "echarts": "5.4.2",
-      "lit": "2.3.1"
+      "echarts": "5.5.0",
+      "lit": "2.6.1"
     },
     "devDependencies": {
       "@rollup/plugin-replace": "3.1.0",
@@ -240,13 +239,13 @@
       "rollup-plugin-brotli": "3.1.0",
       "strip-css-comments": "5.0.0",
       "transform-ast": "2.4.4",
-      "typescript": "4.7.4",
-      "vite": "v3.1.0",
-      "vite-plugin-checker": "0.4.9",
-      "workbox-build": "6.5.0",
-      "workbox-core": "6.5.0",
-      "workbox-precaching": "6.5.0"
+      "typescript": "4.9.5",
+      "vite": "3.2.7",
+      "vite-plugin-checker": "0.5.4",
+      "workbox-build": "6.5.4",
+      "workbox-core": "6.5.4",
+      "workbox-precaching": "6.5.4"
     },
-    "hash": "5b73b56ecdbd30e3d52da0c98d9af6a5dc6543d9f736de25000f3b4f3dd228c9"
+    "hash": "ce34becf60d22718f52517b95c60e7529a25a9c3b6983abe0d3fdfb7a879ee30"
   }
 }

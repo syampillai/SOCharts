@@ -33,6 +33,7 @@ public class GaugeChart extends SelfPositioningChart implements HasPolarProperty
     private PolarProperty polarProperty;
     private final NeedleData data;
     private AxisLine axisLine;
+    private boolean showNeedle = true;
 
     /**
      * Constructor with a single needle for the gauge.
@@ -70,6 +71,15 @@ public class GaugeChart extends SelfPositioningChart implements HasPolarProperty
     private GaugeChart(NeedleData needleData) {
         super(ChartType.Gauge,false, needleData);
         this.data = needleData;
+    }
+
+    /**
+     * Set whether needle should be shown or not.
+     *
+     * @param showNeedle True/false.
+     */
+    public void showNeedle(boolean showNeedle) {
+        this.showNeedle = showNeedle;
     }
 
     @Override
@@ -160,7 +170,7 @@ public class GaugeChart extends SelfPositioningChart implements HasPolarProperty
             label.setFormatter(formatter);
         }
         ComponentPart.encode(sb, "axisLine", axisLine);
-        sb.append(",\"pointer\":{\"itemStyle\":{\"color\":\"auto\"}}");
+        sb.append(",\"pointer\":{\"show\":").append(showNeedle).append(",\"itemStyle\":{\"color\":\"auto\"}}");
     }
 
     private void encode(StringBuilder sb, String name, Number value) {
@@ -327,7 +337,7 @@ public class GaugeChart extends SelfPositioningChart implements HasPolarProperty
      */
     public static class AxisLine extends VisiblePart {
 
-        private boolean roundCap;
+        private boolean roundCap = false;
         private final AxisLineStyle style = new AxisLineStyle();
 
         @Override
@@ -337,6 +347,20 @@ public class GaugeChart extends SelfPositioningChart implements HasPolarProperty
             ComponentPart.encode(sb, "lineStyle", style);
         }
 
+        /**
+         * Set whether to set rounded end for the axis line of the Gauge chart.
+         *
+         * @param roundCap True/false.
+         */
+        public void roundCap(boolean roundCap) {
+            this.roundCap = roundCap;
+        }
+
+        /**
+         * Get the style of the Gauge chart's axis line.
+         *
+         * @return Style.
+         */
         public final LineStyle getStyle() {
             return style;
         }

@@ -102,6 +102,17 @@ public class DataMatrix {
     }
 
     /**
+     * Add a row of data.
+     *
+     * @param data Data to add.
+     */
+    public void addRow(double... data) {
+        if(data != null && data.length > 0) {
+            dataList.add(new Data(data));
+        }
+    }
+
+    /**
      * Remove data rows.
      *
      * @param data Data to remove.
@@ -202,8 +213,18 @@ public class DataMatrix {
      * @return Row names as category data provider.
      */
     public CategoryDataProvider getRowNames() {
+        return getRowNames(-1);
+    }
+
+    /**
+     * Get row names as a category data provider.
+     *
+     * @param limit Limit the number of entries returned.
+     * @return Row names as category data provider.
+     */
+    public CategoryDataProvider getRowNames(int limit) {
         if(rowNameGenerator == null) {
-            rowNameGenerator = new RowNames();
+            rowNameGenerator = new RowNames(limit);
         }
         return rowNameGenerator;
     }
@@ -215,6 +236,17 @@ public class DataMatrix {
      * @return Row as data provider.
      */
     public DataProvider getRow(int row) {
+        return getRow(row, -1);
+    }
+
+    /**
+     * Get a specific row as data provider.
+     *
+     * @param row Row index.
+     * @param limit Limit the number of entries returned.
+     * @return Row as data provider.
+     */
+    public DataProvider getRow(int row, int limit) {
         if(row >= 0 && row <= dataList.size()) {
             if(row < rowData.size()) {
                 return rowData.get(row);
@@ -223,7 +255,7 @@ public class DataMatrix {
                 return null;
             }
             while(rowData.size() <= row) {
-                rowData.add(new RowData(rowData.size()));
+                rowData.add(new RowData(rowData.size(), limit));
             }
             return rowData.get(rowData.size() - 1);
         }
@@ -237,6 +269,17 @@ public class DataMatrix {
      * @return Column as data provider.
      */
     public DataProvider getColumn(int column) {
+        return getColumn(column, -1);
+    }
+
+    /**
+     * Get a specific column as data provider.
+     *
+     * @param column Column index.
+     * @param limit Limit the number of entries returned.
+     * @return Column as data provider.
+     */
+    public DataProvider getColumn(int column, int limit) {
         if(column < 0) {
             return null;
         }
@@ -247,7 +290,7 @@ public class DataMatrix {
             return null;
         }
         while(columnData.size() <= column) {
-            columnData.add(new ColumnData(columnData.size()));
+            columnData.add(new ColumnData(columnData.size(), limit));
         }
         return columnData.get(columnData.size() - 1);
     }
@@ -398,12 +441,21 @@ public class DataMatrix {
 
     private class RowNames extends BaseData implements CategoryDataProvider {
 
-        private RowNames() {
+        private final int limit;
+
+        private RowNames(int limit) {
+            this.limit = limit;
         }
 
         @Override
         public Stream<String> stream() {
-            return Stream.generate(new RowNameGenerator()).limit(getRowCount());
+            int l = limit;
+            if(l <= 0) {
+                l = getRowCount();
+            } else {
+                l = Math.min(l, getRowCount());
+            }
+            return Stream.generate(new RowNameGenerator()).limit(l);
         }
 
         @Override
@@ -438,9 +490,11 @@ public class DataMatrix {
     private class ColumnData extends BaseData implements DataProvider {
 
         private final int index;
+        private final int limit;
 
-        private ColumnData(int index) {
+        private ColumnData(int index, int limit) {
             this.index = index;
+            this.limit = limit;
         }
 
         @Override
@@ -450,7 +504,13 @@ public class DataMatrix {
 
         @Override
         public Stream<Number> stream() {
-            return Stream.generate(new Generator()).limit(dataList.size());
+            int l = limit;
+            if(l <= 0) {
+                l = dataList.size();
+            } else {
+                l = Math.min(l, dataList.size());
+            }
+            return Stream.generate(new Generator()).limit(l);
         }
 
         @Override
@@ -486,14 +546,17 @@ public class DataMatrix {
     private class RowData extends BaseData implements DataProvider {
 
         private final int row;
+        private final int limit;
 
-        private RowData(int row) {
+        private RowData(int row, int limit) {
             this.row = row;
+            this.limit = limit;
         }
 
         @Override
         public Stream<Number> stream() {
-            return dataList.get(row).stream();
+            Stream<Number> s = dataList.get(row).stream();
+            return limit <= 0 ? s : s.limit(limit);
         }
 
         @Override

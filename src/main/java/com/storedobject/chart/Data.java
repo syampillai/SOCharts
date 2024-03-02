@@ -31,4 +31,21 @@ public class Data extends AbstractData<Number> implements DataProvider {
     public Data(Number... data) {
         super(Number.class, data);
     }
+
+    /**
+     * Constructor.
+     *
+     * @param data Initial data to add
+     */
+    public Data(double... data) {
+        super(Number.class, toNum(data));
+    }
+
+    private static Number[] toNum(double... v) {
+        Number[] numbers = new Number[v.length];
+        for(int i = 0; i < v.length; i++) {
+            numbers[i] = v[i];
+        }
+        return numbers;
+    }
 }
