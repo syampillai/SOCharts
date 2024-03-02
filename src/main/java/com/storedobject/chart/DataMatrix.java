@@ -113,6 +113,46 @@ public class DataMatrix {
     }
 
     /**
+     * Add rows of data at a given index.
+     *
+     * @param index Index.
+     * @param data Data to add.
+     */
+    public void insertRow(int index, Data... data) {
+        if(data != null) {
+            for(Data d: data) {
+                if(d != null) {
+                    dataList.add(index, d);
+                }
+            }
+        }
+    }
+
+    /**
+     * Add rows of data at a given index.
+     *
+     * @param index Index.
+     * @param data Data to add.
+     */
+    public void insertRow(int index, Number... data) {
+        if(data != null && data.length > 0) {
+            dataList.add(index, new Data(data));
+        }
+    }
+
+    /**
+     * Add rows of data at a given index.
+     *
+     * @param index Index.
+     * @param data Data to add.
+     */
+    public void insertRow(int index, double... data) {
+        if(data != null && data.length > 0) {
+            dataList.add(index, new Data(data));
+        }
+    }
+
+    /**
      * Remove data rows.
      *
      * @param data Data to remove.

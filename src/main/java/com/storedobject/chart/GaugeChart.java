@@ -33,7 +33,7 @@ public class GaugeChart extends SelfPositioningChart implements HasPolarProperty
     private PolarProperty polarProperty;
     private final NeedleData data;
     private AxisLine axisLine;
-    private boolean showNeedle = true;
+    private boolean showNeedle = true, showProgress = false;
 
     /**
      * Constructor with a single needle for the gauge.
@@ -75,11 +75,26 @@ public class GaugeChart extends SelfPositioningChart implements HasPolarProperty
 
     /**
      * Set whether needle should be shown or not.
+     * <p>Note: If you set this to <code>false</code>, "progress" (See {@link #showProgress(boolean)}) will be
+     * switched on. If you don't want to display both needle and progress too, invoke {@link #showProgress(boolean)}
+     * after this.</p>
      *
      * @param showNeedle True/false.
      */
     public void showNeedle(boolean showNeedle) {
         this.showNeedle = showNeedle;
+        if(!showNeedle) {
+            this.showProgress = true;
+        }
+    }
+
+    /**
+     * Set whether to show progress on the dial or not. typically, you may set this if the needle is hidden.
+     *
+     * @param showProgress True/false
+     */
+    public void showProgress(boolean showProgress) {
+        this.showProgress = showProgress;
     }
 
     @Override
@@ -170,7 +185,8 @@ public class GaugeChart extends SelfPositioningChart implements HasPolarProperty
             label.setFormatter(formatter);
         }
         ComponentPart.encode(sb, "axisLine", axisLine);
-        sb.append(",\"pointer\":{\"show\":").append(showNeedle).append(",\"itemStyle\":{\"color\":\"auto\"}}");
+        sb.append(",\"progress\":{\"show\":").append(showProgress).append("},\"pointer\":{\"show\":")
+                .append(showNeedle).append(",\"itemStyle\":{\"color\":\"auto\"}}");
     }
 
     private void encode(StringBuilder sb, String name, Number value) {
