@@ -201,8 +201,18 @@ public class DataMatrix {
      * @return Column names as category data provider.
      */
     public CategoryDataProvider getColumnNames() {
+        return getColumnNames(-1);
+    }
+
+    /**
+     * Get column names as a category data provider.
+     *
+     * @param limit Limit the number of entries returned.
+     * @return Column names as category data provider.
+     */
+    public CategoryDataProvider getColumnNames(int limit) {
         if(columnNameGenerator == null) {
-            columnNameGenerator = new ColumnNames();
+            columnNameGenerator = new ColumnNames(limit);
         }
         return columnNameGenerator;
     }
@@ -402,12 +412,21 @@ public class DataMatrix {
 
     private class ColumnNames extends BaseData implements CategoryDataProvider {
 
-        private ColumnNames() {
+        private final int limit;
+
+        private ColumnNames(int limit) {
+            this.limit = limit;
         }
 
         @Override
         public Stream<String> stream() {
-            return Stream.generate(new ColumnNameGenerator()).limit(getColumnCount());
+            int l = limit;
+            if(l <= 0) {
+                l = getColumnCount();
+            } else {
+                l = Math.min(l, getColumnCount());
+            }
+            return Stream.generate(new ColumnNameGenerator()).limit(l);
         }
 
         @Override
