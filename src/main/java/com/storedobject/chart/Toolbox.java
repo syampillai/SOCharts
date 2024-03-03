@@ -42,11 +42,18 @@ public class Toolbox extends VisiblePart implements Component, HasPosition {
     public Toolbox() {
     }
 
+    /**
+     * Constructor.
+     *
+     * @param buttons Buttons to add.
+     */
+    public Toolbox(ToolboxButton... buttons) {
+        addButton(buttons);
+    }
+
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        ComponentPart.addComma(sb);
-        sb.append("\"tooltip\":{\"show\":true}");
         if(vertical) {
             ComponentPart.encode(sb, "orient", "vertical");
         }
@@ -130,7 +137,7 @@ public class Toolbox extends VisiblePart implements Component, HasPosition {
          * Constructor.
          */
         public Download() {
-            setCaption("Download");
+            setCaption("Download as image");
         }
 
         /**
@@ -164,6 +171,8 @@ public class Toolbox extends VisiblePart implements Component, HasPosition {
         @Override
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
+            sb.append(',');
+            ComponentPart.encode(sb, "name","sochart");
             if(resolution > 1) {
                 sb.append(',');
                 ComponentPart.encode(sb, "pixelRatio", resolution);

@@ -86,19 +86,22 @@ export class SOChart extends LitElement {
         this.chart = null;
     }
 
-    setThemeAndLocale(theme, locale) {
+    setThemeAndLocale(theme, locale, renderer) {
         this.destroyChart();
-        this.updateChart(false, this.allOptions, theme, locale);
+        this.updateChart(false, this.allOptions, theme, locale, renderer);
     }
 
-    updateChart(full, options, theme, locale) {
+    updateChart(full, options, theme, locale, renderer) {
         if(full) {
             this.allOptions = options;
         }
         var json = JSON.parse(options);
         this._stuff(json);
         if(!this.chart || this.chart == null) {
-            this.chart = echarts.init(this.shadowRoot.getElementById(this.idChart), theme, { locale: locale });
+            this.chart = echarts.init(this.shadowRoot.getElementById(this.idChart), theme, {
+                locale: locale,
+                renderer: renderer
+            });
         }
         this.events.forEach(event => {
             this.chart.on(event.event, { name: event.data }, params => {

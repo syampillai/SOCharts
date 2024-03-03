@@ -92,6 +92,7 @@ public class SOChart extends LitComponent implements HasSize {
     private final HashMap<SOEvent, Runnable> events = new HashMap<>();
     private String theme;
     private Language language;
+    private boolean svg = false;
 
     @ClientCallable
     private void runEvent(String event, String target) {
@@ -251,6 +252,11 @@ public class SOChart extends LitComponent implements HasSize {
         updateThemeAndLocale();
     }
 
+    public void setSVGRendering() {
+        svg = true;
+        updateThemeAndLocale();
+    }
+
     /**
      * Set language.
      *
@@ -263,7 +269,7 @@ public class SOChart extends LitComponent implements HasSize {
 
     private void updateThemeAndLocale() {
         if(!neverUpdated) {
-            executeJS("setThemeAndLocale", theme, language());
+            executeJS("setThemeAndLocale", theme, language(), svg ? "svg" : "canvas");
         }
     }
 
@@ -569,16 +575,52 @@ public class SOChart extends LitComponent implements HasSize {
             sb.append(",\"backgroundColor\":").append(defaultBackground);
         }
         for(ComponentEncoder ce: encoders) {
-            ce.encode(sb, parts);
+            ce.encode(this, sb, parts);
         }
+        ComponentPart.addComma(sb);
+        addCustomEncoding((ComponentPart) null, sb);
+        ComponentPart.removeComma(sb);
         sb.append('}');
-        executeJS("updateChart", !skipData, customizeJSON(sb.toString()), theme, language());
+        executeJS("updateChart", !skipData, customizeJSON(sb.toString()), theme, language(),
+                svg ? "svg" : "canvas");
         dataSet.clear();
         parts.clear();
         defaultColors = null;
         defaultBackground = null;
         defaultTextStyle = null;
         neverUpdated = false;
+    }
+
+    /**
+     * This method is invoked after rendering each {@link ComponentPart} type so that you can add more such components.
+     * <p>Note: Please note that if you are adding any custom code, it should merge properly to the already
+     * generated part in the buffer. You may use {@link #customizeJSON(String)} to check the final outcome.</p>
+     * <p>Warning: If you add custom code vis this mechanism, it may not be compatible with the future releases
+     * because the functionality you add via this mechanism may be supported directly in the future releases.</p>
+     *
+     * @param componentPartClass The component part class that is currently added. You may add more of these.
+     * @param buffer The buffer that contains the code that is already generated.
+     */
+    @SuppressWarnings("unused")
+    protected void addCustomEncoding(Class<? extends ComponentPart> componentPartClass, StringBuilder buffer) {
+    }
+
+    /**
+     * This method is invoked after rendering each {@link ComponentPart}. You can add custom code into the buffer
+     * that already contains the encoding for the part. Also, you can add at the root-level (not related to any
+     * particular {@link ComponentPart}). For this, this method is invoked with the component part parameter
+     * set to null.
+     * <p>Note: Please note that if you are adding any custom code, it should merge properly to the already
+     * generated part in the buffer. You may use {@link #customizeJSON(String)} to check the final outcome.</p>
+     * <p>Warning: If you add custom code vis this mechanism, it may not be compatible with the future releases
+     * because the functionality you add via this mechanism may be supported directly in the future releases.</p>
+     *
+     * @param componentPart The component part to which custom code can be added. If this is null, then code added will
+     *                      go to the root-level.
+     * @param buffer The buffer that contains the code that is already generated.
+     */
+    @SuppressWarnings("unused")
+    protected void addCustomEncoding(ComponentPart componentPart, StringBuilder buffer) {
     }
 
     /**
@@ -695,7 +737,26 @@ public class SOChart extends LitComponent implements HasSize {
             this.label = label;
         }
 
-        private void encode(StringBuilder sb, List<? extends ComponentPart> components) {
+        private Class<? extends ComponentPart> partClass() {
+            if(!Axis.AxisWrapper.class.isAssignableFrom(partType)) {
+                return partType;
+            }
+            if(XAxis.XAxisWrapper.class.isAssignableFrom(partType)) {
+                return XAxis.class;
+            }
+            if(YAxis.YAxisWrapper.class.isAssignableFrom(partType)) {
+                return YAxis.class;
+            }
+            if(AngleAxis.AngleAxisWrapper.class.isAssignableFrom(partType)) {
+                return AngleAxis.class;
+            }
+            if(RadiusAxis.RadiusAxisWrapper.class.isAssignableFrom(partType)) {
+                return RadiusAxis.class;
+            }
+            return partType;
+        }
+
+        private void encode(SOChart soChart, StringBuilder sb, List<? extends ComponentPart> components) {
             int renderingIndex = 0;
             int serial = -2;
             for (ComponentPart c: components) {
@@ -725,13 +786,29 @@ public class SOChart extends LitComponent implements HasSize {
                     ++renderingIndex;
                     sb.append('{');
                     c.encodeJSON(sb);
+                    ComponentPart.addComma(sb);
+                    soChart.addCustomEncoding(c, sb);
                     ComponentPart.removeComma(sb);
                     sb.append('}');
                 }
             }
+            ComponentPart.addComma(sb);
             if(renderingIndex > 0) {
-                sb.append(']');
+                soChart.addCustomEncoding(partClass(), sb);
+            } else {
+                int start = sb.length();
+                sb.append('"').append(label).append("\":");
+                sb.append('[');
+                int end = sb.length();
+                soChart.addCustomEncoding(partClass(), sb);
+                if(sb.length() == end) {
+                    sb.delete(start, end);
+                    ComponentPart.removeComma(sb);
+                    return;
+                }
             }
+            ComponentPart.removeComma(sb);
+            sb.append(']');
         }
     }
 

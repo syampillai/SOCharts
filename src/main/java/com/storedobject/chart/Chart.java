@@ -386,6 +386,10 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         } else {
             soChart.addParts(data);
         }
+        Tooltip tooltip = getTooltip(false);
+        if(tooltip != null) {
+            tooltip.addParts(soChart);
+        }
         if(markArea != null) {
             soChart.addParts(markArea.data);
         }
