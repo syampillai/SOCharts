@@ -252,6 +252,9 @@ public class SOChart extends LitComponent implements HasSize {
         updateThemeAndLocale();
     }
 
+    /**
+     * Switch on SVG rendering instead of canvas rendering.
+     */
     public void setSVGRendering() {
         svg = true;
         updateThemeAndLocale();
