@@ -21,7 +21,7 @@
 
     <groupId>io.rtlscloud.vaadin</groupId>
     <artifactId>so-charts</artifactId>
-    <version>3.2.5</version>
+    <version>3.2.5-SNAPSHOT</version>
     <name>SO Charts</name>
     <description>Vaadin LitElement wrapper for ECharts</description>
 
