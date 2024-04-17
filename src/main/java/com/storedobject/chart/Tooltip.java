@@ -22,163 +22,170 @@ import java.util.Set;
 
 /**
  * Tooltip to display.
- * <p>In most cases, default tooltips are good enough. However, you can still create customized tooltips using
- * these methods: {@link #append(String)}, {@link #append(AbstractDataProvider)}, {@link #append(Chart)},
- * {@link #newline()}.</p>
+ * <p>
+ * In most cases, default tooltips are good enough. However, you can still create customized tooltips using these
+ * methods: {@link #append(String)}, {@link #append(AbstractDataProvider)}, {@link #append(Chart)}, {@link #newline()}.
+ * </p>
  *
  * @author Syam
  */
 public class Tooltip extends VisiblePart implements Component, HasData {
 
-    /**
-     * Type of tooltips.
-     *
-     * @author Syam
-     */
-    public enum Type {
-        /**
-         * Tooltip for items (data-points).
-         */
-        Item,
-        /**
-         * Tooltip for an axis.
-         */
-        Axis,
-        /**
-         * Tooltip for special cases.
-         */
-        None
-    }
-    private Type type = null;
-    final List<Object> parts = new ArrayList<>();
+	/**
+	 * Type of tooltips.
+	 *
+	 * @author Syam
+	 */
+	public enum Type {
+		/**
+		 * Tooltip for items (data-points).
+		 */
+		Item,
+		/**
+		 * Tooltip for an axis.
+		 */
+		Axis,
+		/**
+		 * Tooltip for special cases.
+		 */
+		None
+	}
 
-    @Override
-    public void encodeJSON(StringBuilder sb) {
-        super.encodeJSON(sb);
-        if(type != null) {
-            ComponentPart.encode(sb, "trigger", ("" + type).toLowerCase());
-        }
-        if(!parts.isEmpty()) {
-            ComponentPart.addComma(sb);
-            sb.append("\"formatter\":");
-            sb.append("{\"functionP\":{");
-            sb.append("\"body\":[");
-            boolean first = true;
-            for(Object p: parts) {
-                if(first) {
-                    first = false;
-                } else {
-                    sb.append(',');
-                }
-                if(p instanceof String s) {
-                    s = s.replace("\n", "<br>");
-                    sb.append(ComponentPart.escape(s));
-                } else if(p instanceof AbstractDataProvider) { // Data
-                    sb.append(((AbstractDataProvider<?>)p).getSerial());
-                } else { // Chart
-                    Chart chart = (Chart) p;
-                    AbstractDataProvider<?> d = chart.dataValue();
-                    if(d != null) {
-                        int dataIndex = chart.dataValueIndex();
-                        if(dataIndex < 0) {
-                            sb.append(d.getSerial());
-                        } else {
-                            sb.append('[').append(d.getSerial()).append(',').append(dataIndex).append(']');
-                        }
-                    }
-                }
-            }
-            sb.append("]}}");
-        }
-    }
+	private Type type = null;
+	final List<Object> parts = new ArrayList<>();
 
-    @Override
-    public void validate() {
-    }
+	@Override
+	public void encodeJSON(final StringBuilder sb) {
+		super.encodeJSON(sb);
+		if (type != null) {
+			ComponentPart.encode(sb, "trigger", ("" + type).toLowerCase());
+		}
+		if (!parts.isEmpty()) {
+			ComponentPart.addComma(sb);
+			sb.append("\"formatter\":");
+			sb.append("{\"functionP\":{");
+			sb.append("\"body\":[");
+			boolean first = true;
+			for (final Object p : parts) {
+				if (first) {
+					first = false;
+				} else {
+					sb.append(',');
+				}
+				if (p instanceof String) {
+					String s = (String) p;
+					s = s.replace("\n", "<br>");
+					sb.append(ComponentPart.escape(s));
+				} else if (p instanceof AbstractDataProvider) { // Data
+					sb.append(((AbstractDataProvider<?>) p).getSerial());
+				} else { // Chart
+					final Chart chart = (Chart) p;
+					final AbstractDataProvider<?> d = chart.dataValue();
+					if (d != null) {
+						final int dataIndex = chart.dataValueIndex();
+						if (dataIndex < 0) {
+							sb.append(d.getSerial());
+						} else {
+							sb.append('[').append(d.getSerial()).append(',').append(dataIndex).append(']');
+						}
+					}
+				}
+			}
+			sb.append("]}}");
+		}
+	}
 
-    /**
-     * Get the type of this tooltip.
-     *
-     * @return Type.
-     */
-    public final Type getType() {
-        return type;
-    }
+	@Override
+	public void validate() {
+	}
 
-    /**
-     * Set the type of this tooltip.
-     *
-     * @param type Type of the tooltip.
-     */
-    public void setType(Type type) {
-        this.type = type;
-    }
+	/**
+	 * Get the type of this tooltip.
+	 *
+	 * @return Type.
+	 */
+	public final Type getType() {
+		return type;
+	}
 
-    /**
-     * Add some text as part of the tooltip.
-     *
-     * @param part Part to be added.
-     * @return Self reference.
-     */
-    public Tooltip append(String part) {
-        if(part != null && !part.isBlank()) {
-            if(parts.isEmpty()) {
-                parts.add(part);
-            } else {
-                Object last = parts.get(parts.size() - 1);
-                if(last instanceof String) {
-                    parts.remove(parts.size() - 1);
-                    append(last + part);
-                } else {
-                    parts.add(part);
-                }
-            }
-        }
-        return this;
-    }
+	/**
+	 * Set the type of this tooltip.
+	 *
+	 * @param type
+	 *            Type of the tooltip.
+	 */
+	public void setType(final Type type) {
+		this.type = type;
+	}
 
-    /**
-     * Add a new line to the tooltip.
-     *
-     * @return Self reference.
-     */
-    public Tooltip newline() {
-        return append("<br>");
-    }
+	/**
+	 * Add some text as part of the tooltip.
+	 *
+	 * @param part
+	 *            Part to be added.
+	 * @return Self reference.
+	 */
+	public Tooltip append(final String part) {
+		if (part != null && !part.isBlank()) {
+			if (parts.isEmpty()) {
+				parts.add(part);
+			} else {
+				final Object last = parts.get(parts.size() - 1);
+				if (last instanceof String) {
+					parts.remove(parts.size() - 1);
+					append(last + part);
+				} else {
+					parts.add(part);
+				}
+			}
+		}
+		return this;
+	}
 
-    /**
-     * Add a data point to the tooltip.
-     *
-     * @param data Data point will be taken from this data.
-     * @return Self reference.
-     */
-    public Tooltip append(AbstractDataProvider<?> data) {
-        parts.add(data);
-        return this;
-    }
+	/**
+	 * Add a new line to the tooltip.
+	 *
+	 * @return Self reference.
+	 */
+	public Tooltip newline() {
+		return append("<br>");
+	}
 
-    /**
-     * Add a data point of a specific chart to the tooltip. Mostly, you can use {@link #append(AbstractDataProvider)}
-     * to add data point but some special charts (such as {@link HeatmapChart}) have specialized internal data
-     * and data points from such data can be added using this method.
-     *
-     * @param chart Chart from which data point should be taken.
-     * @return Self reference.
-     */
-    public Tooltip append(Chart chart) {
-        parts.add(chart);
-        return this;
-    }
+	/**
+	 * Add a data point to the tooltip.
+	 *
+	 * @param data
+	 *            Data point will be taken from this data.
+	 * @return Self reference.
+	 */
+	public Tooltip append(final AbstractDataProvider<?> data) {
+		parts.add(data);
+		return this;
+	}
 
-    @Override
-    public void declareData(Set<AbstractDataProvider<?>> dataSet) {
-        parts.stream().filter(p -> p instanceof AbstractDataProvider).map(p -> (AbstractDataProvider<?>)p)
-                .forEach(dataSet::add);
-    }
+	/**
+	 * Add a data point of a specific chart to the tooltip. Mostly, you can use {@link #append(AbstractDataProvider)} to
+	 * add data point but some special charts (such as {@link HeatmapChart}) have specialized internal data and data
+	 * points from such data can be added using this method.
+	 *
+	 * @param chart
+	 *            Chart from which data point should be taken.
+	 * @return Self reference.
+	 */
+	public Tooltip append(final Chart chart) {
+		parts.add(chart);
+		return this;
+	}
 
-    @Override
-    public void addParts(SOChart soChart) {
-        parts.stream().filter(p -> p instanceof AbstractDataProvider).map(p -> (AbstractDataProvider<?>)p)
-                .forEach(soChart::addData);
-    }
+	@Override
+	public void declareData(final Set<AbstractDataProvider<?>> dataSet) {
+		parts.stream().filter(p -> p instanceof AbstractDataProvider).map(p -> (AbstractDataProvider<?>) p)
+				.forEach(dataSet::add);
+	}
+
+	@Override
+	public void addParts(final SOChart soChart) {
+		parts.stream().filter(p -> p instanceof AbstractDataProvider).map(p -> (AbstractDataProvider<?>) p)
+				.forEach(soChart::addData);
+	}
 }

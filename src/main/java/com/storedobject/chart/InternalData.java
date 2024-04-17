@@ -25,44 +25,61 @@ import java.util.stream.Stream;
  */
 public interface InternalData<T> extends AbstractDataProvider<T>, InternalDataProvider {
 
-    /**
-     * Wrap an {@link AbstractDataProvider} to create an instance of an {@link InternalData}.
-     *
-     * @param dataProvider Data provider to wrap.
-     * @param <T> Type of the data provider.
-     * @return Wrapped data provider that is "internal".
-     */
-    static <T> InternalData<T> wrap(AbstractDataProvider<T> dataProvider) {
-        return new WrappedDataProvider<>(dataProvider);
-    }
+	/**
+	 * Wrap an {@link AbstractDataProvider} to create an instance of an {@link InternalData}.
+	 *
+	 * @param dataProvider
+	 *            Data provider to wrap.
+	 * @param <T>
+	 *            Type of the data provider.
+	 * @return Wrapped data provider that is "internal".
+	 */
+	static <T> InternalData<T> wrap(final AbstractDataProvider<T> dataProvider) {
+		return new WrappedDataProvider<>(dataProvider);
+	}
 
-    /**
-     * A wrapper class to convert any instance of {@link AbstractDataProvider} to an instance of
-     * {@link InternalDataProvider}.
-     *
-     * @param <T> Type of the data provider.
-     * @author Syam
-     */
-    record WrappedDataProvider<T>(AbstractDataProvider<T> dataProvider) implements InternalData<T> {
+	/**
+	 * A wrapper class to convert any instance of {@link AbstractDataProvider} to an instance of
+	 * {@link InternalDataProvider}.
+	 *
+	 * @param <T>
+	 *            Type of the data provider.
+	 * @author Syam
+	 */
+	public static class WrappedDataProvider<T> implements InternalData<T> {
 
-        @Override
-        public Stream<T> stream() {
-            return dataProvider.stream();
-        }
+		private AbstractDataProvider<T> dataProvider;
 
-        @Override
-        public DataType getDataType() {
-            return dataProvider.getDataType();
-        }
+		public AbstractDataProvider<T> getDataProvider() {
+			return dataProvider;
+		}
 
-        @Override
-        public void setSerial(int serial) {
-            dataProvider.setSerial(serial);
-        }
+		public void setDataProvider(final AbstractDataProvider<T> dataProvider) {
+			this.dataProvider = dataProvider;
+		}
 
-        @Override
-        public int getSerial() {
-            return dataProvider.getSerial();
-        }
-    }
+		public WrappedDataProvider(final AbstractDataProvider<T> dataProvider) {
+			this.dataProvider = dataProvider;
+		}
+
+		@Override
+		public Stream<T> stream() {
+			return dataProvider.stream();
+		}
+
+		@Override
+		public DataType getDataType() {
+			return dataProvider.getDataType();
+		}
+
+		@Override
+		public void setSerial(final int serial) {
+			dataProvider.setSerial(serial);
+		}
+
+		@Override
+		public int getSerial() {
+			return dataProvider.getSerial();
+		}
+	}
 }

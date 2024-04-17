@@ -22,84 +22,84 @@ package com.storedobject.chart;
  * @author Syam
  */
 public class PointSymbol implements ComponentProperty {
-    private PointSymbolType type = PointSymbolType.CIRCLE;
-    private boolean show = true;
-    String size;
-    private boolean hoverAnimation = true;
-    private String url;
-    private String svgPath;
-    private Boolean isURL = true;
+	private PointSymbolType type = PointSymbolType.CIRCLE;
+	private boolean show = true;
+	String size;
+	private boolean hoverAnimation = true;
+	private String url;
+	private String svgPath;
+	private Boolean isURL = true;
 
+	public PointSymbol() {
+		url = "";
+		svgPath = "";
+	}
 
-    public PointSymbol() {
-        this.url = "";
-        this.svgPath = "";
-    }
+	public void setUrl(final String url) {
+		this.setType(PointSymbolType.NONE);
+		isURL = true;
+		this.url = String.format("image://%s", url);
+	}
 
-    public void setUrl(String url) {
-        this.setType(PointSymbolType.NONE);
-        this.isURL = true;
-        this.url = String.format("image://%s", url);
-    }
+	public String getCustomSymbol() {
+		return isURL ? url : svgPath;
+	}
 
-    public String getCustomSymbol() {
-        return this.isURL ? this.url : this.svgPath;
-    }
+	public void setSvgPath(final String svgPath) {
+		this.setType(PointSymbolType.NONE);
+		isURL = false;
+		this.svgPath = String.format("path://%s", svgPath);
+	}
 
-    public void setSvgPath(String svgPath) {
-        this.setType(PointSymbolType.NONE);
-        this.isURL = false;
-        this.svgPath = String.format("path://%s", svgPath);
-    }
+	public void show() {
+		show = true;
+	}
 
-    public void show() {
-        show = true;
-    }
+	public void hide() {
+		show = false;
+	}
 
+	public void setType(final PointSymbolType pointSymbolType) {
+		type = pointSymbolType;
+	}
 
-    public void hide() {
-        show = false;
-    }
+	public void setSize(final int size) {
+		if (size <= 0) {
+			this.size = null;
+		} else {
+			this.size = "" + size;
+		}
+	}
 
+	public void setSize(final String size) {
+		this.size = size;
+	}
 
-    public void setType(PointSymbolType pointSymbolType) {
-        this.type = pointSymbolType;
-    }
+	public void setSize(final int width, final int height) {
+		if (width > 0 && height > 0) {
+			size = "[" + width + "," + height + "]";
+		} else if (width > 0) {
+			setSize(width);
+		} else if (height > 0) {
+			setSize(height);
+		} else {
+			size = null;
+		}
+	}
 
+	public void setHoverAnimation(final boolean hoverAnimation) {
+		this.hoverAnimation = hoverAnimation;
+	}
 
-    public void setSize(int size) {
-        if(size <= 0) {
-            this.size = null;
-        } else {
-            this.size = "" + size;
-        }
-    }
-
-    public void setSize(int width, int height) {
-        if(width > 0 && height > 0) {
-            this.size = "[" + width + "," + height + "]";
-        } else if(width > 0) {
-            setSize(width);
-        } else if(height > 0) {
-            setSize(height);
-        } else {
-            this.size = null;
-        }
-    }
-
-    public void setHoverAnimation(boolean hoverAnimation) {
-        this.hoverAnimation = hoverAnimation;
-    }
-
-    @Override
+	@Override
     public void encodeJSON(StringBuilder sb) {
         String t = this.type != PointSymbolType.NONE ? this.type.toString() : this.getCustomSymbol();
-        ComponentPart.encode(sb, "showSymbol", show);
-        ComponentPart.encode(sb,"symbol", t);
-        if(size != null) {
-            ComponentPart.addComma(sb);
+		ComponentPart.encode(sb, "showSymbol", show);
+		ComponentPart.encode(sb, "symbol", t);
+		if (size != null) {
+			ComponentPart.addComma(sb);
             sb.append("\"symbolSize\":").append(size);
-        }
-        ComponentPart.encode(sb, "hoverAnimation", hoverAnimation);
-    }
+		}
+		ComponentPart.encode(sb, "hoverAnimation", hoverAnimation);
+	}
 }

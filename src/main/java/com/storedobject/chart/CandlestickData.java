@@ -23,30 +23,79 @@ package com.storedobject.chart;
  */
 public class CandlestickData extends AbstractData<CandlestickData.Candlestick> {
 
-    /**
-     * Candlestick chart.
-     *
-     * @param data Data points to add.
-     */
-    public CandlestickData(Candlestick... data) {
-        super(Candlestick.class, data);
-    }
+	/**
+	 * Candlestick chart.
+	 *
+	 * @param data
+	 *            Data points to add.
+	 */
+	public CandlestickData(final Candlestick... data) {
+		super(Candlestick.class, data);
+	}
 
-    /**
-     * A structure to represent a data point in the candlestick chart.
-     *
-     * @author Syam
-     *
-     * @param opening Opening value
-     * @param closing Closing value
-     * @param low Lowe value
-     * @param high High value
-     */
-    public record Candlestick(Number opening, Number closing, Number low, Number high) {
+	/**
+	 * A structure to represent a data point in the candlestick chart.
+	 *
+	 * @author Syam
+	 *
+	 * @param opening
+	 *            Opening value
+	 * @param closing
+	 *            Closing value
+	 * @param low
+	 *            Lowe value
+	 * @param high
+	 *            High value
+	 */
+	public class Candlestick {
 
-        @Override
-        public String toString() {
-            return "[" + opening + "," + closing + "," + low + "," + high + "]";
-        }
-    }
+		private Number opening;
+		private Number closing;
+		private Number low;
+		private Number high;
+
+		public Candlestick(final Number opening, final Number closing, final Number low, final Number high) {
+			this.opening = opening;
+			this.closing = closing;
+			this.low = low;
+			this.high = high;
+		}
+
+		public Number getOpening() {
+			return opening;
+		}
+
+		public void setOpening(final Number opening) {
+			this.opening = opening;
+		}
+
+		public Number getClosing() {
+			return closing;
+		}
+
+		public void setClosing(final Number closing) {
+			this.closing = closing;
+		}
+
+		public Number getLow() {
+			return low;
+		}
+
+		public void setLow(final Number low) {
+			this.low = low;
+		}
+
+		public Number getHigh() {
+			return high;
+		}
+
+		public void setHigh(final Number high) {
+			this.high = high;
+		}
+
+		@Override
+		public String toString() {
+			return "[" + opening + "," + closing + "," + low + "," + high + "]";
+		}
+	}
 }

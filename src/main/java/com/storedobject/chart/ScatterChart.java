@@ -23,61 +23,64 @@ package com.storedobject.chart;
  */
 public class ScatterChart extends XYChart {
 
-    private PointSymbol pointSymbol;
+	private PointSymbol pointSymbol;
 
-    /**
-     * Constructor. (Data can be set later).
-     */
-    public ScatterChart() {
-        this(null, null);
-    }
+	/**
+	 * Constructor. (Data can be set later).
+	 */
+	public ScatterChart() {
+		this(null, null);
+	}
 
-    /**
-     * Constructor.
-     *
-     * @param xData Data for X axis.
-     * @param yData Data for Y axis.
-     */
-    public ScatterChart(AbstractDataProvider<?> xData, AbstractDataProvider<?> yData) {
-        super(ChartType.Scatter, xData, yData);
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param xData
+	 *            Data for X axis.
+	 * @param yData
+	 *            Data for Y axis.
+	 */
+	public ScatterChart(final AbstractDataProvider<?> xData, final AbstractDataProvider<?> yData) {
+		super(ChartType.Scatter, xData, yData);
+	}
 
+	@Override
+	public void validate() throws ChartException {
+		super.validate();
+		if (coordinateSystem == null || !RectangularCoordinate.class.isAssignableFrom(coordinateSystem.getClass())) {
+			throw new ChartException("Scatter chart must be plotted on a rectangular coordinate system");
+		}
+	}
 
-    @Override
-    public void validate() throws ChartException {
-        super.validate();
-        if(coordinateSystem == null || !RectangularCoordinate.class.isAssignableFrom(coordinateSystem.getClass())) {
-            throw new ChartException("Scatter chart must be plotted on a rectangular coordinate system");
-        }
-    }
+	@Override
+	public void encodeJSON(final StringBuilder sb) {
+		super.encodeJSON(sb);
+		if (pointSymbol != null) {
+			pointSymbol.encodeJSON(sb);
+		}
+	}
 
-    @Override
-    public void encodeJSON(StringBuilder sb) {
-        super.encodeJSON(sb);
-        if(pointSymbol != null) {
-            pointSymbol.encodeJSON(sb);
-        }
-    }
+	/**
+	 * Get the {@link PointSymbol}.
+	 *
+	 * @param create
+	 *            Whether to create it if not exists or not.
+	 * @return The instance of the current {@link PointSymbol} or newly created instance if requested.
+	 */
+	public PointSymbol getPointSymbol(final boolean create) {
+		if (pointSymbol == null && create) {
+			pointSymbol = new PointSymbol();
+		}
+		return pointSymbol;
+	}
 
-    /**
-     * Get the {@link PointSymbol}.
-     *
-     * @param create Whether to create it if not exists or not.
-     * @return  The instance of the current {@link PointSymbol} or newly created instance if requested.
-     */
-    public PointSymbol getPointSymbol(boolean create) {
-        if(pointSymbol == null && create) {
-            pointSymbol = new PointSymbol();
-        }
-        return pointSymbol;
-    }
-
-    /**
-     * Set a different point-symbol.
-     *
-     * @param pointSymbol An instance of the {@link PointSymbol}.
-     */
-    public void setPointSymbol(PointSymbol pointSymbol) {
-        this.pointSymbol = pointSymbol;
-    }
+	/**
+	 * Set a different point-symbol.
+	 *
+	 * @param pointSymbol
+	 *            An instance of the {@link PointSymbol}.
+	 */
+	public void setPointSymbol(final PointSymbol pointSymbol) {
+		this.pointSymbol = pointSymbol;
+	}
 }

@@ -23,92 +23,135 @@ package com.storedobject.chart;
  */
 public final class Orientation implements ComponentProperty {
 
-    private String code = null;
+	private String code = null;
 
-    /**
-     * Radial orientation.
-     */
-    public void radial() {
-        code = "R";
-    }
+	/**
+	 * Radial orientation.
+	 */
+	public void radial() {
+		code = "R";
+	}
 
-    /**
-     * Right-to-left orientation.
-     */
-    public void rightToLeft() {
-        code = "RL";
-    }
+	/**
+	 * Right-to-left orientation.
+	 */
+	public void rightToLeft() {
+		code = "RL";
+	}
 
-    /**
-     * Left-to-right orientation.
-     */
-    public void leftToRight() {
-        code = "LR";
-    }
+	/**
+	 * Left-to-right orientation.
+	 */
+	public void leftToRight() {
+		code = "LR";
+	}
 
-    /**
-     * Top-to-bottom orientation.
-     */
-    public void topToBottom() {
-        code = "TB";
-    }
+	/**
+	 * Top-to-bottom orientation.
+	 */
+	public void topToBottom() {
+		code = "TB";
+	}
 
-    /**
-     * Bottom-to-top orientation.
-     */
-    public void bottomToTop() {
-        code = "BT";
-    }
+	/**
+	 * Bottom-to-top orientation.
+	 */
+	public void bottomToTop() {
+		code = "BT";
+	}
 
-    @Override
-    public void encodeJSON(StringBuilder sb) {
-        if(code == null) {
-            return;
-        }
-        sb.append("\"layout\":\"");
-        if("R".equals(code)) {
-            sb.append("radial\",\"label\":{},\"leaves\":{\"label\":{}}");
-            return;
-        } else {
-            sb.append("orthogonal\",\"orient\":\"").append(code).append('"');
-        }
-        sb.append(",\"label\":{\"position\":\"");
-        switch(code) {
-            case "TB" -> sb.append("top");
-            case "BT" -> sb.append("bottom");
-            case "LR" -> sb.append("left");
-            case "RL" -> sb.append("right");
-        }
-        sb.append("\",\"rotate\":");
-        switch(code) {
-            case "TB" -> sb.append(-90);
-            case "BT" -> sb.append(90);
-            case "LR", "RL" -> sb.append(0);
-        }
-        sb.append(",\"verticalAlign\":\"middle\",\"align\":\"");
-        switch(code) {
-            case "TB", "BT" -> sb.append("right");
-            case "LR" -> sb.append("right");
-            case "RL" -> sb.append("left");
-        }
-        sb.append("\"},\"leaves\":{\"label\":{\"position\":\"");
-        switch(code) {
-            case "TB" -> sb.append("bottom");
-            case "BT" -> sb.append("top");
-            case "LR" -> sb.append("right");
-            case "RL" -> sb.append("left");
-        }
-        sb.append("\",\"rotate\":");
-        switch(code) {
-            case "TB" -> sb.append(-90);
-            case "BT" -> sb.append(90);
-            case "LR", "RL" -> sb.append(0);
-        }
-        sb.append(",\"verticalAlign\":\"middle\",\"align\":\"");
-        switch(code) {
-            case "TB", "BT", "LR" -> sb.append("left");
-            case "RL" -> sb.append("right");
-        }
-        sb.append("\"}}");
-    }
+	@Override
+	public void encodeJSON(final StringBuilder sb) {
+		if (code == null) {
+			return;
+		}
+		sb.append("\"layout\":\"");
+		if ("R".equals(code)) {
+			sb.append("radial\",\"label\":{},\"leaves\":{\"label\":{}}");
+			return;
+		} else {
+			sb.append("orthogonal\",\"orient\":\"").append(code).append('"');
+		}
+		sb.append(",\"label\":{\"position\":\"");
+		switch (code) {
+		case "TB":
+			sb.append("top");
+			break;
+		case "BT":
+			sb.append("bottom");
+			break;
+		case "LR":
+			sb.append("left");
+			break;
+		case "RL":
+			sb.append("right");
+			break;
+		}
+		sb.append("\",\"rotate\":");
+		switch (code) {
+		case "TB":
+			sb.append(-90);
+			break;
+		case "BT":
+			sb.append(90);
+			break;
+		case "LR":
+		case "RL":
+			sb.append(0);
+			break;
+		}
+		sb.append(",\"verticalAlign\":\"middle\",\"align\":\"");
+		switch (code) {
+		case "TB":
+		case "BT":
+			sb.append("right");
+			break;
+		case "LR":
+			sb.append("right");
+			break;
+		case "RL":
+			sb.append("left");
+			break;
+		}
+		sb.append("\"},\"leaves\":{\"label\":{\"position\":\"");
+		switch (code) {
+		case "TB":
+			sb.append("bottom");
+			break;
+		case "BT":
+			sb.append("top");
+			break;
+		case "LR":
+			sb.append("right");
+			break;
+		case "RL":
+			sb.append("left");
+			break;
+		}
+		sb.append("\",\"rotate\":");
+		switch (code) {
+		case "TB":
+			sb.append(-90);
+			break;
+		case "BT":
+			sb.append(90);
+			break;
+		case "LR":
+		case "RL":
+			sb.append(0);
+			break;
+		}
+		sb.append(",\"verticalAlign\":\"middle\",\"align\":\"");
+		switch (code) {
+		case "TB":
+		case "BT":
+		case "LR":
+			sb.append("left");
+			break;
+		case "RL":
+			sb.append("right");
+			break;
+		}
+		sb.append("\"}}");
+	}
 }
