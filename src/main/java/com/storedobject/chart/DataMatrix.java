@@ -106,7 +106,7 @@ public class DataMatrix {
      *
      * @param data Data to add.
      */
-    public void addRow(double... data) {
+    public void addRow(double[] data) {
         if(data != null && data.length > 0) {
             dataList.add(new Data(data));
         }
@@ -146,7 +146,7 @@ public class DataMatrix {
      * @param index Index.
      * @param data Data to add.
      */
-    public void insertRow(int index, double... data) {
+    public void insertRow(int index, double[] data) {
         if(data != null && data.length > 0) {
             dataList.add(index, new Data(data));
         }
