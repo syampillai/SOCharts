@@ -24,6 +24,11 @@
     <remote-repository>
       <option name="id" value="Vaadin pre-release repository" />
       <option name="name" value="Vaadin pre-release repository" />
+      <option name="url" value="https://maven.vaadin.com/vaadin-prereleases/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="Vaadin pre-release repository" />
+      <option name="name" value="Vaadin pre-release repository" />
       <option name="url" value="http://maven.vaadin.com/vaadin-prereleases/" />
     </remote-repository>
   </component>

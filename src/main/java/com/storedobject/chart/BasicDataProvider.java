@@ -19,6 +19,8 @@ package com.storedobject.chart;
 /**
  * A basic data provider that can be extended to create customized data providers.
  *
+ * @param <T> Data type.
+ *
  * @author Syam
  */
 public abstract class BasicDataProvider<T> implements AbstractDataProvider<T> {

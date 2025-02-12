@@ -54,7 +54,7 @@ import java.util.*;
  *
  * @author Syam
  */
-@NpmPackage(value = "echarts", version = "5.5.0")
+@NpmPackage(value = "echarts", version = "5.6.0")
 @Tag("so-chart")
 @JsModule("./so/chart/chart.js")
 public class SOChart extends LitComponent implements HasSize {
