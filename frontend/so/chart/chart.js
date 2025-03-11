@@ -608,7 +608,7 @@ export class SOChart extends LitElement {
                         fill: "#000",
                     })
                 }
-            };
+            }
             let circleBottom = {
                 type: 'ring',
                 ignore: ignore(xParent + barWidthParent / 2, yParent + barHeightParent),
