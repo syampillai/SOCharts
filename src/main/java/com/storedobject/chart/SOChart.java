@@ -17,10 +17,9 @@
 package com.storedobject.chart;
 
 import com.storedobject.helper.ID;
-import com.storedobject.helper.LitComponent;
+import com.storedobject.helper.LitComponentWithSize;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
-import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
@@ -40,7 +39,7 @@ import java.util.*;
  * </p>
  * <p>
  * Typical usage of the SOChart is to new it and add it to some layout for displaying it. Any {@link Component} that is
- * added to the {@link Chart} will be be displayed. For example, you can create a {@link PieChart} and add it to the
+ * added to the {@link Chart} will be displayed. For example, you can create a {@link PieChart} and add it to the
  * {@link SOChart} using {@link #add(Component...)}.
  * </p>
  * <pre>
@@ -57,7 +56,7 @@ import java.util.*;
 @NpmPackage(value = "echarts", version = "5.6.0")
 @Tag("so-chart")
 @JsModule("./so/chart/chart.js")
-public class SOChart extends LitComponent implements HasSize {
+public class SOChart extends LitComponentWithSize {
 
     final static ComponentEncoder[] encoders = {
             new ComponentEncoder("*", DefaultColors.class),
@@ -195,53 +194,6 @@ public class SOChart extends LitComponent implements HasSize {
      */
     public Legend getDefaultLegend() {
         return legend;
-    }
-
-    /**
-     * Set the size.
-     *
-     * @param width Width.
-     * @param height Height.
-     */
-    public void setSize(String width, String height) {
-        setWidth(width);
-        setHeight(height);
-    }
-
-    @Override
-    public void setWidth(String width) {
-        HasSize.super.setWidth(width);
-        getElement().setProperty("width", width);
-    }
-
-    @Override
-    public void setHeight(String height) {
-        HasSize.super.setHeight(height);
-        getElement().setProperty("height", height);
-    }
-
-    @Override
-    public void setMinWidth(String minWidth) {
-        HasSize.super.setMinWidth(minWidth);
-        getElement().setProperty("minw", minWidth);
-    }
-
-    @Override
-    public void setMinHeight(String minHeight) {
-        HasSize.super.setMinHeight(minHeight);
-        getElement().setProperty("minh", minHeight);
-    }
-
-    @Override
-    public void setMaxWidth(String maxWidth) {
-        HasSize.super.setMaxWidth(maxWidth);
-        getElement().setProperty("maxw", maxWidth);
-    }
-
-    @Override
-    public void setMaxHeight(String maxHeight) {
-        HasSize.super.setMaxHeight(maxHeight);
-        getElement().setProperty("maxh", maxHeight);
     }
 
     /**
@@ -444,8 +396,8 @@ public class SOChart extends LitComponent implements HasSize {
      * display changes if parameter is <code>true</code>.
      * </p>
      * <p>
-     * Why this method is required? If the data set is really big, it will be accountable for the majority of the
-     * communication overhead and it will be useful if we can update the display with other changes if no data is
+     * Why this method is required? If the data set is huge, it will be accountable for the majority of the
+     * communication overhead, and it will be useful if we can update the display with other changes if no data is
      * changed.
      * </p>
      * <p>

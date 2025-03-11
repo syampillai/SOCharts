@@ -36,7 +36,7 @@ export class SOChart extends LitElement {
         // Keep a reference to pending resize event. We use this to not trigger too many render events on continuous resize
         this.pendingResizeEvent = null;
         this.resizeListener = (event) => {
-            if(this.chart && this.chart != null) {
+            if(this.chart) {
                 // Clear previous pending event (if any) and register a new one. This way only last one will trigger
                 if (this.pendingResizeEvent) {
                     clearTimeout(this.pendingResizeEvent);
@@ -66,7 +66,7 @@ export class SOChart extends LitElement {
     }
 
     updated(changedProps) {
-        if(this.chart && this.chart != null && !changedProps.has("idChart")) {
+        if(this.chart && !changedProps.has("idChart")) {
             this.chart.resize();
         }
     }
@@ -97,7 +97,7 @@ export class SOChart extends LitElement {
         }
         var json = JSON.parse(options);
         this._stuff(json);
-        if(!this.chart || this.chart == null) {
+        if(!this.chart) {
             this.chart = echarts.init(this.shadowRoot.getElementById(this.idChart), theme, {
                 locale: locale,
                 renderer: renderer
