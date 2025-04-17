@@ -23,9 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -174,16 +172,6 @@ public class Project extends AbstractProject {
             }
         }
         return false;
-    }
-
-    private boolean contains(ProjectTask instance) {
-        if(instance instanceof Task task) {
-            if(task.group == null) {
-                return false;
-            }
-            instance = task.group;
-        }
-        return taskGroups.contains((TaskGroup) instance);
     }
 
     /**
@@ -393,7 +381,7 @@ public class Project extends AbstractProject {
      *
      * @author Syam
      */
-    abstract class ProjectTask extends AbstractTask {
+    public abstract class ProjectTask extends AbstractTask {
 
         private int order = -1;
         /**
@@ -600,7 +588,7 @@ public class Project extends AbstractProject {
                     end = taskEnd;
                 }
             }
-            if(start == null || end == null) {
+            if(start == null) {
                 return 0;
             }
             return (int)getDurationType().between(start, end);
@@ -608,7 +596,7 @@ public class Project extends AbstractProject {
 
         @Override
         public final LocalDateTime getStart() {
-            LocalDateTime taskStart = tasks.get(0).getStart();
+            LocalDateTime taskStart = tasks.getFirst().getStart();
             if(taskStart.isBefore(start)) {
                 start = taskStart;
             }
@@ -730,6 +718,11 @@ public class Project extends AbstractProject {
         }
     }
 
+    @Override
+    boolean isEmptyGroup() {
+        return taskGroups.isEmpty();
+    }
+
     /**
      * Get all task groups of this project.
      * <p>Note: Null will be returned if the project contains inconsistencies.</p>
@@ -778,47 +771,24 @@ public class Project extends AbstractProject {
     }
 
     @Override
-    <T> Iterator<T> iterator(BiFunction<AbstractTask, Integer, T> encoder, Predicate<AbstractTask> taskFilter) {
-        return new TaskIterator<>(encoder, taskFilter);
+    public <T> Iterator<T> iterator(BiFunction<AbstractTask, Integer, T> function, Predicate<AbstractTask> taskFilter) {
+        return new TaskIterator<>(function, taskFilter);
     }
 
-    private class TaskIterator<T> implements Iterator<T> {
-
-        private int index = -1;
-        private int groupIndex = -1;
-        private int taskIndex = -1;
-        private Task next = null;
-        private final BiFunction<AbstractTask, Integer, T> encoder;
-        private final Predicate<AbstractTask> taskFilter;
+    private class TaskIterator<T> extends ElementIterator<T> {
 
         private TaskIterator(BiFunction<AbstractTask, Integer, T> encoder, Predicate<AbstractTask> taskFilter) {
-            this.encoder = encoder;
-            this.taskFilter = taskFilter;
+            super(encoder, taskFilter);
         }
 
         @Override
-        public boolean hasNext() {
-            if(next != null) {
-                return true;
-            }
-            if(groupIndex == Integer.MIN_VALUE) {
-                return false;
-            }
-            if(groupIndex == -1) {
-                if(taskGroups.isEmpty()) {
-                    groupIndex = Integer.MIN_VALUE;
-                    return false;
-                }
-                groupIndex = 0;
-                taskIndex = 0;
-            } else {
-                ++taskIndex;
-            }
+        void checkNext() {
             TaskGroup taskGroup = taskGroups.get(groupIndex);
             while(taskIndex >= taskGroup.tasks.size()) {
                 if(++groupIndex >= taskGroups.size()) {
                     groupIndex = Integer.MIN_VALUE;
-                    return false;
+                    next = null;
+                    return;
                 }
                 taskGroup = taskGroups.get(groupIndex);
                 if(taskGroup.tasks.isEmpty()) {
@@ -829,21 +799,6 @@ public class Project extends AbstractProject {
             }
             ++index;
             next = taskGroup.getTask(taskIndex);
-            if(taskFilter != null && !taskFilter.test(next)) {
-                next = null;
-                return hasNext();
-            }
-            return true;
-        }
-
-        @Override
-        public T next() {
-            if(next == null) {
-                throw new NoSuchElementException();
-            }
-            Task task = next;
-            next = null;
-            return encoder.apply(task, index);
         }
     }
 
@@ -851,7 +806,7 @@ public class Project extends AbstractProject {
     protected AbstractDataProvider<String> dependencies() {
         BiFunction<AbstractTask, Integer, String> func = (t, i) -> "[" + i + "," + encode(t.renderStart())
                 + "," + encode(t.getEnd()) + "," + dependents((Task)t) + "]";
-        return dataProvider(DataType.OBJECT, func, t -> ((Task)t).predecessors.size() > 0);
+        return dataProvider(DataType.OBJECT, func, t -> !((Task) t).predecessors.isEmpty());
     }
 
     private String dependents(Task task) {
@@ -859,7 +814,7 @@ public class Project extends AbstractProject {
         boolean first = true;
         for(ProjectTask at: task.predecessors) {
             if(at instanceof TaskGroup tg) {
-                at = tg.tasks.get(tg.tasks.size() - 1);
+                at = tg.tasks.getLast();
             }
             if(first) {
                 first = false;
@@ -937,7 +892,7 @@ public class Project extends AbstractProject {
     final String getAxisLabel(AbstractTask abstractTask, int index) {
         Task task = (Task) abstractTask;
         return "[" + index + ",\"" + getAxisLabel(task.group) + "\","
-                + (task == task.group.tasks.get(task.group.tasks.size() - 1) ? 0 : 1) + ",\""
+                + (task == task.group.tasks.getLast() ? 0 : 1) + ",\""
                 + getAxisLabel(task) + "\",\"" + getExtraAxisLabel(task) + "\"," + task.getColor() + ","
                 + groupFontSize(task) + "," + extraFontSize(task) + "]";
     }
@@ -945,22 +900,5 @@ public class Project extends AbstractProject {
     @Override
     AbstractDataProvider<String> axisLabels() {
         return dataProvider(DataType.OBJECT, this::getAxisLabel);
-    }
-
-    @Override
-    protected String getTooltipLabel(AbstractTask abstractTask) {
-        Task task = (Task)abstractTask;
-        String extra = task.getExtraInfo();
-        if(extra == null || extra.isEmpty()) {
-            extra = "";
-        } else {
-            extra = "<br>" + extra;
-        }
-        Function<LocalDateTime, String> timeConverter = getTooltipTimeFormat();
-        String s = getLabel(task) + "<br>" + timeConverter.apply(task.start);
-        if(task.isMilestone()) {
-            return s + extra;
-        }
-        return s + " - " + timeConverter.apply(task.getEnd()) + " (" + task.getDuration() + ")" + extra;
     }
 }

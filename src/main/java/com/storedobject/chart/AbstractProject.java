@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -222,23 +223,12 @@ public abstract class AbstractProject {
             this.taskFilter = taskFilter;
         }
 
+        @SuppressWarnings("NullableProblems")
         @Override
         public Iterator<T> iterator() {
             return AbstractProject.this.iterator(encoder, taskFilter);
         }
     }
-
-    /**
-     * Provide an iterator of tasks/activities.
-     *
-     * @param encoder Encoder used to encode the task/activity to the desired output type. (A function that takes
-     *                the task/activity and the index as the input).
-     * @param taskFilter Filter to apply while selecting the task/activity.
-     * @param <T> Type of output required.
-     * @return Iterator that returns encoded values of the task/activity.
-     */
-    abstract <T> Iterator<T> iterator(BiFunction<AbstractTask, Integer, T> encoder,
-                                                Predicate<AbstractTask> taskFilter);
 
     /**
      * Data for rendering the task/activity bands.
@@ -411,7 +401,18 @@ public abstract class AbstractProject {
      * @param task Task/activity.
      * @return Label.
      */
-    protected abstract String getTooltipLabel(AbstractTask task);
+    protected String getTooltipLabel(AbstractTask task) {
+        String extra = nullAsEmpty(task.getExtraInfo());
+        if(!extra.isEmpty()) {
+            extra = "<br>" + extra;
+        }
+        Function<LocalDateTime, String> timeConverter = getTooltipTimeFormat();
+        String s = getLabel(task) + "<br>" + timeConverter.apply(task.start);
+        if(task.isMilestone()) {
+            return s + extra;
+        }
+        return s + " - " + timeConverter.apply(task.getEnd()) + " (" + task.getDuration() + ")" + extra;
+    }
 
     /**
      * Get labels for tooltip for the tasks/activities.
@@ -678,5 +679,130 @@ public abstract class AbstractProject {
      */
     public void setActivityFontSize(int activityFontSize) {
         setTaskFontSize(activityFontSize);
+    }
+
+    /**
+     * Check if the task/activity group is empty or not.
+     *
+     * @return True/false.
+     */
+    abstract boolean isEmptyGroup();
+
+    /**
+     * Get a stream of some type derived from each task/activity and its index.
+     * @param function Function to create desired output instance. (A function that takes
+     *                the task/activity and the index as the input).
+     * @param taskFilter Filter to apply while selecting the task/activity. This could be null.
+     * @return Stream of derived instances.
+     * @param <T> Element type of the returning stream.
+     */
+    public <T> Stream<T> stream(BiFunction<AbstractTask, Integer, T> function,
+                                Predicate<AbstractTask> taskFilter) {
+        return StreamSupport.stream(new TaskIterable<>(function, taskFilter).spliterator(), false);
+    }
+
+    /**
+     * Get an iterable of some type derived from each task/activity and its index.
+     * @param function Function to create desired output instance. (A function that takes
+     *                the task/activity and the index as the input).
+     * @param taskFilter Filter to apply while selecting the task/activity. This could be null.
+     * @return Iterable of the derived instances.
+     * @param <T> Element type of the returning iterable.
+     */
+    public <T> Iterable<T> iterable(BiFunction<AbstractTask, Integer, T> function,
+                                    Predicate<AbstractTask> taskFilter) {
+        return new TaskIterable<>(function, taskFilter);
+    }
+
+    /**
+     * Get an iterator of some type derived from each task/activity and its index.
+     * @param function Function to create desired output instance. (A function that takes
+     *                the task/activity and the index as the input).
+     * @param taskFilter Filter to apply while selecting the task/activity. This could be null.
+     * @return Iterator of the derived instances.
+     * @param <T> Element type of the returning iterator.
+     */
+    public abstract <T> Iterator<T> iterator(BiFunction<AbstractTask, Integer, T> function,
+                                             Predicate<AbstractTask> taskFilter);
+
+    /**
+     * An iterator implementation for tasks/activities of this project or activity list.
+     * @param <T>
+     */
+    abstract class ElementIterator<T> implements Iterator<T> {
+
+        int index = -1;
+        int groupIndex = -1;
+        int taskIndex = -1;
+        AbstractTask next = null;
+        final BiFunction<AbstractTask, Integer, T> function;
+        final Predicate<AbstractTask> taskFilter;
+
+        /**
+         * Constructor.
+         *
+         * @param function Function to create desired output instance. (A function that takes
+         *                the task/activity and the index as the input).
+         * @param taskFilter Filter to apply while selecting the task/activity.
+         */
+        ElementIterator(BiFunction<AbstractTask, Integer, T> function, Predicate<AbstractTask> taskFilter) {
+            this.function = function;
+            this.taskFilter = taskFilter;
+        }
+
+        @Override
+        public final boolean hasNext() {
+            if(next != null) {
+                return true;
+            }
+            if(groupIndex == Integer.MIN_VALUE) {
+                return false;
+            }
+            if(groupIndex == -1) {
+                if(isEmptyGroup()) {
+                    groupIndex = Integer.MIN_VALUE;
+                    return false;
+                }
+                groupIndex = 0;
+                taskIndex = 0;
+            } else {
+                ++taskIndex;
+            }
+            checkNext();
+            if(next == null) {
+                return false;
+            }
+            if(taskFilter != null && !taskFilter.test(next)) {
+                next = null;
+                return hasNext();
+            }
+            return true;
+        }
+
+        /**
+         * Set the "next" available task/activity in this method.
+         */
+        abstract void checkNext();
+
+        @Override
+        public final T next() {
+            if(next == null) {
+                throw new NoSuchElementException();
+            }
+            AbstractTask task = next;
+            next = null;
+            return function.apply(task, index);
+        }
+    }
+
+    /**
+     * Converts a null string to an empty string. If the input string is not null,
+     * it returns the string itself.
+     *
+     * @param s the input string that may be null
+     * @return an empty string if the input is null, otherwise returns the input string
+     */
+    String nullAsEmpty(String s) {
+        return s == null ? "" : s;
     }
 }
