@@ -318,7 +318,13 @@ public class ActivityList extends AbstractProject {
             return start;
         }
 
-        abstract void check() throws ChartException;
+        /**
+         * Performs a validation check for the activity or activity group.
+         * This method needs to be implemented by subclasses to provide the specific validation logic.
+         *
+         * @throws ChartException if any validation error occurs during the check.
+         */
+        protected abstract void check() throws ChartException;
     }
 
     /**
@@ -417,7 +423,7 @@ public class ActivityList extends AbstractProject {
         }
 
         @Override
-        void check() throws ChartException {
+        protected void check() throws ChartException {
             Activity p = activities.getFirst(), c;
             p.check();
             for(int i = 1; i < activities.size(); i++) {
@@ -531,7 +537,7 @@ public class ActivityList extends AbstractProject {
         }
 
         @Override
-        void check() throws ChartException {
+        protected void check() throws ChartException {
             if(getDuration() <= 0) {
                 throw new ChartException("Invalid duration in " + this);
             }
