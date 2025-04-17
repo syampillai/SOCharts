@@ -1,100 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~  Copyright 2019-2025 Syam Pillai
-  ~  Licensed under the Apache License, Version 2.0 (the "License");
-  ~  you may not use this file except in compliance with the License.
-  ~  You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~  Unless required by applicable law or agreed to in writing, software
-  ~  distributed under the License is distributed on an "AS IS" BASIS,
-  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~  See the License for the specific language governing permissions and
-  ~  limitations under the License.
-  ~
-  -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.storedobject.chart</groupId>
+    <parent>
+        <groupId>com.storedobject</groupId>
+        <artifactId>so-vaadinpom</artifactId>
+        <version>24.7.2</version>
+        <relativePath/>
+    </parent>
+
     <artifactId>so-charts</artifactId>
-    <version>4.0.1</version>
+    <version>5.0.0</version>
     <name>SO Charts</name>
     <description>Vaadin LitElement wrapper for ECharts</description>
 
     <properties>
-        <vaadin.version>24.6.6</vaadin.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java-version>17</java-version>
-        <maven.compiler.release>${java-version}</maven.compiler.release>
-        <maven-compiler-plugin-version>3.12.1</maven-compiler-plugin-version>
-        <maven-jar-plugin-version>3.3.0</maven-jar-plugin-version>
-        <maven-resources-plugin-version>3.3.1</maven-resources-plugin-version>
-        <maven-javadoc-plugin-version>3.6.3</maven-javadoc-plugin-version>
-        <maven-source-plugin-version>3.3.0</maven-source-plugin-version>
-        <maven-assembly-plugin-version>3.6.0</maven-assembly-plugin-version>
-        <so-helper-version>4.1.0</so-helper-version>
+        <so-helper-version>5.0.0</so-helper-version>
     </properties>
-
-    <organization>
-        <name>Syam Pillai</name>
-    </organization>
 
     <licenses>
         <license>
-            <name>Apache 2</name>
+            <name>Apache License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-bom</artifactId>
-                <type>pom</type>
-                <scope>import</scope>
-                <version>${vaadin.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+
+    <organization>
+        <name>Syam Pillai</name>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>syampillai</id>
+            <name>Syam Pillai</name>
+            <email>syam.s.pillai@gmail.com</email>
+        </developer>
+    </developers>
 
     <repositories>
         <repository>
-            <id>Vaadin pre-release repository</id>
-            <url>https://maven.vaadin.com/vaadin-prereleases/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>vaadin-addons</id>
-            <url>https://maven.vaadin.com/vaadin-addons</url>
+            <id>so-maven</id>
+            <url>https://storedobject.com/maven</url>
         </repository>
     </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>Vaadin pre-release repository</id>
-            <url>https://maven.vaadin.com/vaadin-prereleases/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 
     <dependencies>
-
         <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.storedobject.helper</groupId>
+            <groupId>com.storedobject</groupId>
             <artifactId>so-helper</artifactId>
             <version>${so-helper-version}</version>
         </dependency>
@@ -103,131 +58,6 @@
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin-version}</version>
-                <configuration>
-                    <source>${java-version}</source>
-                    <target>${java-version}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven-jar-plugin-version}</version>
-                <configuration>
-                    <archive>
-                        <index>true</index>
-                        <manifest>
-                            <addClasspath>false</addClasspath>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <Vaadin-Package-Version>1</Vaadin-Package-Version>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-maven-plugin</artifactId>
-                <version>${vaadin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-frontend</goal>
-                            <goal>build-frontend</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <pnpmEnable>true</pnpmEnable>
-                </configuration>
-            </plugin>
-
-        </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>directory</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>${maven-assembly-plugin-version}</version>
-                        <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>assembly/assembly.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <phase>install</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>${maven-source-plugin-version}</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${maven-javadoc-plugin-version}</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <source>${java-version}</source>
-                            <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-                            <quiet>true</quiet>
-                            <!--
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                            -->
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <version>${maven-jar-plugin-version}</version>
-                        <configuration>
-                            <!-- VAADIN files that shouldn't be included in add-ons -->
-                            <excludes>
-                                <exclude>META-INF/VAADIN/</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

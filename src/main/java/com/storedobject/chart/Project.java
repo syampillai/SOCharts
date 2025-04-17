@@ -194,7 +194,7 @@ public class Project extends AbstractProject {
      */
     public TaskGroup createTaskGroup(String name) {
         TaskGroup taskGroup = new TaskGroup(name);
-        taskGroups.add(0, taskGroup);
+        taskGroups.addFirst(taskGroup);
         return taskGroup;
     }
 
@@ -241,7 +241,7 @@ public class Project extends AbstractProject {
         checked = false;
         taskGroups.remove(taskGroup);
         while(!taskGroup.tasks.isEmpty()) {
-            deleteTask(taskGroup.tasks.get(0));
+            deleteTask(taskGroup.tasks.getFirst());
         }
     }
 

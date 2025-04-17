@@ -55,34 +55,34 @@ public abstract class AbstractGanttChart implements ComponentGroup {
         soChart.add(getC());
         try {
             project.validateConstraints();
-        } catch(ChartException e) {
+        } catch (ChartException e) {
             error.setText(e.getMessage());
             soChart.add(error);
             return;
         }
-        if(project.isEmpty()) {
+        if (project.isEmpty()) {
             error.setText("Empty project - " + project.getName());
             soChart.add(error);
             return;
         }
-        if(today == null) {
+        if (today == null) {
             AbstractDataProvider<?> data = project.dataForToday();
-            if(data != null) {
+            if (data != null) {
                 today = new Today(data);
             }
         }
-        if(taskBands == null) {
+        if (taskBands == null) {
             taskBands = new TaskBands();
         }
-        if(tasks == null) {
+        if (tasks == null) {
             tasks = new Tasks();
         }
-        if(taskAxisLabels == null) {
+        if (taskAxisLabels == null) {
             taskAxisLabels = new TaskAxisLabels();
         }
-        if(taskDependencies == null) {
+        if (taskDependencies == null) {
             AbstractDataProvider<?> depData = project.dependencies();
-            if(depData != null) {
+            if (depData != null) {
                 taskDependencies = new TaskDependencies(depData);
             }
         }
@@ -103,7 +103,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
      * @return Y-axis zoom component.
      */
     DataZoom getYAxisZoom() {
-        if(taskZoom == null) {
+        if (taskZoom == null) {
             taskZoom = new DataZoom(getC(), getYAxis());
             taskZoom.setFilterMode(2);
             taskZoom.setShowDetail(false);
@@ -118,7 +118,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
      * @return Time-axis zoom component.
      */
     public DataZoom getTimeAxisZoom() {
-        if(timeZoom == null) {
+        if (timeZoom == null) {
             timeZoom = new DataZoom(getC(), getTimeAxis());
             timeZoom.setFilterMode(2);
             timeZoom.setShowDetail(false);
@@ -133,7 +133,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
      * @return Rectangular co-ordinate system. (An instance of {@link RectangularCoordinate}).
      */
     public RectangularCoordinate getCoordinateSystem() {
-        if(coordinate == null) {
+        if (coordinate == null) {
             coordinate = new RectangularCoordinate(getTimeAxis(), getYAxis());
             Position p = coordinate.getPosition(true);
             //noinspection ConstantConditions
@@ -155,7 +155,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
      * @return Time axis. (An instance of {@link XAxis}).
      */
     public XAxis getTimeAxis() {
-        if(timeAxis == null) {
+        if (timeAxis == null) {
             timeAxis = new XAxis(project.getDurationType().isDateBased() ? DataType.DATE : DataType.TIME);
             timeAxis.getLabel(true).getAlignment(true).center();
             timeAxis.getTicks(true).hide();
@@ -170,7 +170,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
      * @return Y-axis. (An instance of {@link YAxis}).
      */
     YAxis getYAxis() {
-        if(taskAxis == null) {
+        if (taskAxis == null) {
             taskAxis = new YAxis(DataType.NUMBER);
             taskAxis.getLabel(true).hide();
             taskAxis.getTicks(true).hide();
@@ -191,7 +191,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
 
         @Override
         protected AbstractDataProvider<?> dataToEmbed() {
-            if(bands == null) {
+            if (bands == null) {
                 bands = project.bands();
             }
             return bands;
@@ -239,7 +239,7 @@ public abstract class AbstractGanttChart implements ComponentGroup {
 
         @Override
         protected AbstractDataProvider<?> dataToEmbed() {
-            if(data == null) {
+            if (data == null) {
                 data = project.axisLabels();
             }
             return data;
@@ -262,12 +262,13 @@ public abstract class AbstractGanttChart implements ComponentGroup {
             setName("Tasks");
             plotOn(getC(), getTimeAxis(), getYAxis());
             Tooltip tooltip = new Tooltip();
-            tooltip.append(project.tooltipLabels());setTooltip(tooltip);
+            tooltip.append(project.tooltipLabels());
+            setTooltip(tooltip);
         }
 
         @Override
         protected AbstractDataProvider<?> dataToEmbed() {
-            if(data == null) {
+            if (data == null) {
                 data = project.taskData();
             }
             return data;
