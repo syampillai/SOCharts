@@ -67,7 +67,7 @@ public class Test extends VerticalLayout {
         soChart.add(gc);
 
         // Click event
-        soChart.addClickEventListener(gc, e -> System.err.println("Event: " + e));
+        soChart.addClickListener(gc, e -> System.err.println("Event: " + e));
     }
 
     private static void lineChart(SOChart soChart) {
@@ -96,6 +96,6 @@ public class Test extends VerticalLayout {
         soChart.add(lineChart, new Title("Sample Line Chart"));
 
         // Click event
-        soChart.addClickEventListener(lineChart, e -> System.err.println("Event: " + e));
+        soChart.addClickListener(lineChart, e -> System.err.println("Event: " + e));
     }
 }

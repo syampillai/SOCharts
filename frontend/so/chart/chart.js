@@ -22,6 +22,7 @@ export class SOChart extends LitElement {
     constructor() {
         super();
         this.idChart = null;
+        this.eventHandler = null;
         this.data = {};
         this.allOptions = "";
         this.minw = "5vw";
@@ -88,7 +89,7 @@ export class SOChart extends LitElement {
         this.updateChart(false, this.allOptions, theme, locale, renderer);
     }
 
-    updateChart(full, options, theme, locale, renderer, events) {
+    updateChart(full, options, theme, locale, renderer, partEvents) {
         if(full) {
             this.allOptions = options;
         }
@@ -101,7 +102,7 @@ export class SOChart extends LitElement {
             });
         }
         this.chart.setOption(json);
-        this.enableClickEvents(events);
+        this.enableClickEvents(partEvents);
     }
 
     clearData() {
@@ -150,14 +151,22 @@ export class SOChart extends LitElement {
     }
 
     // noinspection JSUnusedGlobalSymbols
-    enableClickEvents(enable) {
-        if(this.chart) {
-            this.chart.off('click');
-            if (enable) {
-                this.chart.on('click', e => {
+    enableClickEvents(enableParts) {
+        if(!this.chart) {
+            return;
+        }
+        if(enableParts) {
+            if(!this.eventHandler) {
+                this.eventHandler = e => {
                     console.log(e);
-                    this.$server.onClick(e.seriesId);
-                });
+                    this.$server.onPartClick(e.seriesId);
+                };
+                this.chart.on('click', this.eventHandler);
+            }
+        } else {
+            if(this.eventHandler) {
+                this.chart.off('click', this.eventHandler);
+                this.eventHandler = null;
             }
         }
     }

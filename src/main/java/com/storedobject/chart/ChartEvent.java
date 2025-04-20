@@ -9,6 +9,7 @@ package com.storedobject.chart;
  */
 public class ChartEvent {
 
+    private final SOChart soChart;
     private final ChartEventType type;
     private final long partId;
     private Object data;
@@ -16,12 +17,23 @@ public class ChartEvent {
     /**
      * Constructs a new ChartEvent with the specified type and part ID.
      *
+     * @param soChart The {@code SOChart} instance associated with this event.
      * @param type The type of the chart event. This determines the kind of event that occurred.
      * @param partId The ID of the chart part associated with this event.
      */
-    public ChartEvent(ChartEventType type, long partId) {
+    public ChartEvent(SOChart soChart, ChartEventType type, long partId) {
+        this.soChart = soChart;
         this.type = type;
         this.partId = partId;
+    }
+
+    /**
+     * Retrieves the {@code SOChart} instance associated with this chart event.
+     *
+     * @return The {@code SOChart} instance linked to this event.
+     */
+    public SOChart getSoChart() {
+        return soChart;
     }
 
     /**

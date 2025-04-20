@@ -18,9 +18,7 @@ package com.storedobject.chart;
 
 import com.storedobject.helper.ID;
 import com.storedobject.helper.LitComponentWithSize;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.ClientCallable;
-import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.shared.Registration;
@@ -58,7 +56,7 @@ import java.util.stream.Stream;
 @NpmPackage(value = "echarts", version = "5.6.0")
 @Tag("so-chart")
 @JsModule("./so/chart/chart.js")
-public class SOChart extends LitComponentWithSize {
+public class SOChart extends LitComponentWithSize implements ClickNotifier<SOChart> {
 
     final static ComponentEncoder[] encoders = {
             new ComponentEncoder("*", DefaultColors.class),
@@ -116,7 +114,7 @@ public class SOChart extends LitComponentWithSize {
     }
 
     @ClientCallable
-    private void onClick(String seriesId) {
+    private void onPartClick(String seriesId) {
         if(eventListeners.isEmpty()) {
             return; // This should never happen because we disable events when no listeners are registered.
         }
@@ -126,7 +124,10 @@ public class SOChart extends LitComponentWithSize {
         } catch(NumberFormatException e) {
             return;
         }
-        ChartEvent event = new ChartEvent(ChartEventType.CLICK, id);
+        if(id <= 0) {
+            return;
+        }
+        ChartEvent event = new ChartEvent(this, ChartEventType.CLICK, id);
         if(handleEvent(event, componentGroups.stream().map(cg -> cg))) {
             return;
         }
@@ -154,12 +155,12 @@ public class SOChart extends LitComponentWithSize {
      * Adds a click event listener to the chart. This method registers the specified
      * event handler and listener for handling click events on the chart.
      *
-     * @param eventHandler the event handler responsible for managing the click event
-     * @param listener the listener that will handle the click event when triggered
+     * @param eventHandler the event handler responsible for managing the click event.
+     * @param listener the listener that will handle the click event when triggered.
      * @return a {@code Registration} object that can be used to remove the registered
-     *         click event listener
+     *         click event listener.
      */
-    public Registration addClickEventListener(ChartEventHandler eventHandler, ChartEventListener listener) {
+    public Registration addClickListener(ChartEventHandler eventHandler, ChartEventListener listener) {
         CE ce = new CE(eventHandler, ChartEventType.CLICK, listener);
         if(eventListeners.isEmpty()) {
             executeJS("enableClickEvents", true);
@@ -395,17 +396,17 @@ public class SOChart extends LitComponentWithSize {
     }
 
     /**
-     * Remove all components from the chart. (Chart display and event listeners will not be cleared
+     * Remove all components and component-parts event handlers from the chart. (Chart display will not be cleared
      * unless {@link #update()} or {@link #clear()} method is called).
      */
     public void removeAll() {
+        eventListeners.clear();
         components.clear();
     }
 
     /**
      * Clear the chart. This will remove the chart display. However, it can be
      * rendered again by invoking {@link #update()} as long as {@link #removeAll()} is not called.
-     * <p>Note: Event listeners will be cleared.</p>
      */
     public void clear() {
         if(neverUpdated) {
