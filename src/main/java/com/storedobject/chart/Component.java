@@ -16,8 +16,6 @@
 
 package com.storedobject.chart;
 
-import java.util.Map;
-
 /**
  * <p>
  * Chart component. Chart components can be added to the {@link SOChart} for rendering using

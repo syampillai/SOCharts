@@ -25,7 +25,6 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.shared.Registration;
 
-import java.beans.EventHandler;
 import java.util.*;
 import java.util.stream.Stream;
 
