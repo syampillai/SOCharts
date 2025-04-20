@@ -1,28 +1,43 @@
 package com.storedobject.test;
 
 import com.storedobject.chart.*;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Route("")
 public class Test extends VerticalLayout {
 
+    private final SOChart soChart = new SOChart();
+
     public Test() {
-
         setSizeFull();
-
-        // Define a chart component
-        SOChart soChart = new SOChart();
         soChart.setSizeFull();
-        add(soChart);
-
-        // Gantt chart
-        createGanttChart(soChart);
+        drawMenu();
     }
 
-    private static void createGanttChart(SOChart soChart) {
+    private void drawMenu() {
+        removeAll();
+        add(new Button("Gantt Chart", e -> build(() -> ganttChart(soChart))));
+        add(new Button("Line Chart", e -> build(() -> lineChart(soChart))));
+    }
+
+    private void build(Runnable builder) {
+        removeAll();
+        soChart.removeAll();
+        add(new Button("Back to Menu", e -> drawMenu()));
+        add(soChart);
+        builder.run();
+        try {
+            soChart.update();
+        } catch (Exception ignored) {
+        }
+    }
+
+    private static void ganttChart(SOChart soChart) {
         // Sample project with few entries
         Project project = new Project();
         project.setStart(LocalDateTime.now().minusDays(10));
@@ -50,5 +65,41 @@ public class Test extends VerticalLayout {
 
         // Add the Gantt Chart to our chart component
         soChart.add(gc);
+
+        // Click event
+        soChart.addClickEventListener(gc, e -> {
+            System.err.println("Event: " + e);
+        });
+    }
+
+    private static void lineChart(SOChart soChart) {
+        // Generating some random values for a LineChart
+        Random random = new Random();
+        Data xValues = new Data(), yValues = new Data();
+        for (int x = 0; x < 40; x++) {
+            xValues.add(x);
+            yValues.add(random.nextDouble());
+        }
+        xValues.setName("X Values");
+        yValues.setName("Random Values");
+
+        // Line chart is initialized with the generated XY values
+        LineChart lineChart = new LineChart(xValues, yValues);
+        lineChart.setName("40 Random Values");
+
+        // Line chart needs a coordinate system to plot on
+        // We need Number-type for both X and Y axes in this case
+        XAxis xAxis = new XAxis(DataType.NUMBER);
+        YAxis yAxis = new YAxis(DataType.NUMBER);
+        RectangularCoordinate rc = new RectangularCoordinate(xAxis, yAxis);
+        lineChart.plotOn(rc);
+
+        // Add to the chart display area with a simple title
+        soChart.add(lineChart, new Title("Sample Line Chart"));
+
+        // Click event
+        soChart.addClickEventListener(lineChart, e -> {
+            System.err.println("Event: " + e);
+        });
     }
 }

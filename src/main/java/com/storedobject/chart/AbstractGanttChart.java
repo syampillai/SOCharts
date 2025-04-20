@@ -49,6 +49,12 @@ public abstract class AbstractGanttChart implements ComponentGroup {
     }
 
     @Override
+    public boolean checkEvent(ChartEvent event) {
+        return ComponentPart.checkEvent(event, taskBands, tasks, today, taskAxisLabels, taskDependencies, timeZoom,
+                taskZoom, coordinate, timeAxis, taskAxis, error);
+    }
+
+    @Override
     public void addParts(SOChart soChart) {
         soChart.disableDefaultLegend();
         soChart.remove(error);

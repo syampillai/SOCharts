@@ -46,8 +46,4 @@ public interface Component extends ComponentPart {
      */
     default void addParts(SOChart soChart) {
     }
-
-    default Map<SOEvent, Runnable> getEvents() {
-        return null;
-    }
 }

@@ -1,6 +1,9 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
+    <inspection_tool class="UnusedReturnValue" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="highestModifier" value="package-private" />
+    </inspection_tool>
     <inspection_tool class="unused" enabled="true" level="WARNING" enabled_by_default="true" klass="packageLocal" inner_class="packageLocal" field="packageLocal" method="packageLocal" checkParameterExcludingHierarchy="false">
       <option name="LOCAL_VARIABLE" value="true" />
       <option name="FIELD" value="true" />

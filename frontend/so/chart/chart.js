@@ -1,5 +1,4 @@
-import { LitElement, html, css } from 'lit';
-import {property, customElement} from 'lit/decorators.js';
+import { LitElement, html } from 'lit';
 import * as echarts from 'echarts/dist/echarts.min';
 
 export class SOChart extends LitElement {
@@ -31,13 +30,12 @@ export class SOChart extends LitElement {
         this.maxh = "6000px";
         this.width = "33vw";
         this.height = "33vh";
-        this.events = [];
-        
+
         // Keep a reference to pending resize event. We use this to not trigger too many render events on continuous resize
         this.pendingResizeEvent = null;
-        this.resizeListener = (event) => {
+        this.resizeListener = () => {
             if(this.chart) {
-                // Clear previous pending event (if any) and register a new one. This way only last one will trigger
+                // Clear previous pending event (if any) and register a new one. This way only the last one will trigger
                 if (this.pendingResizeEvent) {
                     clearTimeout(this.pendingResizeEvent);
                 }
@@ -47,10 +45,6 @@ export class SOChart extends LitElement {
                 }, 500);
             }
         };
-    }
-
-    addEvent(event, data) {
-        this.events.push({ event, data })
     }
 
     connectedCallback() {
@@ -71,10 +65,12 @@ export class SOChart extends LitElement {
         }
     }
 
+    // noinspection JSUnusedGlobalSymbols
     clearChart() {
         if(this.chart == null) {
             return;
         }
+        this.chart.enableClickEvents(false);
         this.chart.clear();
     }
 
@@ -86,16 +82,17 @@ export class SOChart extends LitElement {
         this.chart = null;
     }
 
+    // noinspection JSUnusedGlobalSymbols
     setThemeAndLocale(theme, locale, renderer) {
         this.destroyChart();
         this.updateChart(false, this.allOptions, theme, locale, renderer);
     }
 
-    updateChart(full, options, theme, locale, renderer) {
+    updateChart(full, options, theme, locale, renderer, events) {
         if(full) {
             this.allOptions = options;
         }
-        var json = JSON.parse(options);
+        const json = JSON.parse(options);
         this._stuff(json);
         if(!this.chart) {
             this.chart = echarts.init(this.shadowRoot.getElementById(this.idChart), theme, {
@@ -103,12 +100,8 @@ export class SOChart extends LitElement {
                 renderer: renderer
             });
         }
-        this.events.forEach(event => {
-            this.chart.on(event.event, { name: event.data }, params => {
-               this.$server.runEvent(event.event, event.data);
-           })
-        });
         this.chart.setOption(json);
+        this.enableClickEvents(events);
     }
 
     clearData() {
@@ -119,7 +112,7 @@ export class SOChart extends LitElement {
         if(typeof serial !== 'undefined') {
             this.initData(serial, data);
         }
-        var json = JSON.parse(this.allOptions);
+        const json = JSON.parse(this.allOptions);
         this._stuff(json);
         this.chart.setOption(json);
     }
@@ -128,6 +121,7 @@ export class SOChart extends LitElement {
         this.data["d" + serial] = JSON.parse(data)["d"];
     }
 
+    // noinspection JSUnusedGlobalSymbols
     pushData(data) {
         data = JSON.parse(data)["d"];
         for(let k in data) {
@@ -137,6 +131,7 @@ export class SOChart extends LitElement {
         this.updateData();
     }
 
+    // noinspection JSUnusedGlobalSymbols
     appendData(data) {
         data = JSON.parse(data)["d"];
         for(let k in data) {
@@ -145,12 +140,26 @@ export class SOChart extends LitElement {
         this.updateData();
     }
 
+    // noinspection JSUnusedGlobalSymbols
     resetData(serials) {
         serials = JSON.parse(serials)["d"];
         serials.forEach(v => {
             this.data["d" + v] = [];
         });
         this.updateData();
+    }
+
+    // noinspection JSUnusedGlobalSymbols
+    enableClickEvents(enable) {
+        if(this.chart) {
+            this.chart.off('click');
+            if (enable) {
+                this.chart.on('click', e => {
+                    console.log(e);
+                    this.$server.onClick(e.seriesId);
+                });
+            }
+        }
     }
 
     _stuff(obj) {
@@ -162,7 +171,7 @@ export class SOChart extends LitElement {
     }
 
     _stuffFunc(obj) {
-        var o;
+        let o;
         for(let k in obj) {
             o = obj[k];
             if(typeof o === 'object') {
@@ -176,11 +185,13 @@ export class SOChart extends LitElement {
     }
 
     _stuffFuncP(obj) {
-        var o;
+        let o;
         for(let k in obj) {
             o = obj[k];
             if(typeof o === 'object') {
+                // noinspection JSUnresolvedReference
                 if(typeof o.functionP === 'object') {
+                    // noinspection JSUnresolvedReference
                     obj[k] = p => this._formatter(p, o.functionP.body);
                 } else {
                     this._stuffFuncP(o);
@@ -190,7 +201,7 @@ export class SOChart extends LitElement {
     }
 
     _stuffRenderer(obj) {
-        var o;
+        let o;
         for(let k in obj) {
             o = obj[k];
             if(k === "renderItem") {
@@ -202,7 +213,7 @@ export class SOChart extends LitElement {
     }
 
     _stuffData(obj) {
-        var o;
+        let o;
         for(let k in obj) {
             o = obj[k];
             if(k === "data") {
@@ -280,56 +291,57 @@ export class SOChart extends LitElement {
 
     // Horizontal bar renderer (used by Gantt chart).
     // Data Point: [Y-value, label, start, end, completed, bar color, prefix color, non-progress color, font-size]
+    // noinspection JSUnusedGlobalSymbols
     _renderHBar(params, api) {
-        var HEIGHT_RATIO = 0.6;
-        var index = api.value(0);
-        var label = api.value(1);
-        var start = api.coord([api.value(2), index]);
-        var end = api.coord([api.value(3), index]);
-        var donePercentage = api.value(4)
-        var color = api.value(5);
-        var prefixColor = api.value(6);
-        var nonProgressColor = api.value(7);
-        var fontSize = api.value(8);
-        var barWidth = end[0] - start[0];
-        var barHeight = api.size([0, 1])[1];
-        var shiftY = 0;
+        const HEIGHT_RATIO = 0.6;
+        const index = api.value(0);
+        const label = api.value(1);
+        const start = api.coord([api.value(2), index]);
+        const end = api.coord([api.value(3), index]);
+        const donePercentage = api.value(4);
+        const color = api.value(5);
+        const prefixColor = api.value(6);
+        const nonProgressColor = api.value(7);
+        const fontSize = api.value(8);
+        let barWidth = end[0] - start[0];
+        let barHeight = api.size([0, 1])[1];
+        let shiftY;
         if(color === prefixColor) { // Not a Gantt chart
             shiftY = 0;
         } else {
             shiftY = -(barHeight / 2);
         }
         barHeight *= HEIGHT_RATIO;
-        var x = start[0];
-        var y = start[1] - (barHeight / 2) + shiftY;
+        let x = start[0];
+        const y = start[1] - (barHeight / 2) + shiftY;
         x += 3;
         barWidth -= 3;
         if(barWidth < 0) {
             barWidth = 0;
         }
-        var rectSystem = {
+        const rectSystem = {
             x: params.coordSys.x,
             y: params.coordSys.y,
             width: params.coordSys.width,
             height: params.coordSys.height
         };
-        var rectPrefix = {
+        let rectPrefix = {
             x: x - 3,
             y: y,
             width: 3,
             height: barHeight
         };
         rectPrefix = echarts.graphic.clipRectByRect(rectPrefix, rectSystem);
-        var rectBox = {
+        let rectBox = {
             x: x,
             y: y,
             width: barWidth,
             height: barHeight
         };
         rectBox = echarts.graphic.clipRectByRect(rectBox, rectSystem);
-        var rectPercent;
+        let rectPercent;
         if(donePercentage >= 0 && donePercentage < 100) {
-            var completedWidth = (barWidth + 3) * donePercentage / 100;
+            const completedWidth = (barWidth + 3) * donePercentage / 100;
             rectPercent = {
                 x: x + completedWidth - 3,
                 y: y,
@@ -338,8 +350,8 @@ export class SOChart extends LitElement {
             };
             rectPercent = echarts.graphic.clipRectByRect(rectPercent, rectSystem);
         }
-        var hideText;
-        if(shiftY == 0) { // Not a Gantt chart
+        let hideText;
+        if(shiftY === 0) { // Not a Gantt chart
             hideText = !rectPrefix;
         } else {
             hideText = !rectBox;
@@ -392,31 +404,32 @@ export class SOChart extends LitElement {
 
     // Render labels on vertical axis - labels can be connected within the same group too (used by Gantt chart)
     // Data Point: [Y-value, group label, connected, label, sub-label, bar color, font-size, extra-font-size]
+    // noinspection JSUnusedGlobalSymbols
     _renderVAxisLabel(params, api) {
         const minY = params.coordSys.y;
-        const maxY = minY + params.coordSys.height;
+        // const maxY = minY + params.coordSys.height;
         const width = params.coordSys.x - 15;
-        var index = api.value(0);
-        var groupName = api.value(1);
-        var connected = api.value(2);
-        var label = api.value(3);
-        var sublabel = api.value(4);
-        var color = api.value(5);
-        var fontSize = api.value(6);
-        var extraFontSize = api.value(7);
-        var barHeight = api.size([0, 1])[1];
-        var y = api.coord([0, index])[1] - barHeight;
+        const index = api.value(0);
+        const groupName = api.value(1);
+        const connected = api.value(2);
+        const label = api.value(3);
+        const sublabel = api.value(4);
+        const color = api.value(5);
+        const fontSize = api.value(6);
+        const extraFontSize = api.value(7);
+        const barHeight = api.size([0, 1])[1];
+        const y = api.coord([0, index])[1] - barHeight;
         let ry = y + 0.2 * barHeight, ty1 = y + 0.6 * barHeight, ty2 = y + 0.8 * barHeight, rh = 0.8 * barHeight;
         if(ry < minY) {
             let d = minY - ry;
             ry = minY;
             rh -= d;
         }
-        var rect = {
-           x: 10,
-           y: ry,
-           width: width - 10,
-           height: rh
+        let rect = {
+            x: 10,
+            y: ry,
+            width: width - 10,
+            height: rh
         };
         let elements = {
             type: 'group',
@@ -502,7 +515,7 @@ export class SOChart extends LitElement {
                 }
             }]
         };
-        if(connected == 1) {
+        if(connected === 1) {
             rect = {
                x: 10,
                y: y,
@@ -541,31 +554,32 @@ export class SOChart extends LitElement {
 
     // Render arrow lines to show dependencies between bars rendered by the "HBar" renderer. (Used by Gantt chart)
     // Data Point: [Y-value, start, end, "{d:[[dependent Y-value, dependent start, dependent end]...]}"]
+    // noinspection JSUnusedGlobalSymbols
     _renderDependency(params, api) {
         const minX = params.coordSys.x;
         const minY = params.coordSys.y;
         const maxX = minX + params.coordSys.width;
         const maxY = minY + params.coordSys.height;
         const ignore = (x, y) => x < minX || x > maxX || y < minY || y > maxY;
-        var HEIGHT_RATIO = 0.6;
-        var index = api.value(0);
-        var start = api.coord([api.value(1), index]);
-        var end = api.coord([api.value(2), index]);
-        var barWidth = end[0] - start[0];
-        var barHeight = api.size([0, 1])[1] * HEIGHT_RATIO;
-        var x = start[0];
-        var y = (start[1] - barHeight) - (barHeight / 3);
-        var dependencies = JSON.parse(api.value(3).replaceAll('^', '"')).d;
+        const HEIGHT_RATIO = 0.6;
+        const index = api.value(0);
+        const start = api.coord([api.value(1), index]);
+        // const end = api.coord([api.value(2), index]);
+        //var barWidth = end[0] - start[0];
+        const barHeight = api.size([0, 1])[1] * HEIGHT_RATIO;
+        const x = start[0];
+        const y = (start[1] - barHeight) - (barHeight / 3);
+        const dependencies = JSON.parse(api.value(3).replaceAll('^', '"')).d;
         let links = []
         for(let j = 0; j < dependencies.length; j++){
-            var parent = dependencies[j];
-            var indexParent = parent[0];
-            var startParent = api.coord([parent[1], indexParent]);
-            var endParent = api.coord([parent[2], indexParent]);
-            var barWidthParent = endParent[0] - startParent[0];
-            var barHeightParent = api.size([0, 1])[1] * HEIGHT_RATIO;
-            var xParent = startParent[0];
-            var yParent = (startParent[1] - barHeightParent) - (barHeightParent / 3);
+            const parent = dependencies[j];
+            const indexParent = parent[0];
+            const startParent = api.coord([parent[1], indexParent]);
+            const endParent = api.coord([parent[2], indexParent]);
+            const barWidthParent = endParent[0] - startParent[0];
+            const barHeightParent = api.size([0, 1])[1] * HEIGHT_RATIO;
+            const xParent = startParent[0];
+            const yParent = (startParent[1] - barHeightParent) - (barHeightParent / 3);
             let arrow = {}
             if(x < (xParent + barWidthParent / 2)) {
                 if(y > yParent) {
@@ -675,22 +689,23 @@ export class SOChart extends LitElement {
     }
 
     // Render horizontal bands. Data Point: [Y-value, start, end, color]
+    // noinspection JSUnusedGlobalSymbols
     _renderHBand(params, api) {
-        var index = api.value(0);
-        var color = api.value(3);
-        var start = api.coord([api.value(1), index]);
-        var end = api.coord([api.value(2), index]);
-        var barWidth = end[0] - start[0];
-        var barHeight = api.size([0, 1])[1];
-        var x = start[0];
-        var y = start[1] - barHeight;
-        var rectNormal = {
+        const index = api.value(0);
+        const color = api.value(3);
+        const start = api.coord([api.value(1), index]);
+        const end = api.coord([api.value(2), index]);
+        const barWidth = end[0] - start[0];
+        const barHeight = api.size([0, 1])[1];
+        const x = start[0];
+        const y = start[1] - barHeight;
+        let rectNormal = {
             x: x,
             y: y,
             width: barWidth,
             height: barHeight
         };
-        var rectSystem = {
+        const rectSystem = {
             x: params.coordSys.x,
             y: params.coordSys.y,
             width: params.coordSys.width,
@@ -712,15 +727,16 @@ export class SOChart extends LitElement {
     }
 
     // Render a vertical line at a given value. Single Data Point: [line at, text label, color]
+    // noinspection JSUnusedGlobalSymbols
     _renderVLine(params, api) {
-        var lineAt = api.coord([api.value(0), 0]);
-        var x = lineAt[0];
-        var y = params.coordSys.y;
-        var y_end = y + params.coordSys.height;
+        const lineAt = api.coord([api.value(0), 0]);
+        const x = lineAt[0];
+        const y = params.coordSys.y;
+        const y_end = y + params.coordSys.height;
         let color = api.value(2);
         let text = api.value(1);
-        var textWidth = echarts.format.getTextRect(text).width;
-        var elements = [];
+        const textWidth = echarts.format.getTextRect(text).width;
+        const elements = [];
         if(textWidth > 0) {
             elements.push({
                 type: 'text',

@@ -23,7 +23,7 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public interface ComponentGroup {
+public interface ComponentGroup extends ChartEventHandler {
 
     /**
      * Add parts of this group to {@link SOChart}. This will be invoked if the group was already added
@@ -45,7 +45,7 @@ public interface ComponentGroup {
     /**
      * This method is invoked before the {@link #addParts(SOChart)} to verify that the {@link ComponentGroup} is valid.
      *
-     * @throws ChartException Throws when in invalid state.
+     * @throws ChartException Throws when in an invalid state.
      */
     default void validate() throws ChartException {
     }
