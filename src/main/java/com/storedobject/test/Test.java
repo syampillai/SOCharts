@@ -88,6 +88,7 @@ public class Test extends VerticalLayout {
         // Line chart needs a coordinate system to plot on
         // We need Number-type for both X and Y axes in this case
         XAxis xAxis = new XAxis(DataType.NUMBER);
+        xAxis.setClickable(true);
         YAxis yAxis = new YAxis(DataType.NUMBER);
         RectangularCoordinate rc = new RectangularCoordinate(xAxis, yAxis);
         lineChart.plotOn(rc);

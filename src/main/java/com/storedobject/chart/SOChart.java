@@ -120,6 +120,7 @@ public class SOChart extends LitComponentWithSize implements ClickNotifier<SOCha
         }
         long id;
         try {
+            System.err.println("Series id: " + seriesId);
             id = Long.parseLong(seriesId);
         } catch(NumberFormatException e) {
             return;

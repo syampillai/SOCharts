@@ -27,7 +27,7 @@ import java.util.Objects;
  *
  * @author Syam
  */
-public abstract class Axis extends VisiblePart implements Wrapped {
+public abstract class Axis extends VisiblePart implements Wrapped, Clickable {
 
     /**
      * Definition of pointer types.
@@ -67,6 +67,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     private Pointer pointer;
     private int renderingIndex;
     private AbstractDataProvider<?> data;
+    private boolean clickable = false;
     SOChart soChart;
 
     /**
@@ -149,6 +150,16 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
     }
 
+    @Override
+    public void setClickable(boolean clickable) {
+        this.clickable = clickable;
+    }
+
+    @Override
+    public boolean isClickable() {
+        return clickable;
+    }
+
     /**
      * Set the data for this axis.
      * <p>Note: Normally, this is not required to be set unless you are working on a custom chart that is not yet
@@ -216,7 +227,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     }
 
     /**
-     * Get name of the axis.
+     * Get the name of the axis.
      *
      * @return Name of the axis.
      */
@@ -234,7 +245,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     }
 
     /**
-     * Invert the axis. If called, drawing of the axis will be inverted (drawn in the opposite direction).
+     * Invert the axis. If called, the drawing of the axis will be inverted (drawn in the opposite direction).
      */
     public void invert() {
         inverted = true;
@@ -319,7 +330,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     /**
      * Set the minimum value for the axis.
      *
-     * @param min Minimum value. (For category axis, it could be just an ordinal number of the category). Note: The type
+     * @param min Minimum value. (For category axis, it could be just an ordinal number of the categories). Note: The type
      *            of the value must be compatible with the data type of the axis. Otherwise, it will be ignored.
      */
     public void setMin(Number min) {
@@ -327,16 +338,16 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     }
 
     /**
-     * By invoking this method, minimum of the axis will be set as minimum value of the data.
+     * By invoking this method, the minimum of the axis will be set as the minimum value of the data.
      */
     public void setMinAsMinData() {
         min = "dataMin";
     }
 
     /**
-     * Set maximum value for the axis.
+     * Set the maximum value for the axis.
      *
-     * @param max Maximum value. (For category axis, it could be just an ordinal number of the category). Note: The type
+     * @param max Maximum value. (For category axis, it could be just an ordinal number of the categories). Note: The type
      *            of the value must be compatible with the data type of the axis. Otherwise, it will be ignored.
      */
     public void setMax(Object max) {
@@ -344,7 +355,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     }
 
     /**
-     * By invoking this method, maximum of the axis will be set as maximum value of the data.
+     * By invoking this method, the maximum of the axis will be set as the maximum value of the data.
      */
     public void setMaxAsMaxData() {
         max = "dataMax";
@@ -361,8 +372,8 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     }
 
     /**
-     * Set whether zero position to be shown or not. On certain charts, it may be required not to show zero
-     * position of the axis. Note: this setting is ignored if minimum and maximum values are already set. Also,
+     * Set whether zero positions to be shown or not. On certain charts, it may be required not to show zero
+     * positions of the axis. Note: this setting is ignored if minimum and maximum values are already set. Also,
      * this is not applicable to category type axes.
      *
      * @param show True or false.
@@ -505,7 +516,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
 
     /**
      * Get the axis-pointer for the axis. (By default, no axis-pointer will be shown. However, if a call is
-     * made to this method with create = <code>true</code>, axis-pointer will be made visible. Then, you may use
+     * made to this method with <code>create = true</code>, an axis-pointer will be made visible. Then, you may use
      * the {@link Pointer#hide()} method to hide it if required.)
      *
      * @param create Whether to create if not exists or not.
@@ -572,7 +583,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
 
         /**
-         * Check if label for the maximum value will be displayed or not.
+         * Check if a label for the maximum value will be displayed or not.
          *
          * @return True or false. <code>Null</code> value means that it will be determined automatically to eliminate
          * labels-overlap.
@@ -592,7 +603,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
 
         /**
-         * Check if label for the minimum value will be displayed or not.
+         * Check if a label for the minimum value will be displayed or not.
          *
          * @return True or false. <code>Null</code> value means that it will be determined automatically to eliminate
          * labels-overlap.
@@ -624,8 +635,8 @@ public abstract class Axis extends VisiblePart implements Wrapped {
          * Set the interval between labels.
          * <p>Important Note: This is applicable only for {@link DataType#CATEGORY}.</p>
          *
-         * @param interval 0 means all labels, 1 means every alternate labels, 2 means every 2nd labels and so on.
-         *                 A special value of -1 means labelling will be determined automatically to eliminate overlap.
+         * @param interval 0 means all labels, 1 means every alternate label, 2 means every 2nd label and so on.
+         *                 A special value of -1 means labeling will be determined automatically to remove overlap.
          */
         public void setInterval(int interval) {
             this.interval = interval;
@@ -672,17 +683,17 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
 
         /**
-         * Set a Javascript function as the label formatter. Only the body of the Javascript function needs to be
-         * set. Two parameters, (value, index), are passed to the function - value: The value at that axis-tick, index:
+         * Set a JavaScript function as the label formatter. Only the body of the JavaScript function needs to be
+         * set. Two parameters, (value, index) are passed to the function - value: The value at that axis-tick, index:
          * The index is the axis-tick index (index is of not much use since it is not the index of the data). The
          * function should return the label to be displayed.
-         * <p>Example: For displaying a rounded numeric value (rounded to 2 decimals places) in a numeric axis,
+         * <p>Example: For displaying a rounded numeric value (rounded to 2 decimal places) in a numeric axis,
          * you may do something like:</p>
          * <pre>
          *     setFormatterFunction("return value.toFixed(2);");
          * </pre>
          *
-         * @param function The body of the Javascript function.
+         * @param function The body of the JavaScript function.
          */
         public void setFormatterFunction(String function) {
             this.formatter = ComponentPart.encodeFunction(function, "value", "index");
@@ -709,7 +720,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
 
         /**
-         * Get width of the tick in pixels.
+         * Get the width of the tick in pixels.
          *
          * @return Width of the tick.
          */
@@ -718,7 +729,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
 
         /**
-         * Set width of the tick in pixels.
+         * Set the width of the tick in pixels.
          *
          * @param width Width of the tick.
          */
@@ -752,7 +763,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
 
         /**
-         * Get number of divisions.
+         * Get a number of divisions.
          *
          * @return Number of divisions.
          */
@@ -761,7 +772,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
 
         /**
-         * Set number of divisions.
+         * Set the number of divisions.
          *
          * @param divisions Number of divisions.
          */
@@ -833,8 +844,8 @@ public abstract class Axis extends VisiblePart implements Wrapped {
          * Set the interval between labels. (If not set and if the "interval" is set for the {@link Label} of the
          * axis, that will be used).
          *
-         * @param interval 0 means all labels, 1 means every alternate labels, 2 means every 2nd labels and so on.
-         *                 A special value of -1 means labelling will be determined automatically to eliminate overlap.
+         * @param interval 0 means all labels, 1 means every alternate label, 2 means every 2nd label and so on.
+         *                 A special value of -1 means labeling will be determined automatically to remove overlap.
          */
         public void setInterval(int interval) {
             this.interval = interval;
@@ -860,7 +871,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     }
 
     /**
-     * A base class for various type of lines used in axis and coordinate systems.
+     * A base class for various types of lines used in axis and coordinate systems.
      *
      * @author Syam
      */
@@ -935,7 +946,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
 
         /**
-         * Get the interval for the grid lines. (If not defined, interval property of the axis-label will be used).
+         * Get the interval for the grid lines. (If not defined, the interval property of the axis-label will be used).
          *
          * @return Interval.
          */
@@ -944,7 +955,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
 
         /**
-         * Set the interval for the grid lines. (If not defined, interval property of the axis-label will be used).
+         * Set the interval for the grid lines. (If not defined, the interval property of the axis-label will be used).
          *
          * @param interval 0 means all, 1 means every alternate line, 2 means every 2nd line and so on.
          *                 A special value of -1 means it will be determined automatically.
@@ -998,7 +1009,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
 
         /**
-         * Get the interval for the grid lines. (If not defined, interval property of the axis-label will be used).
+         * Get the interval for the grid lines. (If not defined, the interval property of the axis-label will be used).
          *
          * @return Interval.
          */
@@ -1007,7 +1018,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         }
 
         /**
-         * Set the interval for the grid lines. (If not defined, interval property of the axis-label will be used).
+         * Set the interval for the grid lines. (If not defined, the interval property of the axis-label will be used).
          *
          * @param interval 0 means all, 1 means every alternate line, 2 means every 2nd line and so on.
          *                 A special value of -1 means it will be determined automatically.
@@ -1018,7 +1029,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     }
 
     /**
-     * Represents the axis-pointer shown by the axis. (By default no axis-pointer will be shown. However,
+     * Represents the axis-pointer shown by the axis. (By default, no axis-pointer will be shown. However,
      * if you create one via {@link Axis#getPointer(boolean)}, it will be displayed).
      *
      * @author Syam
@@ -1072,7 +1083,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
 
         /**
          * Get the snap attribute. This will determine whether to snap to point automatically or not.
-         * The default value is auto determined. This feature usually makes sense in value axis and time axis,
+         * The default value is auto-determined. This feature usually makes sense in value axis and time axis,
          * where tiny points can be sought automatically.
          *
          * @return True/false or <code>null</code> if not set (means default).
@@ -1180,7 +1191,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     }
 
     /**
-     * Represents the label that is displayed by the axis-pointer.
+     * Represents the label displayed by the axis-pointer.
      *
      * @author Syam
      */
@@ -1208,7 +1219,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         /**
          * Get the precision for showing the value (Applicable to numeric values).
          *
-         * @return Precision (Number of digits). A value of -1 means it will be determined automatically).
+         * @return Precision (Number of digits). A value of -1 means it will be determined automatically.
          */
         public final int getPrecision() {
             return precision;
@@ -1217,7 +1228,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
         /**
          * Set the precision for showing the value (Applicable to numeric values).
          *
-         * @param precision Precision (Number of digits). A value of -1 means it will be determined automatically).
+         * @param precision Precision (Number of digits). A value of -1 means it will be determined automatically.
          */
         public void setPrecision(int precision) {
             this.precision = precision;
@@ -1225,7 +1236,7 @@ public abstract class Axis extends VisiblePart implements Wrapped {
     }
 
     /**
-     * Represent the handle that can be used with axis-pointer. (This is useful mainly for touch-devices).
+     * Represent the handle that can be used with an axis-pointer. (This is useful mainly for touch-devices).
      *
      * @author Syam
      */
