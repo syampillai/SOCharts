@@ -23,7 +23,7 @@ import com.storedobject.helper.ID;
  *
  * @author Syam
  */
-public interface ComponentPart extends ComponentProperty {
+public interface ComponentPart extends ComponentProperty, ChartEventHandler {
 
     /**
      * Set the rendering index of this part. Rendering index is the position of this part on the chart when it is
@@ -252,5 +252,49 @@ public interface ComponentPart extends ComponentProperty {
             string = string.replace("\n", "\\n");
         }
         return '"' + string + '"';
+    }
+
+    /**
+     * Checks whether the given chart event corresponds to this part based on its part ID.
+     * If the event's part ID matches this part's ID, it associates this part as data with the event
+     * and returns true. Otherwise, it returns false.
+     *
+     * @param event The {@link ChartEvent} to check. The event contains information
+     *              about the part of the chart it is associated with.
+     * @return {@code true} if the event's part ID matches this part's ID, and the part
+     *         is associated with the event as data; {@code false} otherwise.
+     */
+    @Override
+    default boolean checkEvent(ChartEvent event) {
+        if(event.getPartId() == getId()) {
+            event.setData(this);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether the given event matches any of the provided component parts, and if so, associates
+     * the relevant part data with the event.
+     *
+     * @param event The {@code ChartEvent} to be checked. Represents an event that occurs on a chart.
+     *              Its `partId` will be matched against the IDs of the provided component parts.
+     * @param parts The {@code ComponentPart} objects to check against the event. These represent
+     *              individual parts of the chart, each with a unique ID.
+     *              If this argument is null or empty, the method will return {@code false}.
+     * @return {@code true} if any of the provided parts has an ID matching the `partId` of the given event.
+     *         In this case, the event is also updated with the corresponding part's data.
+     *         Otherwise, returns {@code false}.
+     */
+    static boolean checkEvent(ChartEvent event, ComponentPart... parts) {
+        if(parts != null) {
+            for(ComponentPart part: parts) {
+                if(part != null && part.getId() == event.getPartId()) {
+                    event.setData(part);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

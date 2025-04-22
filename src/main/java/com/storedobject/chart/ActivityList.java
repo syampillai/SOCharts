@@ -20,7 +20,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -90,16 +89,6 @@ public class ActivityList extends AbstractProject {
         return activityGroups.isEmpty();
     }
 
-    private boolean contains(ProjectActivity instance) {
-        if(instance instanceof Activity activity) {
-            if(activity.group == null) {
-                return false;
-            }
-            instance = activity.group;
-        }
-        return activityGroups.contains((ActivityGroup) instance);
-    }
-
     /**
      * Create and add a {@link ActivityGroup} to the {@link ActivityList}.
      *
@@ -108,7 +97,7 @@ public class ActivityList extends AbstractProject {
      */
     public ActivityGroup createActivityGroup(String name) {
         ActivityGroup activityGroup = new ActivityGroup(name);
-        activityGroups.add(0, activityGroup);
+        activityGroups.addFirst(activityGroup);
         return activityGroup;
     }
 
@@ -161,7 +150,7 @@ public class ActivityList extends AbstractProject {
         checked = false;
         activityGroups.remove(activityGroup);
         while(!activityGroup.activities.isEmpty()) {
-            deleteActivity(activityGroup.activities.get(0));
+            deleteActivity(activityGroup.activities.getFirst());
         }
     }
 
@@ -204,7 +193,7 @@ public class ActivityList extends AbstractProject {
         if(start == null) {
             arrange();
             if(!isEmpty()) {
-                start = activityGroups.get(0).getStart();
+                start = activityGroups.getFirst().getStart();
             }
         }
         return start;
@@ -257,7 +246,7 @@ public class ActivityList extends AbstractProject {
      *
      * @author Syam
      */
-    abstract class ProjectActivity extends AbstractTask {
+    public abstract class ProjectActivity extends AbstractTask {
 
         private final int duration;
 
@@ -329,7 +318,13 @@ public class ActivityList extends AbstractProject {
             return start;
         }
 
-        abstract void check() throws ChartException;
+        /**
+         * Performs a validation check for the activity or activity group.
+         * This method needs to be implemented by subclasses to provide the specific validation logic.
+         *
+         * @throws ChartException if any validation error occurs during the check.
+         */
+        protected abstract void check() throws ChartException;
     }
 
     /**
@@ -389,13 +384,13 @@ public class ActivityList extends AbstractProject {
 
         @Override
         public final int getDuration() {
-            LocalDateTime start = activities.get(0).getStart(), end = activities.get(activities.size() - 1).getEnd();
+            LocalDateTime start = activities.getFirst().getStart(), end = activities.getLast().getEnd();
             return (int)getDurationType().between(start, end);
         }
 
         @Override
         public final LocalDateTime getStart() {
-            return activities.get(0).getStart();
+            return activities.getFirst().getStart();
         }
 
         /**
@@ -428,8 +423,8 @@ public class ActivityList extends AbstractProject {
         }
 
         @Override
-        void check() throws ChartException {
-            Activity p = activities.get(0), c;
+        protected void check() throws ChartException {
+            Activity p = activities.getFirst(), c;
             p.check();
             for(int i = 1; i < activities.size(); i++) {
                 c = activities.get(i);
@@ -542,7 +537,7 @@ public class ActivityList extends AbstractProject {
         }
 
         @Override
-        void check() throws ChartException {
+        protected void check() throws ChartException {
             if(getDuration() <= 0) {
                 throw new ChartException("Invalid duration in " + this);
             }
@@ -554,6 +549,11 @@ public class ActivityList extends AbstractProject {
             return "[" + getName() + " (" + timeConverter.apply(getStart()) + " - "
                     + timeConverter.apply(getEnd()) + ")]";
         }
+    }
+
+    @Override
+    boolean isEmptyGroup() {
+        return activityGroups.isEmpty();
     }
 
     /**
@@ -588,73 +588,34 @@ public class ActivityList extends AbstractProject {
     }
 
     @Override
-    <T> Iterator<T> iterator(BiFunction<AbstractTask, Integer, T> encoder,
-                                       Predicate<AbstractTask> activityFilter) {
-        return new TaskIterator<>(encoder, activityFilter);
+    public <T> Iterator<T> iterator(BiFunction<AbstractTask, Integer, T> function, Predicate<AbstractTask> activityFilter) {
+        return new ActivityIterator<>(function, activityFilter);
     }
 
-    private class TaskIterator<T> implements Iterator<T> {
+    private class ActivityIterator<T> extends ElementIterator<T> {
 
-        private int index = -1;
-        private int groupIndex = -1;
-        private int activityIndex = -1;
-        private Activity next = null;
-        private final BiFunction<AbstractTask, Integer, T> encoder;
-        private final Predicate<AbstractTask> activityFilter;
-
-        private TaskIterator(BiFunction<AbstractTask, Integer, T> encoder, Predicate<AbstractTask> activityFilter) {
-            this.encoder = encoder;
-            this.activityFilter = activityFilter;
+        private ActivityIterator(BiFunction<AbstractTask, Integer, T> function, Predicate<AbstractTask> activityFilter) {
+            super(function, activityFilter);
         }
 
         @Override
-        public boolean hasNext() {
-            if(next != null) {
-                return true;
-            }
-            if(groupIndex == Integer.MIN_VALUE) {
-                return false;
-            }
-            if(groupIndex == -1) {
-                if(activityGroups.isEmpty()) {
-                    groupIndex = Integer.MIN_VALUE;
-                    return false;
-                }
-                groupIndex = 0;
-                activityIndex = 0;
-            } else {
-                ++activityIndex;
-            }
+        void checkNext() {
             ActivityGroup activityGroup = activityGroups.get(groupIndex);
-            while(activityIndex >= activityGroup.activities.size()) {
+            while(taskIndex >= activityGroup.activities.size()) {
                 if(++groupIndex >= activityGroups.size()) {
                     groupIndex = Integer.MIN_VALUE;
-                    return false;
+                    next = null;
+                    return;
                 }
                 activityGroup = activityGroups.get(groupIndex);
                 if(activityGroup.activities.isEmpty()) {
                     continue;
                 }
-                activityIndex = 0;
+                taskIndex = 0;
                 break;
             }
             ++index;
-            next = activityGroup.getActivity(activityIndex);
-            if(activityFilter != null && !activityFilter.test(next)) {
-                next = null;
-                return hasNext();
-            }
-            return true;
-        }
-
-        @Override
-        public T next() {
-            if(next == null) {
-                throw new NoSuchElementException();
-            }
-            Activity activity = next;
-            next = null;
-            return encoder.apply(activity, index);
+            next = activityGroup.getActivity(taskIndex);
         }
     }
 
@@ -680,27 +641,8 @@ public class ActivityList extends AbstractProject {
                 + group.getColor() + "," + groupFontSize(group) + "," + extraFontSize(group) + "]";
     }
 
-    private String nullAsEmpty(String s) {
-        return s == null ? "" : s;
-    }
-
     @Override
     AbstractDataProvider<String> axisLabels() {
-        return dataProvider(DataType.OBJECT, this::getAxisLabel, t -> ((Activity) t).group.activities.get(0) == t);
-    }
-
-    @Override
-    protected String getTooltipLabel(AbstractTask abstractActivity) {
-        Activity activity = (Activity)abstractActivity;
-        String extra = nullAsEmpty(activity.getExtraInfo());
-        if(!extra.isEmpty()) {
-            extra = "<br>" + extra;
-        }
-        Function<LocalDateTime, String> timeConverter = getTooltipTimeFormat();
-        String s = getLabel(activity) + "<br>" + timeConverter.apply(activity.start);
-        if(activity.isMilestone()) {
-            return s + extra;
-        }
-        return s + " - " + timeConverter.apply(activity.getEnd()) + " (" + activity.getDuration() + ")" + extra;
+        return dataProvider(DataType.OBJECT, this::getAxisLabel, t -> ((Activity) t).group.activities.getFirst() == t);
     }
 }

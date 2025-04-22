@@ -27,10 +27,10 @@ import java.util.function.Function;
  * {@link #setType(ChartType)} method.
  * However, there are concrete derivatives of this class such as {@link PieChart}, {@link NightingaleRoseChart} etc.
  * where more chart-specific methods are available and data for the chart is checked more accurately for errors. If
- * the data set for the chart is of invalid type, system tries to do its best to adapt that data but the chart may not
+ * the data set for the chart is of invalid type, a system tries to do its best to adapt that data, but the chart may not
  * appear if the data conversion fails.
  * </p>
- * <p>Custom Charts: Any chart may be converted to a custom chart by setting up an item renderer to render the each
+ * <p>Custom Charts: Any chart may be converted to a custom chart by setting up an item renderer to render the
  * data point. The item renderer can be specified via {@link #setCustomRenderer(String)}. However, please note that
  * only a few custom renderers are currently available.</p>
  * <p>
@@ -43,7 +43,7 @@ import java.util.function.Function;
  *
  * @author Syam
  */
-public class Chart extends AbstractPart implements Component, HasData, HasAnimation, HasEmphasis {
+public class Chart extends AbstractPart implements Component, HasData, HasAnimation, HasEmphasis, Clickable {
 
     List<Axis> axes;
     private ChartType type = ChartType.Line;
@@ -59,17 +59,8 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
     private MarkArea markArea;
     private Animation animation;
     private Emphasis emphasis;
+    private boolean clickable = true;
     private SOChart soChart;
-    private final HashMap<SOEvent, Runnable> events = new HashMap<>();
-
-    @Override
-    public HashMap<SOEvent, Runnable> getEvents() {
-        return this.events;
-    }
-
-    public void addEvent(SOEvent key, Runnable value) {
-        this.events.put(key, value);
-    }
 
     /**
      * Create a {@link ChartType#Line} chart.
@@ -117,8 +108,8 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
     }
 
     /**
-     * <p>Set a custom renderer for this chart. Each renderer can be used on certain type of charts only, may require
-     * special data requirements and you may have to encode the rendering values. Following are the currently supported
+     * <p>Set a custom renderer for this chart. Each renderer can be used on a certain type of charts only, may require
+     * special data requirements, and you may have to encode the rendering values. The following are the currently supported
      * renderers:</p>
      * <pre>
      * (1) "HBand": Horizontal bands. Applicable to XY charts.
@@ -140,7 +131,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
     /**
      * Get the type-value of the chart. (Example, type-value of the {@link LineChart} is "line"). You must override this
      * and return the correct chart-type if you are creating your own chart-type that is not yet supported by this
-     * add-on lib,
+     * add-on.
      *
      * @return Chart-type value.
      */
@@ -185,12 +176,22 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
 
     /**
      * Get the index to get the real data value of this chart. (In special charts, the actual data value at a data
-     * point may at an index different from 0).
+     * point may be at an index different from 0).
      *
      * @return Data value index.
      */
     protected int dataValueIndex() {
         return -1;
+    }
+
+    @Override
+    public void setClickable(boolean clickable) {
+        this.clickable = clickable;
+    }
+
+    @Override
+    public boolean isClickable() {
+        return clickable;
     }
 
     @Override
@@ -442,8 +443,9 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
      *                         another coordinate system, it will be removed from it).
      * @param axes Axes to be used by the chart. This needs to be specified if the coordinate system has
      *             multiple axes of the required type.
-     * @return Self reference.
+     * @return Self-reference.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Chart plotOn(CoordinateSystem coordinateSystem, Axis... axes) {
         if(coordinateSystem == null) {
             this.axes = null;
@@ -466,7 +468,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
      * Plot the chart on a given set of axes.
      *
      * @param axes Axes to be used by the chart.
-     * @return Self reference.
+     * @return Self-reference.
      */
     public Chart plotOn(Axis... axes) {
         if(axes != null && axes.length > 0) {
@@ -492,7 +494,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
     }
 
     /**
-     * Set name for this chart.
+     * Set the name for this chart.
      *
      * @param name Name.
      */
@@ -531,7 +533,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
     }
 
     /**
-     * Get the label for this chart values.
+     * Get the label for this chart value.
      *
      * @param create Whether to create if not exists or not.
      * @return Label.
@@ -544,7 +546,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
     }
 
     /**
-     * Set the label for this chart values.
+     * Set the label for this chart value.
      *
      * @param label Label.
      */
@@ -627,7 +629,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
     /**
      * Set a customized {@link MarkArea} for this chart.
      *
-     * @param markArea Mark area to set.
+     * @param markArea Mark the area to set.
      */
     public void setMarkArea(MarkArea markArea) {
         this.markArea = markArea;
@@ -787,7 +789,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         private Size x, y;
 
         /**
-         * Set the (x, y) position. The origin is at top-left point of the bounding rectangle.
+         * Set the (x, y) position. The origin is at the top-left point of the bounding rectangle.
          *
          * @param x X position.
          * @param y Y position.
@@ -801,7 +803,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         /**
          * Set the label position to the left side.
          *
-         * @return Self reference.
+         * @return Self-reference.
          */
         public LabelPosition left() {
             x = y = null;
@@ -814,7 +816,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         /**
          * Set the label position to the right side.
          *
-         * @return Self reference.
+         * @return Self-reference.
          */
         public LabelPosition right() {
             x = y = null;
@@ -827,7 +829,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         /**
          * Set the label position to the top side.
          *
-         * @return Self reference.
+         * @return Self-reference.
          */
         public LabelPosition top() {
             x = y = null;
@@ -840,7 +842,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         /**
          * Set the label position to the bottom side.
          *
-         * @return Self reference.
+         * @return Self-reference.
          */
         public LabelPosition bottom() {
             x = y = null;
@@ -853,7 +855,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         /**
          * Set the label position to the center. (Applicable to certain types of charts such as {@link PieChart}).
          *
-         * @return Self reference.
+         * @return Self-reference.
          */
         public LabelPosition center() {
             x = y = null;
@@ -928,7 +930,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
     public static class Emphasis extends com.storedobject.chart.Emphasis {
 
         /**
-         * Definition of the "fading out" of other elements when emphasising.
+         * Definition of the "fading out" of other elements when emphasizing.
          *
          * @author Syam
          */
@@ -994,7 +996,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
         private FADE_OUT_SCOPE fadeOutScope;
 
         /**
-         * Specify how other elements will be faded out when emphasising an element.
+         * Specify how other elements will be faded out when emphasizing an element.
          *
          * @param fadeOut Fade out.
          */

@@ -83,6 +83,12 @@ public abstract class AbstractTask {
     }
 
     /**
+     * Duration. The unit is the same as that of the "duration type" of the project or activity list.
+     * @return Duration of this task/activity.
+     */
+    public abstract int getDuration();
+
+    /**
      * Get the end.
      *
      * @return End.

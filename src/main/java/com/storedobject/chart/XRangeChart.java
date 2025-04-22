@@ -46,6 +46,11 @@ public class XRangeChart<X, Y> implements ComponentGroup {
     private boolean showProgressLabel = false;
     private DataZoom xZoom, yZoom;
 
+    @Override
+    public boolean checkEvent(ChartEvent event) {
+        return ComponentPart.checkEvent(event, xAxis, yAxis, chart, chart, xZoom, yZoom);
+    }
+
     /**
      * Add a data value.
      *
@@ -210,7 +215,7 @@ public class XRangeChart<X, Y> implements ComponentGroup {
     }
 
     /**
-     * Whether to render progress bar or not.
+     * Whether to render a progress bar or not.
      *
      * @param showProgress True/false.
      */
@@ -219,7 +224,7 @@ public class XRangeChart<X, Y> implements ComponentGroup {
     }
 
     /**
-     * Whether to render progress label or not.
+     * Whether to render a progress label or not.
      *
      * @param showProgressLabel True/false.
      */
@@ -235,7 +240,7 @@ public class XRangeChart<X, Y> implements ComponentGroup {
     public XAxis getXAxis() {
         if(xAxis == null) {
             if(!data.isEmpty()) {
-                xAxis = new XAxis(DataType.guessType(data.get(0).xLowerValue));
+                xAxis = new XAxis(DataType.guessType(data.getFirst().xLowerValue));
             }
         }
         return xAxis;
@@ -249,7 +254,7 @@ public class XRangeChart<X, Y> implements ComponentGroup {
     public YAxis getYAxis() {
         if(yAxis == null) {
             if(!data.isEmpty()) {
-                yAxis = new YAxis(DataType.guessType(data.get(0).yValue));
+                yAxis = new YAxis(DataType.guessType(data.getFirst().yValue));
             }
         }
         return yAxis;
@@ -398,11 +403,7 @@ public class XRangeChart<X, Y> implements ComponentGroup {
             if(!showProgressLabel) {
                 return "";
             }
-            String p = String.valueOf(progress);
-            if(p.endsWith(".0")) {
-                p = p.substring(0, p.indexOf('.'));
-            }
-            return " (" + p + "%)";
+            return " (" + AbstractProject.trim(progress) + "%)";
         }
 
         private String tooltip() {

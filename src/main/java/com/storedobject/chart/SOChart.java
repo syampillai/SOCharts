@@ -17,15 +17,14 @@
 package com.storedobject.chart;
 
 import com.storedobject.helper.ID;
-import com.storedobject.helper.LitComponent;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.ClientCallable;
-import com.vaadin.flow.component.HasSize;
-import com.vaadin.flow.component.Tag;
+import com.storedobject.helper.LitComponentWithSize;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
+import com.vaadin.flow.shared.Registration;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -40,7 +39,7 @@ import java.util.*;
  * </p>
  * <p>
  * Typical usage of the SOChart is to new it and add it to some layout for displaying it. Any {@link Component} that is
- * added to the {@link Chart} will be be displayed. For example, you can create a {@link PieChart} and add it to the
+ * added to the {@link Chart} will be displayed. For example, you can create a {@link PieChart} and add it to the
  * {@link SOChart} using {@link #add(Component...)}.
  * </p>
  * <pre>
@@ -54,10 +53,10 @@ import java.util.*;
  *
  * @author Syam
  */
-@NpmPackage(value = "echarts", version = "5.5.0")
+@NpmPackage(value = "echarts", version = "5.6.0")
 @Tag("so-chart")
 @JsModule("./so/chart/chart.js")
-public class SOChart extends LitComponent implements HasSize {
+public class SOChart extends LitComponentWithSize implements ClickNotifier<SOChart> {
 
     final static ComponentEncoder[] encoders = {
             new ComponentEncoder("*", DefaultColors.class),
@@ -89,27 +88,17 @@ public class SOChart extends LitComponent implements HasSize {
     private DefaultColors defaultColors;
     private AbstractColor defaultBackground;
     private DefaultTextStyle defaultTextStyle;
-    private final HashMap<SOEvent, Runnable> events = new HashMap<>();
     private String theme;
     private Language language;
     private boolean svg = false;
-
-    @ClientCallable
-    private void runEvent(String event, String target) {
-        this.events.get(new SOEvent(event, target)).run();
-    }
+    private record CE(ChartEventHandler eventHandler, ChartEventType eventType, ChartEventListener listener) {}
+    private final List<CE> eventListeners = new ArrayList<>();
 
     /**
      * Constructor.
      */
     public SOChart() {
         getElement().setProperty("idChart", "sochart" + ID.newID());
-//        SOEvent event1 = new SOEvent("click", "1");
-//        SOEvent event2 = new SOEvent("click", "2");
-//        this.events.put(event1, () -> System.out.println("Something is right here node 1"));
-//        this.events.put(event2, () -> System.out.println("Something is right here node 2"));
-//        executeJS("addEvent", event1.getEvent(), event1.getTarget());
-//        executeJS("addEvent", event2.getEvent(), event2.getTarget());
     }
 
     @Override
@@ -124,11 +113,73 @@ public class SOChart extends LitComponent implements HasSize {
         }
     }
 
+    @ClientCallable
+    private void onPartClick(String seriesId) {
+        if(eventListeners.isEmpty()) {
+            return; // This should never happen because we disable events when no listeners are registered.
+        }
+        long id;
+        try {
+            System.err.println("Series id: " + seriesId);
+            id = Long.parseLong(seriesId);
+        } catch(NumberFormatException e) {
+            return;
+        }
+        if(id <= 0) {
+            return;
+        }
+        ChartEvent event = new ChartEvent(this, ChartEventType.CLICK, id);
+        if(handleEvent(event, componentGroups.stream().map(cg -> cg))) {
+            return;
+        }
+        if(handleEvent(event, components.stream().map(c -> c))) {
+            return;
+        }
+        handleEvent(event, parts.stream().filter(p -> !(p instanceof Component)).map(p -> p));
+    }
+
+    private boolean handleEvent(ChartEvent event, Stream<ChartEventHandler> handlers) {
+        ChartEventHandler ceh = handlers.filter(h -> h.checkEvent(event)).findFirst().orElse(null);
+        if(ceh != null) {
+            dispatchEvent(event, ceh);
+            return true;
+        }
+        return false;
+    }
+
+    private void dispatchEvent(ChartEvent event, ChartEventHandler forEventHandler) {
+        eventListeners.stream().filter(ce -> ce.eventHandler == forEventHandler && ce.eventType == event.getType())
+                .forEach(ce -> ce.listener.onEvent(event));
+    }
+
+    /**
+     * Adds a click event listener to the chart. This method registers the specified
+     * event handler and listener for handling click events on the chart.
+     *
+     * @param eventHandler the event handler responsible for managing the click event.
+     * @param listener the listener that will handle the click event when triggered.
+     * @return a {@code Registration} object that can be used to remove the registered
+     *         click event listener.
+     */
+    public Registration addClickListener(ChartEventHandler eventHandler, ChartEventListener listener) {
+        CE ce = new CE(eventHandler, ChartEventType.CLICK, listener);
+        if(eventListeners.isEmpty()) {
+            executeJS("enableClickEvents", true);
+        }
+        eventListeners.add(ce);
+        return () -> {
+            eventListeners.remove(ce);
+            if(eventListeners.isEmpty()) {
+                executeJS("enableClickEvents", false);
+            }
+        };
+    }
+
     /**
      * Get the list of default colors. A list is returned, and you may add any number of
      * colors to that list. Those colors will be used sequentially and circularly. However, please note that
      * if the list contains less than 11 colors, more colors will be added to it automatically from the
-     * following to make the count 11:<BR>
+     * following to make count 11:<BR>
      * ['#0000ff', '#c23531', '#2f4554', '#61a0a8', '#d48265', '#91c7ae',
      * '#749f83', '#ca8622', '#bda29a', '#6e7074', '#546570', '#c4ccd3']
      *
@@ -195,53 +246,6 @@ public class SOChart extends LitComponent implements HasSize {
      */
     public Legend getDefaultLegend() {
         return legend;
-    }
-
-    /**
-     * Set the size.
-     *
-     * @param width Width.
-     * @param height Height.
-     */
-    public void setSize(String width, String height) {
-        setWidth(width);
-        setHeight(height);
-    }
-
-    @Override
-    public void setWidth(String width) {
-        HasSize.super.setWidth(width);
-        getElement().setProperty("width", width);
-    }
-
-    @Override
-    public void setHeight(String height) {
-        HasSize.super.setHeight(height);
-        getElement().setProperty("height", height);
-    }
-
-    @Override
-    public void setMinWidth(String minWidth) {
-        HasSize.super.setMinWidth(minWidth);
-        getElement().setProperty("minw", minWidth);
-    }
-
-    @Override
-    public void setMinHeight(String minHeight) {
-        HasSize.super.setMinHeight(minHeight);
-        getElement().setProperty("minh", minHeight);
-    }
-
-    @Override
-    public void setMaxWidth(String maxWidth) {
-        HasSize.super.setMaxWidth(maxWidth);
-        getElement().setProperty("maxw", maxWidth);
-    }
-
-    @Override
-    public void setMaxHeight(String maxHeight) {
-        HasSize.super.setMaxHeight(maxHeight);
-        getElement().setProperty("maxh", maxHeight);
     }
 
     /**
@@ -372,13 +376,6 @@ public class SOChart extends LitComponent implements HasSize {
             for(Component c: components) {
                 if(c != null) {
                     this.components.add(c);
-                    Map<SOEvent, Runnable> cEvents = c.getEvents();
-                    if (cEvents != null) {
-                        this.events.putAll(cEvents);
-                        for (SOEvent key : this.events.keySet()) {
-                            executeJS("addEvent", key.getEvent(), key.getTarget());
-                        }
-                    }
                 }
             }
         }
@@ -400,10 +397,11 @@ public class SOChart extends LitComponent implements HasSize {
     }
 
     /**
-     * Remove all components from the chart. (Chart display will not be cleared unless {@link #update()}
-     * or {@link #clear()} method is called).
+     * Remove all components and component-parts event handlers from the chart. (Chart display will not be cleared
+     * unless {@link #update()} or {@link #clear()} method is called).
      */
     public void removeAll() {
+        eventListeners.clear();
         components.clear();
     }
 
@@ -419,14 +417,14 @@ public class SOChart extends LitComponent implements HasSize {
     }
 
     /**
-     * Update the chart display with current set of components. {@link Component#validate()} method of each component
-     * will be invoked before updating the chart display. The chart display may be already there and only the changes
+     * Update the chart display with the current set of components. {@link Component#validate()} method of each component
+     * will be invoked before updating the chart display. The chart display may be already there, and only the changes
      * and additions will be updated. If a completely new display is required, {@link #clear()} should be invoked before
      * this. (Please note that an "update" will automatically happen when a {@link SOChart} is added to its parent
      * layout for the first time).
      * <p>Note: If this is not the first update, data changes will not be transmitted to the client. So, if you
      * really want to update the whole data too, you should use the {@link #update(boolean)} method with the parameter
-     * set to <code>false</code>. However, it better to transmit data separately via one of the data update methods
+     * set to <code>false</code>. However, it is better to transmit data separately via one of the data update methods
      * ({@link #updateData(AbstractDataProvider...)} and {@link #updateData(HasData...)}) or use the
      * {@link DataChannel} for updating data once the first rendering was already done.</p>
      *
@@ -444,8 +442,8 @@ public class SOChart extends LitComponent implements HasSize {
      * display changes if parameter is <code>true</code>.
      * </p>
      * <p>
-     * Why this method is required? If the data set is really big, it will be accountable for the majority of the
-     * communication overhead and it will be useful if we can update the display with other changes if no data is
+     * Why is this method required? If the data set is huge, it will be accountable for the majority of the
+     * communication overhead, and it will be useful if we can update the display with other changes if no data is
      * changed.
      * </p>
      * <p>
@@ -454,7 +452,7 @@ public class SOChart extends LitComponent implements HasSize {
      * </p>
      *
      * @param skipData Skip data or not. This parameter will be ignored if this is the first-time update. However,
-     *                any data that was never sent to the client will be sent anyway.
+     *                any data never sent to the client will be sent anyway.
      * @throws ChartException When any of the component is not valid.
      * @throws Exception If the JSON customizer raises any exception.
      */
@@ -491,7 +489,7 @@ public class SOChart extends LitComponent implements HasSize {
         int dserial = data.stream().mapToInt(ComponentPart::getSerial).max().orElse(1);
         dserial = Math.max(dserial, 1);
         while(!data.isEmpty()) {
-            AbstractDataProvider<?> d = data.remove(0);
+            AbstractDataProvider<?> d = data.removeFirst();
             if(!(d instanceof InternalDataProvider)) {
                 dataSet.add(d);
             }
@@ -585,7 +583,7 @@ public class SOChart extends LitComponent implements HasSize {
         ComponentPart.removeComma(sb);
         sb.append('}');
         executeJS("updateChart", !skipData, customizeJSON(sb.toString()), theme, language(),
-                svg ? "svg" : "canvas");
+                svg ? "svg" : "canvas", !eventListeners.isEmpty());
         dataSet.clear();
         parts.clear();
         defaultColors = null;
@@ -597,8 +595,8 @@ public class SOChart extends LitComponent implements HasSize {
     /**
      * This method is invoked after rendering each {@link ComponentPart} type so that you can add more such components.
      * <p>Note: Please note that if you are adding any custom code, it should merge properly to the already
-     * generated part in the buffer. You may use {@link #customizeJSON(String)} to check the final outcome.</p>
-     * <p>Warning: If you add custom code vis this mechanism, it may not be compatible with the future releases
+     * generated part in the buffer. You may use {@link #customizeJSON(String)} to check the outcome.</p>
+     * <p>Warning: If you add custom code via this mechanism, it may not be compatible with the future releases
      * because the functionality you add via this mechanism may be supported directly in the future releases.</p>
      *
      * @param componentPartClass The component part class that is currently added. You may add more of these.
@@ -614,8 +612,8 @@ public class SOChart extends LitComponent implements HasSize {
      * particular {@link ComponentPart}). For this, this method is invoked with the component part parameter
      * set to null.
      * <p>Note: Please note that if you are adding any custom code, it should merge properly to the already
-     * generated part in the buffer. You may use {@link #customizeJSON(String)} to check the final outcome.</p>
-     * <p>Warning: If you add custom code vis this mechanism, it may not be compatible with the future releases
+     * generated part in the buffer. You may use {@link #customizeJSON(String)} to check the outcome.</p>
+     * <p>Warning: If you add custom code via this mechanism, it may not be compatible with the future releases
      * because the functionality you add via this mechanism may be supported directly in the future releases.</p>
      *
      * @param componentPart The component part to which custom code can be added. If this is null, then code added will
@@ -779,7 +777,7 @@ public class SOChart extends LitComponent implements HasSize {
                         if("*".equals(label)) { // Self-rendering type
                             ++renderingIndex;
                             c.encodeJSON(sb);
-                            return; // Only 1 such component is expected.
+                            return; // Only 1 expected.
                         }
                         sb.append('"').append(label).append("\":");
                         sb.append('[');

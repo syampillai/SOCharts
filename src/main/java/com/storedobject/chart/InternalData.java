@@ -21,6 +21,8 @@ import java.util.stream.Stream;
  * A marker interface to combine the interfaces {@link AbstractDataProvider} and {@link InternalDataProvider}.
  * (End-developers should not use this anywhere in their code).
  *
+ * @param <T> Data type.
+ *
  * @author Syam
  */
 public interface InternalData<T> extends AbstractDataProvider<T>, InternalDataProvider {
@@ -41,6 +43,7 @@ public interface InternalData<T> extends AbstractDataProvider<T>, InternalDataPr
      * {@link InternalDataProvider}.
      *
      * @param <T> Type of the data provider.
+     * @param dataProvider Data provider.
      * @author Syam
      */
     record WrappedDataProvider<T>(AbstractDataProvider<T> dataProvider) implements InternalData<T> {

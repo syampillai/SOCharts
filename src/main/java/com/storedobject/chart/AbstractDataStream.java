@@ -21,6 +21,8 @@ import java.util.stream.Stream;
 /**
  * A data provider implementation to provide data from a {@link Stream}.
  *
+ * @param <T> Data type.
+ *
  * @author Syam
  */
 public class AbstractDataStream<T> implements AbstractDataProvider<T> {
@@ -32,6 +34,7 @@ public class AbstractDataStream<T> implements AbstractDataProvider<T> {
     /**
      * Constructor.
      *
+     * @param dataType Data type.
      * @param dataStream Data stream that provides the data.
      */
     public AbstractDataStream(DataType dataType, Stream<T> dataStream) {

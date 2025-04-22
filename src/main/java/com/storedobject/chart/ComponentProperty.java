@@ -21,7 +21,7 @@ package com.storedobject.chart;
  * Represents some combined attributes/properties owned by a {@link Component} or {@link ComponentPart}.
  * </p>
  * <p>
- * An example of an implementation of this interface is {@link Position} that is used by {@link Component}s like
+ * An example of an implementation is {@link Position} that is used by {@link Component}s like
  * {@link RectangularCoordinate} to position them within the chart display area defined by the {@link SOChart}. The
  * typical use-case of {@link ComponentProperty} is as follows:
  * </p>
