@@ -126,8 +126,8 @@ public class SOChart extends LitComponentWithSize {
     @ClientCallable
     private void onClick(String componentType, int componentIndex, String componentSubtype, String seriesId,
                          String targetType, String value) {
-        System.out.printf("Chart clicked - Component Type: %s, Index: %d, Sub-type: %s, Serial Id: %s, Target Type: %s, Value: %s%n",
-                componentType, componentIndex, componentSubtype, seriesId, targetType, value);
+        //System.out.printf("Chart clicked - Component Type: %s, Index: %d, Sub-type: %s, Serial Id: %s, Target Type: %s, Value: %s%n",
+        //        componentType, componentIndex, componentSubtype, seriesId, targetType, value);
         if(eventListeners.isEmpty()) {
             return; // This should never happen because we disable events when no listeners are registered.
         }
@@ -156,7 +156,7 @@ public class SOChart extends LitComponentWithSize {
         }
         event.addData("part", part);
         event.addData("value", value);
-        System.out.printf("Chart clicked - Event: %s%n", event);
+        //System.out.printf("Chart clicked - Event: %s%n", event);
         if(!handleEvent(event, componentGroups.stream().map(cg -> cg))) {
             handleEvent(event, components.stream()
                     .filter(c -> c instanceof Clickable cl && (cl != EMPTY_SPACE))
