@@ -6,9 +6,9 @@ just like any other Vaadin components.
 Include this in the dependencies section of your POM file:
 ```xml
   <dependency>
-    <groupId>com.storedobject</groupId>
+    <groupId>org.vaadin.addons.so</groupId>
     <artifactId>so-charts</artifactId>
-    <version>5.0.0</version>
+    <version>5.0.1</version>
   </dependency>
 ```
 Also, include this in your repositories section:
