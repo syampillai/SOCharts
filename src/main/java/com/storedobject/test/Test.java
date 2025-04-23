@@ -2,6 +2,7 @@ package com.storedobject.test;
 
 import com.storedobject.chart.*;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
@@ -62,12 +63,13 @@ public class Test extends VerticalLayout {
 
         // Plot the project on a Gantt Chart
         GanttChart gc = new GanttChart(project);
+        gc.setClickable(true);
 
         // Add the Gantt Chart to our chart component
         soChart.add(gc);
 
         // Click event
-        soChart.addClickListener(gc, e -> System.err.println("Event: " + e));
+        soChart.addClickListener(gc, e -> notify("Event: " + e));
     }
 
     private static void lineChart(SOChart soChart) {
@@ -97,6 +99,12 @@ public class Test extends VerticalLayout {
         soChart.add(lineChart, new Title("Sample Line Chart"));
 
         // Click event
-        soChart.addClickListener(lineChart, e -> System.err.println("Event: " + e));
+        soChart.addClickListener(lineChart, e -> notify("Event: " + e));
+        soChart.addClickListener(e -> notify("Empty space: " + e));
+        soChart.addClickListener(xAxis, e -> notify("X-Axis: " + e));
+    }
+
+    private static void notify(String message) {
+        Notification.show(message);
     }
 }

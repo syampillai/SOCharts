@@ -56,8 +56,9 @@ import java.util.stream.Stream;
 @NpmPackage(value = "echarts", version = "5.6.0")
 @Tag("so-chart")
 @JsModule("./so/chart/chart.js")
-public class SOChart extends LitComponentWithSize implements ClickNotifier<SOChart> {
+public class SOChart extends LitComponentWithSize {
 
+    private static final EmptySpace EMPTY_SPACE = new EmptySpace();
     final static ComponentEncoder[] encoders = {
             new ComponentEncoder("*", DefaultColors.class),
             new ComponentEncoder("*", DefaultTextStyle.class),
@@ -91,7 +92,7 @@ public class SOChart extends LitComponentWithSize implements ClickNotifier<SOCha
     private String theme;
     private Language language;
     private boolean svg = false;
-    private record CE(ChartEventHandler eventHandler, ChartEventType eventType, ChartEventListener listener) {}
+    private record CE(Clickable eventHandler, ChartEventType eventType, ChartEventListener listener) {}
     private final List<CE> eventListeners = new ArrayList<>();
 
     /**
@@ -113,33 +114,58 @@ public class SOChart extends LitComponentWithSize implements ClickNotifier<SOCha
         }
     }
 
+    private static Class<? extends ComponentPart> partType(String type) {
+        for(ComponentEncoder ce: encoders) {
+            if(ce.label.equals(type)) {
+                return ce.partType;
+            }
+        }
+        return null;
+    }
+
     @ClientCallable
-    private void onPartClick(String seriesId) {
+    private void onClick(String componentType, int componentIndex, String componentSubtype, String seriesId,
+                         String targetType, String value) {
+        //System.out.printf("Chart clicked - Component Type: %s, Index: %d, Sub-type: %s, Serial Id: %s, Target Type: %s, Value: %s%n",
+        //        componentType, componentIndex, componentSubtype, seriesId, targetType, value);
         if(eventListeners.isEmpty()) {
             return; // This should never happen because we disable events when no listeners are registered.
         }
+        ChartEvent event;
+        if(componentType == null || componentType.isEmpty()) { // Clicked on the empty space
+            event = new ChartEvent(this, ChartEventType.CLICK, 0);
+            dispatchEvent(event, EMPTY_SPACE);
+            return;
+        }
         long id;
-        try {
-            System.err.println("Series id: " + seriesId);
-            id = Long.parseLong(seriesId);
-        } catch(NumberFormatException e) {
-            return;
+        if(seriesId == null || seriesId.isEmpty() || !"series".equals(componentType)) {
+            id = 0;
+        } else {
+            try {
+                id = Long.parseLong(seriesId);
+            } catch (NumberFormatException e) {
+                return;
+            }
         }
-        if(id <= 0) {
-            return;
+        event = new ChartEvent(this, ChartEventType.CLICK, id);
+        event.addData("type", partType(componentType));
+        event.addData("serial", componentIndex);
+        String part = componentSubtype;
+        if(part == null || part.isEmpty()) {
+            part = targetType;
         }
-        ChartEvent event = new ChartEvent(this, ChartEventType.CLICK, id);
-        if(handleEvent(event, componentGroups.stream().map(cg -> cg))) {
-            return;
+        event.addData("part", part);
+        event.addData("value", value);
+        //System.out.printf("Chart clicked - Event: %s%n", event);
+        if(!handleEvent(event, componentGroups.stream().map(cg -> cg))) {
+            handleEvent(event, components.stream()
+                    .filter(c -> c instanceof Clickable cl && (cl != EMPTY_SPACE))
+                    .map(c -> (Clickable) c));
         }
-        if(handleEvent(event, components.stream().map(c -> c))) {
-            return;
-        }
-        handleEvent(event, parts.stream().filter(p -> !(p instanceof Component)).map(p -> p));
     }
 
-    private boolean handleEvent(ChartEvent event, Stream<ChartEventHandler> handlers) {
-        ChartEventHandler ceh = handlers.filter(h -> h.checkEvent(event)).findFirst().orElse(null);
+    private boolean handleEvent(ChartEvent event, Stream<Clickable> clickableItems) {
+        Clickable ceh = clickableItems.filter(h -> h.matchSource(event)).findFirst().orElse(null);
         if(ceh != null) {
             dispatchEvent(event, ceh);
             return true;
@@ -147,23 +173,22 @@ public class SOChart extends LitComponentWithSize implements ClickNotifier<SOCha
         return false;
     }
 
-    private void dispatchEvent(ChartEvent event, ChartEventHandler forEventHandler) {
-        eventListeners.stream().filter(ce -> ce.eventHandler == forEventHandler && ce.eventType == event.getType())
+    private void dispatchEvent(ChartEvent event, Clickable matchedHandler) {
+        eventListeners.stream().filter(ce -> ce.eventHandler == matchedHandler && ce.eventType == event.getType())
                 .forEach(ce -> ce.listener.onEvent(event));
     }
 
     /**
-     * Adds a click event listener to the chart. This method registers the specified
-     * event handler and listener for handling click events on the chart.
+     * Adds a click event listener to a specific clickable element.
+     * This method enables click event tracking if it's not already active.
      *
-     * @param eventHandler the event handler responsible for managing the click event.
-     * @param listener the listener that will handle the click event when triggered.
-     * @return a {@code Registration} object that can be used to remove the registered
-     *         click event listener.
+     * @param clickable the target element to which the click listener is being added
+     * @param listener the functional interface that handles the click events
+     * @return a Registration object that can be used to remove the added click listener
      */
-    public Registration addClickListener(ChartEventHandler eventHandler, ChartEventListener listener) {
-        CE ce = new CE(eventHandler, ChartEventType.CLICK, listener);
-        if(eventListeners.isEmpty()) {
+    public Registration addClickListener(Clickable clickable, ChartEventListener listener) {
+        CE ce = new CE(clickable, ChartEventType.CLICK, listener);
+        if(eventListeners.isEmpty() && !neverUpdated) {
             executeJS("enableClickEvents", true);
         }
         eventListeners.add(ce);
@@ -173,6 +198,17 @@ public class SOChart extends LitComponentWithSize implements ClickNotifier<SOCha
                 executeJS("enableClickEvents", false);
             }
         };
+    }
+
+    /**
+     * Adds a click listener to the chart that triggers when a click event occurs on the chart where no chart
+     * element exists (empty areas).
+     *
+     * @param listener the event listener to handle the chart click events
+     * @return a Registration object that can be used to remove the listener
+     */
+    public Registration addClickListener(ChartEventListener listener) {
+        return addClickListener(EMPTY_SPACE, listener);
     }
 
     /**
@@ -305,7 +341,7 @@ public class SOChart extends LitComponentWithSize implements ClickNotifier<SOCha
 
     /**
      * Add data to the chart. This method is normally not required to be used because the {@link Chart}s that are
-     * added will automatically add its respective data too. This is used only when some extra data other that is
+     * added will automatically add its respective data too. This is used only when some extra data that is
      * used in the {@link Chart}s directly for some other display purposes.
      *
      * @param data Data to add.
@@ -397,12 +433,14 @@ public class SOChart extends LitComponentWithSize implements ClickNotifier<SOCha
     }
 
     /**
-     * Remove all components and component-parts event handlers from the chart. (Chart display will not be cleared
+     * Remove all components, associated data and event handlers from the chart. (Chart display will not be cleared
      * unless {@link #update()} or {@link #clear()} method is called).
      */
     public void removeAll() {
         eventListeners.clear();
+        componentGroups.clear();
         components.clear();
+        dataSet.clear();
     }
 
     /**
@@ -493,37 +531,13 @@ public class SOChart extends LitComponentWithSize implements ClickNotifier<SOCha
             if(!(d instanceof InternalDataProvider)) {
                 dataSet.add(d);
             }
-            if(skipData) {
-                if(d.getSerial() <= 0) {
-                    d.validate();
-                    d.setSerial(dserial++);
-                    initData(d);
-                }
-            } else {
-                if(d.getSerial() <= 0) {
-                    d.validate();
-                    d.setSerial(dserial++);
-                }
-                initData(d);
-            }
+            dserial = getDataSerial(skipData, dserial, d);
             data.removeIf(ad -> ad.getSerial() == d.getSerial());
             extraData.removeIf(ad -> ad.getSerial() == d.getSerial());
         }
         for(AbstractDataProvider<?> extra: extraData) {
             dataSet.add(extra);
-            if(skipData) {
-                if(extra.getSerial() <= 0) {
-                    extra.validate();
-                    extra.setSerial(dserial++);
-                    initData(extra);
-                }
-            } else {
-                if(extra.getSerial() <= 0) {
-                    extra.validate();
-                    extra.setSerial(dserial++);
-                }
-                initData(extra);
-            }
+            dserial = getDataSerial(skipData, dserial, extra);
         }
         for(ComponentPart c: parts) {
             c.setSerial(-2);
@@ -590,6 +604,23 @@ public class SOChart extends LitComponentWithSize implements ClickNotifier<SOCha
         defaultBackground = null;
         defaultTextStyle = null;
         neverUpdated = false;
+    }
+
+    private int getDataSerial(boolean skipData, int dserial, AbstractDataProvider<?> d) throws Exception {
+        if(skipData) {
+            if(d.getSerial() <= 0) {
+                d.validate();
+                d.setSerial(dserial++);
+                initData(d);
+            }
+        } else {
+            if(d.getSerial() <= 0) {
+                d.validate();
+                d.setSerial(dserial++);
+            }
+            initData(d);
+        }
+        return dserial;
     }
 
     /**
@@ -916,6 +947,14 @@ public class SOChart extends LitComponentWithSize implements ClickNotifier<SOCha
         @Override
         public void setSerial(int serial) {
             this.serial = serial;
+        }
+    }
+
+    private static class EmptySpace implements Clickable {
+
+        @Override
+        public boolean matchSource(ChartEvent event) {
+            return true;
         }
     }
 }

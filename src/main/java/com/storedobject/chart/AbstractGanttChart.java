@@ -50,23 +50,15 @@ public abstract class AbstractGanttChart implements ComponentGroup, Clickable {
     }
 
     @Override
-    public boolean checkEvent(ChartEvent event) {
-        return ComponentPart.checkEvent(event, taskBands, tasks, today, taskAxisLabels, taskDependencies, timeZoom,
+    public boolean matchSource(ChartEvent event) {
+        return Clickable.matchSource(event, taskBands, tasks, today, taskAxisLabels, taskDependencies, timeZoom,
                 taskZoom, coordinate, timeAxis, taskAxis, error);
-    }
-
-    private void clickable(ComponentPart... parts) {
-        for(ComponentPart part: parts) {
-            if(part instanceof Clickable) {
-                ((Clickable)part).setClickable(clickable);
-            }
-        }
     }
 
     @Override
     public void setClickable(boolean clickable) {
         this.clickable = clickable;
-        clickable(taskBands, tasks, today, taskAxisLabels, taskDependencies, timeZoom,
+        Clickable.setClickable(clickable, taskBands, tasks, today, taskAxisLabels, taskDependencies, timeZoom,
                 taskZoom, coordinate, timeAxis, taskAxis, error);
     }
 
