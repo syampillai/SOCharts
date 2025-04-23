@@ -47,8 +47,8 @@ public class XRangeChart<X, Y> implements ComponentGroup {
     private DataZoom xZoom, yZoom;
 
     @Override
-    public boolean checkEvent(ChartEvent event) {
-        return ComponentPart.checkEvent(event, xAxis, yAxis, chart, chart, xZoom, yZoom);
+    public boolean matchSource(ChartEvent event) {
+        return Clickable.matchSource(event, xAxis, yAxis, chart, chart, xZoom, yZoom);
     }
 
     /**

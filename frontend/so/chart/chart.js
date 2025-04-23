@@ -22,7 +22,8 @@ export class SOChart extends LitElement {
     constructor() {
         super();
         this.idChart = null;
-        this.eventHandler = null;
+        this.clickHandler1 = null;
+        this.clickHandler2 = null;
         this.data = {};
         this.allOptions = "";
         this.minw = "5vw";
@@ -86,10 +87,10 @@ export class SOChart extends LitElement {
     // noinspection JSUnusedGlobalSymbols
     setThemeAndLocale(theme, locale, renderer) {
         this.destroyChart();
-        this.updateChart(false, this.allOptions, theme, locale, renderer);
+        this.updateChart(false, this.allOptions, theme, locale, renderer, this.clickHandler1 != null);
     }
 
-    updateChart(full, options, theme, locale, renderer, partEvents) {
+    updateChart(full, options, theme, locale, renderer, enableClicks) {
         if(full) {
             this.allOptions = options;
         }
@@ -102,7 +103,7 @@ export class SOChart extends LitElement {
             });
         }
         this.chart.setOption(json);
-        this.enableClickEvents(partEvents);
+        this.enableClickEvents(enableClicks);
     }
 
     clearData() {
@@ -151,22 +152,30 @@ export class SOChart extends LitElement {
     }
 
     // noinspection JSUnusedGlobalSymbols
-    enableClickEvents(enableParts) {
+    enableClickEvents(enable) {
         if(!this.chart) {
             return;
         }
-        if(enableParts) {
-            if(!this.eventHandler) {
-                this.eventHandler = e => {
-                    console.log(e);
-                    this.$server.onPartClick(e.seriesId);
+        if(enable) {
+            if(!this.clickHandler1) {
+                this.clickHandler1 = e => {
+                    // console.log(e);
+                    this.$server.onClick(e.componentType, e.componentIndex, e.componentSubType, e.seriesId, e.targetType, JSON.stringify(e.value));
                 };
-                this.chart.on('click', this.eventHandler);
+                this.chart.on('click', this.clickHandler1);
+                this.clickHandler2 = e => {
+                    if(!e.target) {
+                        this.$server.onClick("", 0, "", "", "", "");
+                    }
+                };
+                this.chart.getZr().on('click', this.clickHandler2);
             }
         } else {
-            if(this.eventHandler) {
-                this.chart.off('click', this.eventHandler);
-                this.eventHandler = null;
+            if(this.clickHandler2) {
+                this.chart.off('click', this.clickHandler1);
+                this.clickHandler1 = null;
+                this.chart.getZr().off('click', this.clickHandler2);
+                this.clickHandler2 = null;
             }
         }
     }

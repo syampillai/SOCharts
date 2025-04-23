@@ -1,5 +1,8 @@
 package com.storedobject.chart;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Represents an event that occurs in a chart.
  * A {@code ChartEvent} encapsulates the type of the event, the ID of the part
@@ -12,7 +15,7 @@ public class ChartEvent {
     private final SOChart soChart;
     private final ChartEventType type;
     private final long partId;
-    private Object data;
+    private Map<String, Object> data;
 
     /**
      * Constructs a new ChartEvent with the specified type and part ID.
@@ -57,20 +60,24 @@ public class ChartEvent {
     /**
      * Retrieves the additional data associated with the event.
      *
-     * @return The data associated with the event, or null if no data is set.
+     * @return The data associated with the event.
      */
-    public Object getData() {
+    public Map<String, Object> getData() {
+        if(this.data == null) {
+            this.data = new HashMap<>();
+        }
         return data;
     }
 
     /**
-     * Sets the additional data associated with the chart event.
+     * Adds a key-value pair to the additional data associated with the chart event.
+     * If the data map is not initialized, it will create a new one before adding the entry.
      *
-     * @param data The data to associate with the event. This can be any object
-     *             that provides additional information relevant to the event.
+     * @param key The key representing the data entry.
+     * @param data The value associated with the key.
      */
-    public void setData(Object data) {
-        this.data = data;
+    public void addData(String key, Object data) {
+        getData().put(key, data);
     }
 
     @Override

@@ -195,6 +195,16 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
     }
 
     @Override
+    public String getClickKeyName() {
+        return "silent";
+    }
+
+    @Override
+    public boolean getClickValue() {
+        return !clickable;
+    }
+
+    @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
         if(colors != null) {
