@@ -183,7 +183,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
      * @return Data that represents the main data of the chart.
      */
     protected AbstractDataProvider<?> mainData() {
-        for(AbstractDataProvider<?> d: data) {
+        for(AbstractDataProvider<?> d: getData()) {
             if(d != null) {
                 return d;
             }

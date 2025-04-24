@@ -24,6 +24,7 @@ import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.shared.Registration;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -600,26 +601,27 @@ public class SOChart extends LitComponentWithSize {
         parts.sort(Comparator.comparing(ComponentPart::getSerial));
         StringBuilder sb = new StringBuilder();
         sb.append("{\"dataset\":[");
+        List<List<Integer>> dataOrder = new ArrayList<>();
+        for (AbstractDataProvider<?> d : dataSet) {
+            int length = dataLengthMap.get(d.getSerial());
+            List<Integer> order = dataOrder.stream().filter(o -> o.getFirst() == length).findFirst().orElse(null);
+            if(order == null) {
+                order = new ArrayList<>();
+                order.add(length);
+                dataOrder.add(order);
+            }
+            order.add(d.getSerial());
+        }
         boolean firstIndex = true;
-        for(int i: datasetIndexMap.values()) {
+        for(List<Integer> order: dataOrder) {
             if(firstIndex) {
                 firstIndex = false;
             } else {
                 sb.append(',');
             }
             sb.append("{\"source\":{");
-            boolean first = true;
-            for (AbstractDataProvider<?> d : dataSet) {
-                if(datasetIndex(d) != i) {
-                    continue;
-                }
-                if (first) {
-                    first = false;
-                } else {
-                    sb.append(',');
-                }
-                sb.append("\"d").append(d.getSerial()).append("\":").append(d.getSerial());
-            }
+            sb.append(order.stream().skip(1).map(i -> "\"d" + i + "\":" + i)
+                    .collect(Collectors.joining(",")));
             sb.append("}}");
         }
         sb.append("]");

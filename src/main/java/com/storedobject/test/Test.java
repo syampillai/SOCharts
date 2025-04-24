@@ -1,27 +1,34 @@
 package com.storedobject.test;
 
 import com.storedobject.chart.*;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Route("")
 public class Test extends VerticalLayout {
 
+    private Timer timer;
+    private UI ui;
+
     private final SOChart soChart = new SOChart() {
         @Override
         protected String customizeDataJSON(String json, AbstractDataProvider<?> data) throws Exception {
-            //System.err.printf("%d>> %s%n", data.getSerial(), json);
+            System.err.printf("%d>> %s%n", data.getSerial(), json);
             return super.customizeDataJSON(json, data);
         }
 
         @Override
         protected String customizeJSON(String json) throws Exception {
-            //System.out.printf("JSON: %s%n", json);;
+            System.out.printf("JSON: %s%n", json);;
             return super.customizeJSON(json);
         }
     };
@@ -34,11 +41,18 @@ public class Test extends VerticalLayout {
     }
 
     private void drawMenu() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        ui = UI.getCurrent();
         removeAll();
         add(new Button("Gantt Chart", e -> build(() -> ganttChart(soChart))));
         add(new Button("Line Chart", e -> build(() -> lineChart(soChart))));
         add(new Button("Line & Bar Chart", e -> build(() -> lineAndBar(soChart))));
         add(new Button("Radar Chart", e -> build(() -> radarChart(soChart))));
+        add(new Button("Nightingale Rose Chart", e -> build(() -> nightingleChart(soChart))));
+        add(new Button("Chart with Mark Area", e -> build(() -> withMarkAreaChart(soChart))));
+        add(new Button("Chart Push", e -> build(() -> new ChartPush(soChart))));
     }
 
     private void build(Runnable builder) {
@@ -46,10 +60,11 @@ public class Test extends VerticalLayout {
         soChart.removeAll();
         add(new Button("Back to Menu", e -> drawMenu()));
         add(soChart);
-        builder.run();
         try {
+            builder.run();
             soChart.update();
-        } catch (Exception ignored) {
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
@@ -244,5 +259,145 @@ public class Test extends VerticalLayout {
 
         // Add to the chart display area
         soChart.add(chart);
+    }
+
+    private static void nightingleChart(SOChart soChart) {
+        // Let us define some inline data
+        CategoryData labels = new CategoryData("Banana", "Apple", "Orange", "Grapes");
+        Data data = new Data(25, 40, 20, 30);
+
+        // We are going to create a couple of charts. So, each chart should be positioned appropriately
+        // Create a self-positioning chart
+        NightingaleRoseChart nc = new NightingaleRoseChart(labels, data);
+        Position p = new Position();
+        p.setTop(Size.percentage(50));
+        nc.setPosition(p); // Position it leaving 50% space at the top
+
+        // Second chart to add
+        BarChart bc = new BarChart(labels, data);
+        RectangularCoordinate coordinate =
+                new RectangularCoordinate(new XAxis(DataType.CATEGORY), new YAxis(DataType.NUMBER));
+        p = new Position();
+        p.setBottom(Size.percentage(55));
+        coordinate.setPosition(p); // Position it leaving 55% space at the bottom
+        bc.plotOn(coordinate); // Bar chart needs to be plotted on a coordinate system
+
+        // Just to demonstrate it, we are creating a "Download" and a "Zoom" toolbox button
+        Toolbox toolbox = new Toolbox();
+        toolbox.addButton(new Toolbox.Download(), new Toolbox.Zoom());
+
+        // Let's add some titles
+        Title title = new Title("My First Chart");
+        title.setSubtext("2nd Line of the Title");
+
+        // Add the chart components to the chart display area
+        soChart.add(nc, bc, toolbox, title);
+    }
+
+    private static void withMarkAreaChart(SOChart soChart) {
+
+        // Generating some random values for a LineChart
+        Random random = new Random();
+        Data xValues = new Data(), yValues = new Data();
+        for (int x = 0; x < 40; x++) {
+            xValues.add(x);
+            yValues.add(random.nextDouble());
+        }
+        xValues.setName("X Values");
+        yValues.setName("Random Values");
+
+        // Line chart is initialized with the generated XY values
+        LineChart lineChart = new LineChart(xValues, yValues);
+        lineChart.setName("40 Random Values");
+
+        // We need Number-type for both X and Y axes in this case
+        XAxis xAxis = new XAxis(DataType.NUMBER);
+        YAxis yAxis = new YAxis(DataType.NUMBER);
+
+        // Mark area (From x = 20 to x = 30)
+        MarkArea.Block area20_30 = new MarkArea.Block();
+        area20_30.setName("Area (20 to 30)");
+        area20_30.setSides(xAxis, 20, 30);
+
+        // Mark area (Both X and Y axis are specified).
+        MarkArea.Block rectBlock = new MarkArea.Block();
+        rectBlock.setName("Rectangular Block");
+        rectBlock.setSides(xAxis, yAxis, 15, 0.2, "max", 0.8);
+        rectBlock.getItemStyle(true).setColor(new Color("red"));
+
+        // Add Mark Areas to the chart.
+        lineChart.getMarkArea(true).add(area20_30, rectBlock);
+
+        // Line chart needs a coordinate system to plot on
+        RectangularCoordinate rc = new RectangularCoordinate(xAxis, yAxis);
+        lineChart.plotOn(rc);
+
+        // Add to the chart display area with a simple title
+        soChart.add(lineChart, new Title("Sample Line Chart"));
+    }
+
+    private class ChartPush {
+
+        private final SOChart soChart;
+        private final Random randomGen = new Random();
+        private final TimeData seconds = new TimeData();
+        private final Data random = new Data();
+        private final DataChannel dataChannel;
+
+        public ChartPush(SOChart soChart) {
+            this.soChart = soChart;
+
+            // Axes
+            XAxis xAxis = new XAxis(seconds);
+            xAxis.setMinAsMinData();
+            xAxis.setMaxAsMaxData();
+            xAxis.getLabel(true).setFormatter("{ss}");
+            YAxis yAxis = new YAxis(random);
+            yAxis.setMin(0);
+            yAxis.setMax(100);
+
+            // Line chart
+            LineChart lc = new LineChart(seconds, random);
+            lc.plotOn(new RectangularCoordinate(xAxis, yAxis));
+            lc.setSmoothness(true);
+
+            // Add the chart to the chart display
+            soChart.add(lc);
+
+            // Create a data channel to push the data
+            dataChannel = new DataChannel(soChart, seconds, random);
+            if (timer != null) {
+                timer.cancel();
+            }
+            timer = new Timer();
+            timer.scheduleAtFixedRate(
+                    new TimerTask() { // Generate a tick in every second
+                        @Override
+                        public void run() {
+                            data();
+                        }
+                    },
+                    5000L,
+                    1000L);
+        }
+
+        private void data() {
+            // Generate a new data point
+            seconds.add(System.currentTimeMillis());
+            random.add(randomGen.nextInt(100));
+            int lastIndex = seconds.size() - 1;
+            ui.access(() -> { // Required to lock the UI
+                        try {
+                            if (lastIndex < 60) {
+                                // Append data if data-size is less than 60
+                                dataChannel.append(seconds.get(lastIndex), random.get(lastIndex));
+                            } else {
+                                // Push data if the data-size is more than 60 (tail-end will be trimmed)
+                                dataChannel.push(seconds.get(lastIndex), random.get(lastIndex));
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    });
+        }
     }
 }
