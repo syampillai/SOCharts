@@ -18,7 +18,7 @@ package com.storedobject.chart;
 
 /**
  * A marker interface to denote that an {@link AbstractDataProvider} is internal to some chart that handles its data
- * internally and that can't be shared with other charts. (End-developers should not use this anywhere in their code).
+ * internally and that can't be shared with other charts. (End developers should not use this anywhere in their code).
  *
  * @author Syam
  */

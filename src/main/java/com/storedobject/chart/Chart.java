@@ -175,6 +175,23 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
     }
 
     /**
+     * Get the main data to be used for rendering.
+     * <p>Note: This is internally used to find out which one of the data set is used by the data-encoder while
+     * rendering the chart.</p>
+     * In most case, this will be determined automatically.
+     *
+     * @return Data that represents the main data of the chart.
+     */
+    protected AbstractDataProvider<?> mainData() {
+        for(AbstractDataProvider<?> d: data) {
+            if(d != null) {
+                return d;
+            }
+        }
+        return dataValue();
+    }
+
+    /**
      * Get the index to get the real data value of this chart. (In special charts, the actual data value at a data
      * point may be at an index different from 0).
      *

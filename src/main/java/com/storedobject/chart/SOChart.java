@@ -94,6 +94,11 @@ public class SOChart extends LitComponentWithSize {
     private boolean svg = false;
     private record CE(Clickable eventHandler, ChartEventType eventType, ChartEventListener listener) {}
     private final List<CE> eventListeners = new ArrayList<>();
+    private final Map<Integer, Integer> dataLengthMap = new HashMap<>();
+    private final Map<Integer, Integer> datasetIndexMap = new HashMap<>();
+    private boolean debugData = false;
+    private boolean debugOptions = false;
+    private boolean debugEvents = false;
 
     /**
      * Constructor.
@@ -121,6 +126,23 @@ public class SOChart extends LitComponentWithSize {
             }
         }
         return null;
+    }
+
+    /**
+     * Enables or disables debugging functionality at the client-side. Debug messages will be printed to
+     * the JavaScript console if enabled.
+     *
+     * @param debugData    if true, enables debugging for data sets used.
+     * @param debugOptions if true, enables debugging for options and configurations of the chart.
+     * @param debugEvents  if true, enables debugging for events and their handling.
+     */
+    public void debug(boolean debugData, boolean debugOptions, boolean debugEvents) {
+        this.debugData = debugData;
+        this.debugOptions = debugOptions;
+        this.debugEvents = debugEvents;
+        if(!neverUpdated) {
+            executeJS("debug", debugData, debugOptions, debugEvents);
+        }
     }
 
     @ClientCallable
@@ -441,6 +463,8 @@ public class SOChart extends LitComponentWithSize {
         componentGroups.clear();
         components.clear();
         dataSet.clear();
+        datasetIndexMap.clear();
+        dataLengthMap.clear();
     }
 
     /**
@@ -575,21 +599,34 @@ public class SOChart extends LitComponentWithSize {
         }
         parts.sort(Comparator.comparing(ComponentPart::getSerial));
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"dataset\":{\"source\":{");
-        boolean first = true;
-        for(AbstractDataProvider<?> d: dataSet) {
-            if(first) {
-                first = false;
+        sb.append("{\"dataset\":[");
+        boolean firstIndex = true;
+        for(int i: datasetIndexMap.values()) {
+            if(firstIndex) {
+                firstIndex = false;
             } else {
                 sb.append(',');
             }
-            sb.append("\"d").append(d.getSerial()).append("\":").append(d.getSerial());
+            sb.append("{\"source\":{");
+            boolean first = true;
+            for (AbstractDataProvider<?> d : dataSet) {
+                if(datasetIndex(d) != i) {
+                    continue;
+                }
+                if (first) {
+                    first = false;
+                } else {
+                    sb.append(',');
+                }
+                sb.append("\"d").append(d.getSerial()).append("\":").append(d.getSerial());
+            }
+            sb.append("}}");
         }
-        sb.append("}}");
+        sb.append("]");
         if(defaultBackground != null) {
             sb.append(",\"backgroundColor\":").append(defaultBackground);
         }
-        for(ComponentEncoder ce: encoders) {
+        for (ComponentEncoder ce : encoders) {
             ce.encode(this, sb, parts);
         }
         ComponentPart.addComma(sb);
@@ -597,7 +634,7 @@ public class SOChart extends LitComponentWithSize {
         ComponentPart.removeComma(sb);
         sb.append('}');
         executeJS("updateChart", !skipData, customizeJSON(sb.toString()), theme, language(),
-                svg ? "svg" : "canvas", !eventListeners.isEmpty());
+                svg ? "svg" : "canvas", !eventListeners.isEmpty(), debugData, debugOptions, debugEvents);
         dataSet.clear();
         parts.clear();
         defaultColors = null;
@@ -692,10 +729,57 @@ public class SOChart extends LitComponentWithSize {
     }
 
     private void updateData(String command, AbstractDataProvider<?> data) throws Exception {
-        StringBuilder sb = new StringBuilder("{\"d\":");
-        data.encodeJSON(sb);
-        sb.append('}');
-        executeJS(command + "Data", data.getSerial(), customizeDataJSON(sb.toString(), data));
+        StringBuilder b = new StringBuilder();
+        data.encodeJSON(b);
+        String d = customizeDataJSON(b.toString(), data);
+        int count = countData(d);
+        if(count < 0) {
+            throw new ChartException("Invalid data from " + data.className() + ": " + d);
+        }
+        dataLengthMap.put(data.getSerial(), count);
+        executeJS(command + "Data", data.getSerial(), "{\"d\":" + d + "}", datasetIndex(data));
+    }
+
+    private int datasetIndex(AbstractDataProvider<?> data) {
+        int count = dataLengthMap.getOrDefault(data.getSerial(), 0);
+        return datasetIndexMap.computeIfAbsent(count, k -> datasetIndexMap.size());
+    }
+
+    private static int countData(String d) {
+        int i = d.indexOf('[');
+        d = d.substring(i + 1);
+        i = d.lastIndexOf(']');
+        d = d.substring(0, i);
+        int depth = 0, count = 1;
+        boolean inQuote = false;
+        char quoteChar = 0;
+        char c;
+        for (i = 0; i < d.length(); i++) {
+            c = d.charAt(i);
+            if (!inQuote) {
+                if (c == '[' || c == '{' || c == '(') {
+                    depth++;
+                } else if (c == ']' || c == '}' || c == ')') {
+                    depth--;
+                } else if (c == '\'' || c == '"') {
+                    inQuote = true;
+                    quoteChar = c;
+                } else if (depth == 0 && c == ',') {
+                    count++;
+                }
+            } else {
+                if (c == quoteChar && d.charAt(i - 1) != '\\') {
+                    inQuote = false;
+                }
+            }
+            if (depth < 0) {
+                return -1;
+            }
+        }
+        if (depth != 0) {
+            return -1;
+        }
+        return count;
     }
 
     /**
@@ -821,6 +905,13 @@ public class SOChart extends LitComponentWithSize {
                     ComponentPart.addComma(sb);
                     soChart.addCustomEncoding(c, sb);
                     ComponentPart.removeComma(sb);
+                    if(c instanceof Chart chart) {
+                        AbstractDataProvider<?> mainData = chart.mainData();
+                        if(mainData != null) {
+                            ComponentPart.addComma(sb);
+                            sb.append("\"datasetIndex\":").append(soChart.datasetIndex(mainData));
+                        }
+                    }
                     sb.append('}');
                 }
             }

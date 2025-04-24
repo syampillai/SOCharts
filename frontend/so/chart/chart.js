@@ -24,7 +24,7 @@ export class SOChart extends LitElement {
         this.idChart = null;
         this.clickHandler1 = null;
         this.clickHandler2 = null;
-        this.data = {};
+        this.data = [];
         this.allOptions = "";
         this.minw = "5vw";
         this.minh = "5vw";
@@ -32,6 +32,9 @@ export class SOChart extends LitElement {
         this.maxh = "6000px";
         this.width = "33vw";
         this.height = "33vh";
+        this.debugData = false;
+        this.debugOptions = false;
+        this.debugEvent = false;
 
         // Keep a reference to pending resize event. We use this to not trigger too many render events on continuous resize
         this.pendingResizeEvent = null;
@@ -67,6 +70,12 @@ export class SOChart extends LitElement {
         }
     }
 
+    debug(debugData, debugOptions, debugEvent) {
+        this.debugData = debugData;
+        this.debugOptions = debugOptions;
+        this.debugEvent = debugEvent;
+    }
+
     // noinspection JSUnusedGlobalSymbols
     clearChart() {
         if(this.chart == null) {
@@ -90,7 +99,8 @@ export class SOChart extends LitElement {
         this.updateChart(false, this.allOptions, theme, locale, renderer, this.clickHandler1 != null);
     }
 
-    updateChart(full, options, theme, locale, renderer, enableClicks) {
+    updateChart(full, options, theme, locale, renderer, enableClicks, debugData, debugOptions, debugEvent) {
+        this.debug(debugData, debugOptions, debugEvent);
         if(full) {
             this.allOptions = options;
         }
@@ -102,52 +112,60 @@ export class SOChart extends LitElement {
                 renderer: renderer
             });
         }
+        if(this.debugData) {
+            console.log(this.data);
+        }
+        if(this.debugOptions) {
+            console.log(json);
+        }
         this.chart.setOption(json);
         this.enableClickEvents(enableClicks);
     }
 
     clearData() {
-        this.data = {};
+        this.data = [];
     }
 
-    updateData(serial, data) {
+    updateData(serial, data, index) {
         if(typeof serial !== 'undefined') {
-            this.initData(serial, data);
+            this.initData(serial, data, index);
         }
         const json = JSON.parse(this.allOptions);
         this._stuff(json);
+        if(this.debugData) {
+            console.log(this.data);
+        }
+        if(this.debugOptions) {
+            console.log(json);
+        }
         this.chart.setOption(json);
     }
 
-    initData(serial, data) {
-        this.data["d" + serial] = JSON.parse(data)["d"];
+    initData(serial, data, index) {
+        let d = this.data[index];
+        if(d == null) {
+            d = {};
+            this.data[index] = d;
+        }
+        d["d" + serial] = JSON.parse(data)["d"];
     }
 
     // noinspection JSUnusedGlobalSymbols
-    pushData(data) {
+    pushData(data, index) {
         data = JSON.parse(data)["d"];
         for(let k in data) {
-            this.data[k].push(data[k]);
-            this.data[k].shift();
+            this.data[index][k].push(data[k]);
+            this.data[index][k].shift();
         }
         this.updateData();
     }
 
     // noinspection JSUnusedGlobalSymbols
-    appendData(data) {
+    appendData(data, index) {
         data = JSON.parse(data)["d"];
         for(let k in data) {
-            this.data[k].push(data[k]);
+            this.data[index][k].push(data[k]);
         }
-        this.updateData();
-    }
-
-    // noinspection JSUnusedGlobalSymbols
-    resetData(serials) {
-        serials = JSON.parse(serials)["d"];
-        serials.forEach(v => {
-            this.data["d" + v] = [];
-        });
         this.updateData();
     }
 
@@ -159,7 +177,9 @@ export class SOChart extends LitElement {
         if(enable) {
             if(!this.clickHandler1) {
                 this.clickHandler1 = e => {
-                    // console.log(e);
+                    if(this.debugEvent) {
+                        console.log(e);
+                    }
                     this.$server.onClick(e.componentType, e.componentIndex, e.componentSubType, e.seriesId, e.targetType, JSON.stringify(e.value));
                 };
                 this.chart.on('click', this.clickHandler1);
@@ -237,10 +257,10 @@ export class SOChart extends LitElement {
             if(k === "data") {
                 if(Array.isArray(o)) {
                     o.forEach((v, i, a) => {
-                        a[i] = this.data["d" + v];
+                        a[i] = this._getDataAt(v);
                     });
                 } else {
-                    obj[k] = this.data["d" + o];
+                    obj[k] = this._getDataAt(o);
                 }
             } else if(typeof o === 'object') {
                 this._stuffData(o);
@@ -248,10 +268,28 @@ export class SOChart extends LitElement {
         }
     }
 
+    _getDataAt(pathIndex) {
+        for (let i = 0; i < this.data.length; i++) {
+            let d = this.data[i];
+            d = d["d" + pathIndex];
+            if(d) {
+                return d;
+            }
+        }
+    }
+
     _stuffDataSet(obj) {
-        obj = obj.dataset;
-        for(let k in obj.source) {
-            obj.source[k] = this.data["d" + obj.source[k]];
+        if (!obj.dataset || !Array.isArray(obj.dataset)) {
+            return;
+        }
+        let i = 0;
+        for (let dataset of obj.dataset) {
+            if (dataset.source) {
+                for (let k in dataset.source) {
+                    dataset.source[k] = this.data[i]["d" + dataset.source[k]];
+                }
+            }
+            ++i;
         }
     }
 

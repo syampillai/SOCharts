@@ -48,7 +48,7 @@ public interface AbstractDataProvider<T> extends ComponentPart {
     /**
      * Collect all data values into a list.
      *
-     * @return Data values as a list.
+     * @return Values as a list.
      */
     default List<T> asList() {
         if(this instanceof List) {
@@ -63,7 +63,7 @@ public interface AbstractDataProvider<T> extends ComponentPart {
     /**
      * Get the value type of the data.
      *
-     * @return value type.
+     * @return Value type.
      */
     DataType getDataType();
 

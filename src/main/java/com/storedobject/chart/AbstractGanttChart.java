@@ -240,6 +240,11 @@ public abstract class AbstractGanttChart implements ComponentGroup, Clickable {
         }
 
         @Override
+        protected AbstractDataProvider<?> mainData() {
+            return data;
+        }
+
+        @Override
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
             sb.append(",\"encode\":{\"x\":0,\"y\":-1}");
