@@ -4,7 +4,6 @@ import com.storedobject.chart.*;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
@@ -28,7 +27,7 @@ public class Test extends VerticalLayout {
 
         @Override
         protected String customizeJSON(String json) throws Exception {
-            System.out.printf("JSON: %s%n", json);;
+            System.out.printf("JSON: %s%n", json);
             return super.customizeJSON(json);
         }
     };
@@ -36,15 +35,17 @@ public class Test extends VerticalLayout {
     public Test() {
         setSizeFull();
         soChart.setSizeFull();
-        soChart.debug(true, true, true);
+        soChart.debug(true, false, true);
         drawMenu();
     }
 
     private void drawMenu() {
         if (timer != null) {
             timer.cancel();
+            timer = null;
         }
         ui = UI.getCurrent();
+        ui.setPollInterval(1000); // Need for dynamic data push
         removeAll();
         add(new Button("Gantt Chart", e -> build(() -> ganttChart(soChart))));
         add(new Button("Line Chart", e -> build(() -> lineChart(soChart))));
@@ -338,14 +339,12 @@ public class Test extends VerticalLayout {
 
     private class ChartPush {
 
-        private final SOChart soChart;
         private final Random randomGen = new Random();
         private final TimeData seconds = new TimeData();
         private final Data random = new Data();
         private final DataChannel dataChannel;
 
         public ChartPush(SOChart soChart) {
-            this.soChart = soChart;
 
             // Axes
             XAxis xAxis = new XAxis(seconds);
@@ -387,17 +386,17 @@ public class Test extends VerticalLayout {
             random.add(randomGen.nextInt(100));
             int lastIndex = seconds.size() - 1;
             ui.access(() -> { // Required to lock the UI
-                        try {
-                            if (lastIndex < 60) {
-                                // Append data if data-size is less than 60
-                                dataChannel.append(seconds.get(lastIndex), random.get(lastIndex));
-                            } else {
-                                // Push data if the data-size is more than 60 (tail-end will be trimmed)
-                                dataChannel.push(seconds.get(lastIndex), random.get(lastIndex));
-                            }
-                        } catch (Exception ignored) {
-                        }
-                    });
+                try {
+                    if (lastIndex < 60) {
+                        // Append data if data-size is less than 60
+                        dataChannel.append(seconds.get(lastIndex), random.get(lastIndex));
+                    } else {
+                        // Push data if the data-size is more than 60 (tail-end will be trimmed)
+                        dataChannel.push(seconds.get(lastIndex), random.get(lastIndex));
+                    }
+                } catch (Exception ignored) {
+                }
+            });
         }
     }
 }

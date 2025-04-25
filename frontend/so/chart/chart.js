@@ -25,7 +25,7 @@ export class SOChart extends LitElement {
         this.clickHandler1 = null;
         this.clickHandler2 = null;
         this.data = [];
-        this.allOptions = "";
+        this.allOptions = null;
         this.minw = "5vw";
         this.minh = "5vw";
         this.maxw = "6000px";
@@ -95,13 +95,17 @@ export class SOChart extends LitElement {
 
     // noinspection JSUnusedGlobalSymbols
     setThemeAndLocale(theme, locale, renderer) {
+        if(!this.allOptions) {
+            return;
+        }
         this.destroyChart();
-        this.updateChart(false, this.allOptions, theme, locale, renderer, this.clickHandler1 != null);
+        this.updateChart(false, this.allOptions, theme, locale, renderer, this.clickHandler1 != null,
+            this.debugData, this.debugOptions, this.debugEvent);
     }
 
     updateChart(full, options, theme, locale, renderer, enableClicks, debugData, debugOptions, debugEvent) {
         this.debug(debugData, debugOptions, debugEvent);
-        if(full) {
+        if(full || !this.allOptions) {
             this.allOptions = options;
         }
         const json = JSON.parse(options);
@@ -127,8 +131,11 @@ export class SOChart extends LitElement {
     }
 
     updateData(serial, data, index) {
-        if(typeof serial !== 'undefined') {
+        if(serial && typeof serial !== 'undefined') {
             this.initData(serial, data, index);
+        }
+        if(!this.allOptions) {
+            return;
         }
         const json = JSON.parse(this.allOptions);
         this._stuff(json);
@@ -151,22 +158,34 @@ export class SOChart extends LitElement {
     }
 
     // noinspection JSUnusedGlobalSymbols
-    pushData(data, index) {
-        data = JSON.parse(data)["d"];
-        for(let k in data) {
-            this.data[index][k].push(data[k]);
-            this.data[index][k].shift();
-        }
-        this.updateData();
+    pushData(data) {
+        this._alterData(data, true);
     }
 
     // noinspection JSUnusedGlobalSymbols
-    appendData(data, index) {
+    appendData(data) {
+        this._alterData(data, false);
+    }
+
+    _alterData(data, shift) {
         data = JSON.parse(data)["d"];
-        for(let k in data) {
-            this.data[index][k].push(data[k]);
+        if(this.debugData) {
+            console.log(data);
         }
-        this.updateData();
+        for(let k in data) {
+            let d = this._getDataAt(k);
+            if(d != null) {
+                d.push(data[k]);
+                if (shift) {
+                    d.shift();
+                }
+            } else {
+                if(this.debugData) {
+                    console.log("Data not found for: " + k);
+                }
+            }
+        }
+        this.updateData(null, this.data);
     }
 
     // noinspection JSUnusedGlobalSymbols
@@ -269,13 +288,17 @@ export class SOChart extends LitElement {
     }
 
     _getDataAt(pathIndex) {
+        if (!pathIndex?.toString().startsWith('d')) {
+            pathIndex = "d" + pathIndex;
+        }
         for (let i = 0; i < this.data.length; i++) {
             let d = this.data[i];
-            d = d["d" + pathIndex];
+            d = d[pathIndex];
             if(d) {
                 return d;
             }
         }
+        return null;
     }
 
     _stuffDataSet(obj) {

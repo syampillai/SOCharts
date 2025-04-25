@@ -824,6 +824,12 @@ public class SOChart extends LitComponentWithSize {
         }
     }
 
+    /**
+     * Adhoc update of data - typically called internally from {@link DataChannel} instances.
+     *
+     * @param data Data to push or append.
+     * @param command Command - should be "push" or "append".
+     */
     void updateData(String data, String command) {
         if(neverUpdated) {
             return;
