@@ -332,7 +332,7 @@ export class SOChart extends LitElement {
                 }
                 let d;
                 if(typeof o === 'object') {
-                    d = this.data["d" + o[0]];
+                    d = this._getDataAt(o[0]);
                     if(d == null) {
                         continue;
                     }
@@ -346,7 +346,7 @@ export class SOChart extends LitElement {
                     }
                     s = s + d;
                 } else {
-                    d = this.data["d" + o];
+                    d = this._getDataAt(o);
                     if(d == null) {
                         continue;
                     }
