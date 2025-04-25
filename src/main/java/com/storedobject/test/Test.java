@@ -51,7 +51,7 @@ public class Test extends VerticalLayout {
         add(new Button("Line Chart", e -> build(() -> lineChart(soChart))));
         add(new Button("Line & Bar Chart", e -> build(() -> lineAndBar(soChart))));
         add(new Button("Radar Chart", e -> build(() -> radarChart(soChart))));
-        add(new Button("Nightingale Rose Chart", e -> build(() -> nightingleChart(soChart))));
+        add(new Button("Nightingale Rose Chart", e -> build(() -> nightingaleChart(soChart))));
         add(new Button("Chart with Mark Area", e -> build(() -> withMarkAreaChart(soChart))));
         add(new Button("Chart Push", e -> build(() -> new ChartPush(soChart))));
         add(new Button("Custom Tooltip", e -> build(() -> withCustomTooltip(soChart))));
@@ -263,7 +263,7 @@ public class Test extends VerticalLayout {
         soChart.add(chart);
     }
 
-    private static void nightingleChart(SOChart soChart) {
+    private static void nightingaleChart(SOChart soChart) {
         // Let us define some inline data
         CategoryData labels = new CategoryData("Banana", "Apple", "Orange", "Grapes");
         Data data = new Data(25, 40, 20, 30);
