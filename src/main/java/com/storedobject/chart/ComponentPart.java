@@ -52,7 +52,7 @@ public interface ComponentPart extends ComponentProperty {
     long getId();
 
     /**
-     * Set a serial number (Serial number used internal purposes only). The implementation of this method must be
+     * Set a serial number (Serial number used for internal purposes only). The implementation of this method must be
      * in such a way that the serial number set here must be returned by the {@link #getSerial()} method.
      *
      * @param serial Serial number to set.
@@ -60,7 +60,7 @@ public interface ComponentPart extends ComponentProperty {
     void setSerial(int serial);
 
     /**
-     * Get the current serial number (Serial number used internal purposes only). The serial number set by the
+     * Get the current serial number (Serial number used for internal purposes only). The serial number set by the
      * {@link #setSerial(int)} method should be returned by this method.
      *
      * @return Current serial number.

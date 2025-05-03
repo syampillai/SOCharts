@@ -144,7 +144,7 @@ public class Size {
     /**
      * Create a "null" size. This is useful when we want to reset some already existing "size" value.
      *
-     * @return Size create as "null" value.
+     * @return Size created as a "null" value.
      */
     public static Size none() {
         return new Size(Integer.MIN_VALUE);

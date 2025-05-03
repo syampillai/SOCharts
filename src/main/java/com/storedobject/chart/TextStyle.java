@@ -261,7 +261,7 @@ public class TextStyle implements ComponentProperty {
     }
 
     /**
-     * Restore state. For internal purpose only.
+     * Restore state. For internal purposes only.
      *
      * @param op Restore from this.
      */
@@ -274,6 +274,8 @@ public class TextStyle implements ComponentProperty {
 
     /**
      * Store definition to save/restore state.
+     *
+     * @author Syam
      */
     static class OuterProperties {
         AbstractColor background;
