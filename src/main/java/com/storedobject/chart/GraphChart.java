@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GraphChart extends SelfPositioningChart {
 
-    private final List<Node> nodes;
+    private final List<Node> nodes = new ArrayList<>();
     private final NodeDataProvider nd;
     private boolean roam = false;
     private boolean draggable = false;
@@ -24,7 +24,6 @@ public class GraphChart extends SelfPositioningChart {
 
     public GraphChart() {
         super(ChartType.Graph);
-        this.nodes = new ArrayList<>();
         this.nd = new NodeDataProvider();
         super.setData(nd);
     }
@@ -165,7 +164,7 @@ public class GraphChart extends SelfPositioningChart {
 
     @Override
     public void validate() throws ChartException {
-        if (this.nodes == null) {
+        if (this.nodes.isEmpty()) {
             throw new ChartException("Data not set for " + className());
         }
     }
@@ -189,6 +188,7 @@ public class GraphChart extends SelfPositioningChart {
 
     @Override
     public void encodeJSON(StringBuilder sb) {
+        nodes.forEach(n -> indexOf(n.category)); // Ensure categories are added.
         super.encodeJSON(sb);
         ComponentPart.addComma(sb);
         ComponentPart.encode(sb, "layout", this.getLayout());
@@ -206,17 +206,8 @@ public class GraphChart extends SelfPositioningChart {
             sb.append(",\"force\":");
             force.encodeJSON(sb);
         }
-        sb.append(",\"nodes\":[");
         AtomicBoolean first = new AtomicBoolean(true);
-        nodes.forEach(n -> {
-            if(first.get()) {
-                first.set(false);
-            } else {
-                sb.append(",");
-            }
-            n.encodeJSON(this, sb);
-        });
-        sb.append("],\"categories\":[");
+        sb.append("\"categories\":[");
         first.set(true);
         categories.forEach(c -> {
             if(first.get()) {
@@ -248,7 +239,7 @@ public class GraphChart extends SelfPositioningChart {
 
         @Override
         public void encode(StringBuilder sb, Node value) {
-            value.encodeJSON(sb);
+            value.encodeJSON(GraphChart.this, sb);
         }
     }
 
@@ -266,6 +257,10 @@ public class GraphChart extends SelfPositioningChart {
 
         public Node(String name, Category category) {
             this(name, 0, 0, category);
+        }
+
+        public Node(String name, double x, double y) {
+            this(name, x, y, null);
         }
 
         public Node(String name, double x, double y, Category category) {

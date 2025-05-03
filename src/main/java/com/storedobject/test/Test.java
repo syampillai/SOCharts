@@ -55,6 +55,7 @@ public class Test extends VerticalLayout {
         add(new Button("Chart with Mark Area", e -> build(() -> withMarkAreaChart(soChart))));
         add(new Button("Chart Push", e -> build(() -> new ChartPush(soChart))));
         add(new Button("Custom Tooltip", e -> build(() -> withCustomTooltip(soChart))));
+        add(new Button("Simple Graph Chart", e -> build(() -> simpleGraphChart(soChart))));
     }
 
     private void build(Runnable builder) {
@@ -444,5 +445,29 @@ public class Test extends VerticalLayout {
         // Add to the chart display area with a simple title
         soChart.add(lineChart, new Title("Line Chart with Customized Tooltips"));
 
+    }
+
+    private static void simpleGraphChart(SOChart soChart) {
+
+        GraphChart gc = new GraphChart();
+        GraphChart.Node n1 = new GraphChart.Node("Node 1", 300, 300);
+        GraphChart.Node n2 = new GraphChart.Node("Node 2", 800, 300);
+        GraphChart.Node n3 = new GraphChart.Node("Node 3", 550, 100);
+        GraphChart.Node n4 = new GraphChart.Node("Node 4", 550, 500);
+        n1.connectTo(n2);
+        n1.connectTo(n3);
+        n1.connectTo(n4);
+        n2.connectTo(n1);
+        n2.connectTo(n3);
+        n2.connectTo(n4);
+        n3.connectTo(n1);
+        n3.connectTo(n2);
+        n3.connectTo(n4);
+        n4.connectTo(n1);
+        n4.connectTo(n2);
+        n4.connectTo(n3);
+        gc.addNode(n1, n2, n3, n4);
+
+        soChart.add(gc);
     }
 }
