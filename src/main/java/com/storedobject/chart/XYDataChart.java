@@ -77,7 +77,7 @@ public abstract class XYDataChart extends Chart {
     }
 
     /**
-     * Add heatmap data point.
+     * Add data point.
      *
      * @param xValue X-value at which data needs to be added.
      * @param yValue Y-value at which data needs to be added.
@@ -130,14 +130,15 @@ public abstract class XYDataChart extends Chart {
         }
 
         @Override
-        public Value getMin() {
-            return stream().min(new XYData.XYValueComparator()).orElse(null);
+        public Object getMin() {
+            Value v = stream().min(new XYValueComparator()).orElse(null);
+            return v == null ? null : v.value;
         }
 
         @Override
-        public Value getMax() {
-            super.getMax();
-            return stream().max(new XYValueComparator()).orElse(null);
+        public Object getMax() {
+            Value v = stream().max(new XYValueComparator()).orElse(null);
+            return v == null ? null : v.value;
         }
 
         @Override

@@ -36,11 +36,6 @@ public abstract class XYChart extends AbstractChart {
         super(type, xData, yData);
     }
 
-    XYChart(ChartType type, AbstractDataProvider<?> xData, AbstractDataProvider<?> yData,
-            AbstractDataProvider<?> values) {
-        super(type, xData, yData, values);
-    }
-
     /**
      * Set data for X axis.
      *

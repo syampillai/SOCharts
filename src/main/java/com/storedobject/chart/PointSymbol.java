@@ -117,6 +117,19 @@ public class PointSymbol implements ComponentProperty {
     }
 
     /**
+     * Sets the size of the point symbol and returns the updated {@code PointSymbol} instance.
+     * The size determines the visual dimensions of the point symbol.
+     *
+     * @param size The size of the point symbol to set. A positive value assigns the size,
+     *             while a non-positive value resets the size to {@code null}.
+     * @return The updated {@code PointSymbol} instance with the specified size applied.
+     */
+    public PointSymbol size(int size) {
+        setSize(size);
+        return this;
+    }
+
+    /**
      * Sets the size of the symbol using specified width and height values.
      *
      * @param width The width of the symbol. Should be a positive value.
@@ -135,6 +148,22 @@ public class PointSymbol implements ComponentProperty {
         } else {
             this.size = null;
         }
+    }
+
+    /**
+     * Updates the size of the point symbol using the specified width and height values.
+     * The size defines the visual dimensions of the point symbol and influences its
+     * rendering within the chart.
+     *
+     * @param width The width of the point symbol. Should be a positive value.
+     *              If width is non-positive, the size may be reset depending on height value.
+     * @param height The height of the point symbol. Should be a positive value.
+     *               If height is non-positive, the size may be reset depending on width value.
+     * @return The updated {@code PointSymbol} instance with the specified size applied.
+     */
+    public PointSymbol size(int width, int height) {
+        setSize(width, height);
+        return this;
     }
 
     /**
@@ -193,7 +222,7 @@ public class PointSymbol implements ComponentProperty {
         String t = url == null ? this.type.toString() : url;
         ComponentPart.encode(sb,"symbol", t);
         if(size != null) {
-            ComponentPart.encode(sb, "symbolSize", size);
+            sb.append(",\"symbolSize\":").append(size);
         }
         ComponentPart.encode(sb, "hoverAnimation", hoverAnimation);
         ComponentPart.encode(sb, "showSymbol", show);

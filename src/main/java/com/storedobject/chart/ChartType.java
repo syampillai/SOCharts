@@ -84,10 +84,21 @@ public enum ChartType {
      * Sankey.
      */
     Sankey(new String[] {}, false),
+
+    /**
+     * Graph plotted on XY coordinates.
+     */
+    XYGraph("graph"),
+
+    /**
+     * Boxplot.
+     */
+    Boxplot,
     ;
 
     private final String[] axes;
     private final boolean coordinateSystem;
+    private final String type;
 
     /**
      * Constructor for default XY type.
@@ -97,12 +108,21 @@ public enum ChartType {
     }
 
     /**
+     * Constructor for the default XY type but with a different type name.
+     *
+     * @param type Type name.
+     */
+    ChartType(String type) {
+        this(new String[] { "x", "y"}, true, type);
+    }
+
+    /**
      * Constructor with axes defined.
      *
      * @param axes Name of the axes.
      */
     ChartType(String[] axes) {
-        this(axes, true );
+        this(axes, true, null);
     }
 
     /**
@@ -112,12 +132,28 @@ public enum ChartType {
      * @param coordinateSystem Whether a coordinate system is required for this type or not.
      */
     ChartType(String[] axes, boolean coordinateSystem) {
-        this.axes = axes;
-        this.coordinateSystem = coordinateSystem;
+        this(axes, coordinateSystem, null);
     }
 
     /**
-     * Get name of the axes.
+     * Constructor with axes defined.
+     *
+     * @param axes Name of the axes.
+     * @param coordinateSystem Whether a coordinate system is required for this type or not.
+     * @param type Type name. (If null, it will be set to the name of the enum value in the lower case.)
+     */
+    ChartType(String[] axes, boolean coordinateSystem, String type) {
+        this.axes = axes;
+        this.coordinateSystem = coordinateSystem;
+        if(type == null) {
+            String t = name();
+            type = Character.toLowerCase(t.charAt(0)) + t.substring(1);
+        }
+        this.type = type;
+    }
+
+    /**
+     * Get the name of the axes.
      *
      * @return Name of axes.
      */
@@ -132,5 +168,14 @@ public enum ChartType {
      */
     public boolean requireCoordinateSystem() {
         return coordinateSystem;
+    }
+
+    /**
+     * Retrieves the type name of the chart.
+     *
+     * @return The type name of the chart as a String.
+     */
+    public String getType() {
+        return type;
     }
 }

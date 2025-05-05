@@ -27,7 +27,7 @@ public class Test extends VerticalLayout {
 
         @Override
         protected String customizeJSON(String json) throws Exception {
-            System.out.printf("JSON: %s%n", json);
+            System.out.printf("---------------%nJSON: %s%n", json);
             return super.customizeJSON(json);
         }
     };
@@ -35,7 +35,7 @@ public class Test extends VerticalLayout {
     public Test() {
         setSizeFull();
         soChart.setSizeFull();
-        soChart.debug(false, false, true);
+        soChart.debug(false, true, true);
         drawMenu();
     }
 
@@ -56,6 +56,10 @@ public class Test extends VerticalLayout {
         add(new Button("Chart Push", e -> build(() -> new ChartPush(soChart))));
         add(new Button("Custom Tooltip", e -> build(() -> withCustomTooltip(soChart))));
         add(new Button("Simple Graph Chart", e -> build(() -> simpleGraphChart(soChart))));
+        add(new Button("XY Graph Chart", e -> build(() -> xyGraphChart(soChart))));
+        add(new Button("Heatmap Chart", e -> build(() -> heatmapChart(soChart))));
+        add(new Button("Bubble Chart", e -> build(() -> bubbleChart(soChart))));
+        add(new Button("Boxplot Chart", e -> build(() -> boxplotChart(soChart))));
     }
 
     private void build(Runnable builder) {
@@ -449,11 +453,14 @@ public class Test extends VerticalLayout {
 
     private static void simpleGraphChart(SOChart soChart) {
 
-        GraphChart gc = new GraphChart();
-        GraphChart.Node n1 = new GraphChart.Node("Node 1", 300, 300);
-        GraphChart.Node n2 = new GraphChart.Node("Node 2", 800, 300);
-        GraphChart.Node n3 = new GraphChart.Node("Node 3", 550, 100);
-        GraphChart.Node n4 = new GraphChart.Node("Node 4", 550, 500);
+        GraphData<GraphData.XYNode> g = new GraphData<>();
+        g.draggable(true);
+        g.getForce(true);
+        g.getDefaultCategory().setSize(40);
+        GraphData.XYNode n1 = new GraphData.XYNode("Node 1", 50, 100);
+        GraphData.XYNode n2 = new GraphData.XYNode("Node 2", 50, 120);
+        GraphData.XYNode n3 = new GraphData.XYNode("Node 3", 150, 150);
+        GraphData.XYNode n4 = new GraphData.XYNode("Node 4", 200, 80);
         n1.connectTo(n2);
         n1.connectTo(n3);
         n1.connectTo(n4);
@@ -466,8 +473,109 @@ public class Test extends VerticalLayout {
         n4.connectTo(n1);
         n4.connectTo(n2);
         n4.connectTo(n3);
-        gc.addNode(n1, n2, n3, n4);
+        g.addNode(n1, n2, n3, n4);
 
-        soChart.add(gc);
+        soChart.add(new GraphChart(g));
+    }
+
+    private static void xyGraphChart(SOChart soChart) {
+        CategoryData days = new CategoryData("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+        GraphData<GraphData.ValueNode> g = new GraphData<>();
+        g.draggable(true).getForce(true);
+        g.getDefaultCategory().setSize(40);
+        Random random = new Random();
+        days.forEach(d -> {
+            GraphData.ValueNode n = new GraphData.ValueNode(random.nextDouble(2000));
+            n.setName(d);
+            g.connectFromLastNode(n);
+            g.addNode(n);
+        });
+        XYGraphChart chart = new XYGraphChart(days, g);
+        chart.plotOn(new RectangularCoordinate(new XAxis(days), new YAxis(DataType.NUMBER)));
+
+        soChart.add(chart);
+    }
+
+    private static void heatmapChart(SOChart soChart) {
+
+        // Heatmap chart requires 2 category axes and then, values to be added for each data-point
+        CategoryData days = new CategoryData("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+        CategoryData slots = new CategoryData("Morning", "Noon", "Afternoon", "Evening", "Night");
+
+        // Create the chart.
+        HeatmapChart chart = new HeatmapChart(days, slots);
+        chart.getLabel(true).show(); // Want to display the value as labels
+
+        // Add some data-points
+        chart.addData(0, 0, 27); // Sunday morning
+        chart.addData(0, 3, 28); // Sunday evening
+        chart.addData(1, 3, 31); // Monday evening
+        chart.addData(1, 4, 25); // Monday night
+        chart.addData("Wed", "Noon", 37); // Values can be added by directly addressing X/Y values too.
+
+        // Heatmap charts should be plotted on a rectangular coordinate system
+        chart.plotOn(new RectangularCoordinate(new XAxis(days), new YAxis(slots)));
+
+        // Add to the chart display area
+        soChart.add(chart);
+    }
+
+    private static void bubbleChart(SOChart soChart) {
+
+        // Bubble chart requires 2 axes and then, values to be added for each data-point
+        CategoryData days = new CategoryData("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+        CategoryData slots = new CategoryData("Morning", "Noon", "Afternoon", "Evening", "Night");
+
+        // Create the chart.
+        BubbleChart chart = new BubbleChart(days, slots);
+        chart.setBubbleSize(2); // Size of the bubble will be 2 times the temperature
+        chart.setValueSuffix("\u00B0C");
+
+        // Add some data-points
+        chart.addData(0, 0, 27); // Sunday morning
+        chart.addData(0, 3, 28); // Sunday evening
+        chart.addData(1, 3, 31); // Monday evening
+        chart.addData(1, 4, 25); // Monday night
+        chart.addData("Wed", "Noon", 37); // Values can be added by directly addressing X/Y values too.
+
+        // Bubble charts should be plotted on a rectangular coordinate system
+        chart.plotOn(new RectangularCoordinate(new XAxis(days), new YAxis(slots)));
+
+        // Add to the chart display area
+        soChart.add(chart);
+    }
+
+    private void boxplotChart(SOChart soChart) {
+        CategoryData days = new CategoryData("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+        BoxplotData boxplotData = new BoxplotData();
+        Random r = new Random();
+        days.forEach(d -> boxplotData.add(boxplotData(r)));
+        BoxplotChart chart = new BoxplotChart(days, boxplotData);
+
+        chart.plotOn(new RectangularCoordinate(new XAxis(days), new YAxis(DataType.NUMBER)));
+
+        // Add to the chart display area
+        soChart.add(chart);
+    }
+
+    private BoxplotData.Boxplot boxplotData(Random r) {
+        double min = r.nextDouble(1000);
+        double max;
+        do {
+            max = r.nextDouble(1000);
+        } while (!(max > min));
+        double median;
+        do {
+            median = r.nextDouble(1000);
+        } while (!(median > min) || !(median < max));
+        double q1;
+        do {
+            q1 = r.nextDouble(1000);
+        } while (!(q1 > min) || !(q1 < median));
+        double q3;
+        do {
+            q3 = r.nextDouble(1000);
+        } while (!(q3 > median) || !(q3 < max));
+        return new BoxplotData.Boxplot(min, q1, median, q3, max);
     }
 }

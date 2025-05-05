@@ -24,9 +24,9 @@ package com.storedobject.chart;
 public class CandlestickChart extends XYChart {
 
     private final AbstractDataProvider<?> xData;
-    private final CandlestickData data;
+    private final AbstractDataProvider<CandlestickData.Candlestick> data;
 
-    public CandlestickChart(AbstractDataProvider<?> xData, CandlestickData yData) {
+    public CandlestickChart(AbstractDataProvider<?> xData, AbstractDataProvider<CandlestickData.Candlestick> yData) {
         super(ChartType.Candlestick, xData, yData);
         this.xData = xData;
         this.data = yData;

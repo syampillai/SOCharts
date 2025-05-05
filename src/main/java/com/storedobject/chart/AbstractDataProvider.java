@@ -114,7 +114,7 @@ public interface AbstractDataProvider<T> extends ComponentPart {
      *
      * @return Minimum value of the data.
      */
-    default T getMin() {
+    default Object getMin() {
         if(getDataType() == DataType.CATEGORY) {
             return stream().findFirst().orElse(null);
         }
@@ -130,7 +130,7 @@ public interface AbstractDataProvider<T> extends ComponentPart {
      *
      * @return Minimum value of the data.
      */
-    default T getMax() {
+    default Object getMax() {
         if(getDataType() == DataType.CATEGORY) {
             AtomicReference<T> value = new AtomicReference<>(null);
             stream().forEach(value::set);

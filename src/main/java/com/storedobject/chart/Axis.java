@@ -193,12 +193,10 @@ public abstract class Axis extends VisiblePart implements Wrapped, Clickable {
         min = value(min);
         if(min != null) {
             ComponentPart.encode(sb, "min", min);
-            //sb.append(",\"min\":").append(min);
         }
         max = value(max);
         if(max != null) {
             ComponentPart.encode(sb, "max", max);
-            //sb.append(",\"max\":").append(max);
         }
         if(dataType != DataType.CATEGORY) {
             if(divisions > 0) {

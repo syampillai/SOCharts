@@ -19,7 +19,8 @@ public class Offset implements ComponentProperty {
     public void encodeJSON(String name, StringBuilder sb) {
         String s = "[" + (x < 0 ? ("'" + -x + "%'") : x)
                 + "," + (y < 0 ? ("'" + -y + "%'") : y) + "]";
-        ComponentPart.encode(sb, name, s);
+        ComponentPart.addComma(sb);
+        sb.append('"').append(name).append("\":").append(s);
     }
 
     /**

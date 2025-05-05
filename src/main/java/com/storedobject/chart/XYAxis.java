@@ -40,7 +40,7 @@ public abstract class XYAxis extends Axis {
      * Constructor.
      *
      * @param data Data type will be determined from the data provider. Note: It is not required to use
-     *             same the data on this axis.
+     *              the same data on this axis.
      */
     public XYAxis(AbstractDataProvider<?> data) {
         super(data);

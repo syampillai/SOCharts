@@ -136,11 +136,7 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
      * @return Chart-type value.
      */
     protected String typeValue() {
-        if(custom != null) {
-            return "custom";
-        }
-        String t = type.toString();
-        return Character.toLowerCase(t.charAt(0)) + t.substring(1);
+        return custom == null ? type.getType() : custom;
     }
 
     /**

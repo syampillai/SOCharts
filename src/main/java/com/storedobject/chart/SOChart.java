@@ -574,10 +574,10 @@ public class SOChart extends LitComponentWithSize {
         if(defaultTextStyle != null) {
             parts.add(defaultTextStyle);
         }
-        if(!skipData && legend != null && parts.stream().noneMatch(cp -> cp instanceof Legend)) {
+        if(legend != null && parts.stream().noneMatch(cp -> cp instanceof Legend)) {
             parts.add(legend);
         }
-        if(!skipData && tooltip != null && parts.stream().noneMatch(cp -> cp instanceof Tooltip)) {
+        if(tooltip != null && parts.stream().noneMatch(cp -> cp instanceof Tooltip)) {
             parts.add(tooltip);
         }
         for(ComponentEncoder ce: encoders) {

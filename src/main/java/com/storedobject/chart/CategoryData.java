@@ -36,12 +36,12 @@ public class CategoryData extends AbstractData<String> implements CategoryDataPr
     }
 
     @Override
-    public String getMin() {
+    public Object getMin() {
         return isEmpty() ? null : get(0);
     }
 
     @Override
-    public String getMax() {
+    public Object getMax() {
         return isEmpty() ? null : get(size() - 1);
     }
 }

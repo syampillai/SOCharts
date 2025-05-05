@@ -44,6 +44,7 @@ public class CandlestickData extends AbstractData<CandlestickData.Candlestick> {
      */
     public record Candlestick(Number opening, Number closing, Number low, Number high) {
 
+        @SuppressWarnings("NullableProblems")
         @Override
         public String toString() {
             return "[" + opening + "," + closing + "," + low + "," + high + "]";
