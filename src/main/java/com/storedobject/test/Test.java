@@ -529,7 +529,7 @@ public class Test extends VerticalLayout {
         // Create the chart.
         BubbleChart chart = new BubbleChart(days, slots);
         chart.setBubbleSize(2); // Size of the bubble will be 2 times the temperature
-        chart.setValueSuffix("\u00B0C");
+        chart.setValueSuffix("°C");
 
         // Add some data-points
         chart.addData(0, 0, 27); // Sunday morning
