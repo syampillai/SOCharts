@@ -16,6 +16,15 @@ public class Offset implements ComponentProperty {
         encodeJSON("offset", sb);
     }
 
+    /**
+     * Encodes the offset values into a JSON-compatible format and appends the resulting string
+     * to the provided {@code StringBuilder}. The JSON representation includes the specified name
+     * as a key and the x and y offset values as an array. Negative values for x and y are rendered
+     * as percentages, while non-negative values are represented as integers.
+     *
+     * @param name The name to use as the key in the JSON representation.
+     * @param sb   The {@code StringBuilder} to which the JSON representation will be appended.
+     */
     public void encodeJSON(String name, StringBuilder sb) {
         String s = "[" + (x < 0 ? ("'" + -x + "%'") : x)
                 + "," + (y < 0 ? ("'" + -y + "%'") : y) + "]";
