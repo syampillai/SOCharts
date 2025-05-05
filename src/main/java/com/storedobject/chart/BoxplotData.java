@@ -24,7 +24,6 @@ public class BoxplotData extends AbstractData<BoxplotData.Boxplot> {
      * Represents a boxplot data record with the key statistical parts of a boxplot.
      * The components include lower bound, first quartile (Q1), median, third quartile (Q3),
      * and upper bound.
-     *
      * This record provides an immutable representation of these values.
      *
      * @param lower  The lower bound of the data.
