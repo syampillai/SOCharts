@@ -259,10 +259,10 @@ public interface ComponentPart extends ComponentProperty {
      * the registration parameters for it. The default implementation returns <code>null</code>,
      * meaning it can't handle it.
      *
-     * @param eventType Event type.
+     * @param ignoredEventType Event type.
      * @return A string in JSON format that echarts can understand.
      */
-    default String getEventParameters(ChartEventType eventType) {
+    default String getEventParameters(ChartEventType ignoredEventType) {
         return null;
     }
 }
