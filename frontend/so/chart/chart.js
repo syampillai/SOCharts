@@ -240,7 +240,7 @@ export class SOChart extends LitElement {
         if(!this.chart) {
             return;
         }
-        this.events.forEach((v, k, m) => {
+        this.events.forEach((v, k) => {
             if(k < 0) {
                 this.chart.getZr().off(v.type, v.handler);
             } else {
