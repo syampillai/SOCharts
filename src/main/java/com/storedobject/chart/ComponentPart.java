@@ -253,4 +253,16 @@ public interface ComponentPart extends ComponentProperty {
         }
         return '"' + string + '"';
     }
+
+    /**
+     * If a part can handle certain types of events (like click, double-click, etc.), it should return
+     * the registration parameters for it. The default implementation returns <code>null</code>,
+     * meaning it can't handle it.
+     *
+     * @param eventType Event type.
+     * @return A string in JSON format that echarts can understand.
+     */
+    default String getEventParameters(ChartEventType eventType) {
+        return null;
+    }
 }

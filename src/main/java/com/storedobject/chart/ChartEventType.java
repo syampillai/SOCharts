@@ -6,8 +6,26 @@ package com.storedobject.chart;
  * @author Syam
  */
 public enum ChartEventType {
+
     /**
      * Represents a click event type that can occur on a chart.
      */
-    CLICK
+    Click,
+
+    DoubleClick("dblclick"),
+    ;
+
+    private final String name;
+
+    ChartEventType() {
+        this.name = name().toLowerCase();
+    }
+
+    ChartEventType(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

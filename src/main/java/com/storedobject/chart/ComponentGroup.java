@@ -23,7 +23,7 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public interface ComponentGroup extends Clickable {
+public interface ComponentGroup {
 
     /**
      * Add parts of this group to {@link SOChart}. This will be invoked if the group was already added

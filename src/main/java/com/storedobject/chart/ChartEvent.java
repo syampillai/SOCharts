@@ -14,20 +14,21 @@ public class ChartEvent {
 
     private final SOChart soChart;
     private final ChartEventType type;
-    private final long partId;
+    private final ComponentPart componentPart;
     private Map<String, Object> data;
 
     /**
      * Constructs a new ChartEvent with the specified type and part ID.
+     * <p>Note: Component part will be null when the event happens in a blank area where no part exists.</p>
      *
      * @param soChart The {@code SOChart} instance associated with this event.
      * @param type The type of the chart event. This determines the kind of event that occurred.
-     * @param partId The ID of the chart part associated with this event.
+     * @param componentPart The part of the chart associated with this event. This can be a chart.
      */
-    public ChartEvent(SOChart soChart, ChartEventType type, long partId) {
+    public ChartEvent(SOChart soChart, ChartEventType type, ComponentPart componentPart) {
         this.soChart = soChart;
         this.type = type;
-        this.partId = partId;
+        this.componentPart = componentPart;
     }
 
     /**
@@ -35,7 +36,7 @@ public class ChartEvent {
      *
      * @return The {@code SOChart} instance linked to this event.
      */
-    public SOChart getSoChart() {
+    public SOChart getSOChart() {
         return soChart;
     }
 
@@ -49,12 +50,14 @@ public class ChartEvent {
     }
 
     /**
-     * Retrieves the ID of the part associated with the chart event.
+     * Retrieves the component part of the chart associated with this event.
+     * <p>Note: Component part will be null when the event happens in a blank area where no part exists.</p>
      *
-     * @return The ID of the part as a long value.
+     * @return The {@code ComponentPart} representing the specific part of the chart
+     *         linked to this chart event.
      */
-    public long getPartId() {
-        return partId;
+    public ComponentPart getComponentPart() {
+        return componentPart;
     }
 
     /**
@@ -82,6 +85,6 @@ public class ChartEvent {
 
     @Override
     public String toString() {
-        return "Event(" + type + ", " + partId + ", " + data + ")";
+        return "Event(" + type + ", " + componentPart + ", " + data + ")";
     }
 }

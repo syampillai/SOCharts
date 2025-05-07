@@ -20,7 +20,7 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public abstract class AbstractGanttChart implements ComponentGroup, Clickable {
+public abstract class AbstractGanttChart implements ComponentGroup {
 
     private RectangularCoordinate coordinate;
     private XAxis timeAxis;
@@ -33,7 +33,6 @@ public abstract class AbstractGanttChart implements ComponentGroup, Clickable {
     private TaskDependencies taskDependencies;
     private TaskBands taskBands;
     private DataZoom timeZoom, taskZoom;
-    private boolean clickable = false;
 
     /**
      * Constructor.
@@ -47,24 +46,6 @@ public abstract class AbstractGanttChart implements ComponentGroup, Clickable {
         //noinspection ConstantConditions
         error.getPosition(true).center();
         error.setDraggable(true);
-    }
-
-    @Override
-    public boolean matchSource(ChartEvent event) {
-        return Clickable.matchSource(event, taskBands, tasks, today, taskAxisLabels, taskDependencies, timeZoom,
-                taskZoom, coordinate, timeAxis, taskAxis, error);
-    }
-
-    @Override
-    public void setClickable(boolean clickable) {
-        this.clickable = clickable;
-        Clickable.setClickable(clickable, taskBands, tasks, today, taskAxisLabels, taskDependencies, timeZoom,
-                taskZoom, coordinate, timeAxis, taskAxis, error);
-    }
-
-    @Override
-    public boolean isClickable() {
-        return clickable;
     }
 
     @Override

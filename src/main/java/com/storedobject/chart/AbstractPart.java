@@ -77,9 +77,6 @@ public abstract class AbstractPart implements ComponentPart {
         if(this instanceof HasItemStyle h) {
             ComponentPart.encode(sb, "itemStyle", h.getItemStyle(false));
         }
-        if(this instanceof Clickable c) {
-            ComponentPart.encode(sb, c.getClickKeyName(), c.getClickValue());
-        }
         if(z >= 0) {
             ComponentPart.encode(sb, "z", z);
         }

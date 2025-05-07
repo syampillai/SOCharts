@@ -27,7 +27,7 @@ import java.util.Objects;
  *
  * @author Syam
  */
-public abstract class Axis extends VisiblePart implements Wrapped, Clickable {
+public abstract class Axis extends VisiblePart implements Wrapped {
 
     /**
      * Definition of pointer types.
@@ -67,7 +67,7 @@ public abstract class Axis extends VisiblePart implements Wrapped, Clickable {
     private Pointer pointer;
     private int renderingIndex;
     private AbstractDataProvider<?> data;
-    private boolean clickable = false;
+    private boolean allowEvents = false;
     SOChart soChart;
 
     /**
@@ -150,16 +150,6 @@ public abstract class Axis extends VisiblePart implements Wrapped, Clickable {
         }
     }
 
-    @Override
-    public void setClickable(boolean clickable) {
-        this.clickable = clickable;
-    }
-
-    @Override
-    public boolean isClickable() {
-        return clickable;
-    }
-
     /**
      * Set the data for this axis.
      * <p>Note: Normally, this is not required to be set unless you are working on a custom chart that is not yet
@@ -212,6 +202,25 @@ public abstract class Axis extends VisiblePart implements Wrapped, Clickable {
         ComponentPart.encode(sb, "minorSplitLine", minorGridLines);
         ComponentPart.encode(sb, "splitArea", gridAreas);
         ComponentPart.encode(sb, "axisPointer", pointer);
+        ComponentPart.encode(sb, "silent", !allowEvents);
+    }
+
+    /**
+     * Sets whether events are allowed on this axis.
+     *
+     * @param allowEvents True to allow events, false to disable them.
+     */
+    public void setAllowEvents(boolean allowEvents) {
+        this.allowEvents = allowEvents;
+    }
+
+    /**
+     * Determines whether events are allowed on this axis.
+     *
+     * @return True if events are allowed, false otherwise.
+     */
+    public boolean isAllowEvents() {
+        return allowEvents;
     }
 
     @Override
@@ -932,15 +941,7 @@ public abstract class Axis extends VisiblePart implements Wrapped, Clickable {
         @Override
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
-            if(interval >= -1) {
-                ComponentPart.addComma(sb);
-                sb.append("\"interval\":");
-                if(interval == -1) {
-                    sb.append("\"auto\"");
-                } else {
-                    sb.append(interval);
-                }
-            }
+            Axis.encodeJSON(sb, interval);
         }
 
         /**
@@ -977,6 +978,18 @@ public abstract class Axis extends VisiblePart implements Wrapped, Clickable {
         }
     }
 
+    private static void encodeJSON(StringBuilder sb, int interval) {
+        if(interval >= -1) {
+            ComponentPart.addComma(sb);
+            sb.append("\"interval\":");
+            if(interval == -1) {
+                sb.append("\"auto\"");
+            } else {
+                sb.append(interval);
+            }
+        }
+    }
+
     /**
      * Represents the grid-areas drawn by the axis.
      *
@@ -995,15 +1008,7 @@ public abstract class Axis extends VisiblePart implements Wrapped, Clickable {
         @Override
         public void encodeJSON(StringBuilder sb) {
             super.encodeJSON(sb);
-            if(interval >= -1) {
-                ComponentPart.addComma(sb);
-                sb.append("\"interval\":");
-                if(interval == -1) {
-                    sb.append("\"auto\"");
-                } else {
-                    sb.append(interval);
-                }
-            }
+            Axis.encodeJSON(sb, interval);
         }
 
         /**

@@ -35,7 +35,7 @@ public class Test extends VerticalLayout {
     public Test() {
         setSizeFull();
         soChart.setSizeFull();
-        soChart.debug(false, true, true);
+        soChart.debug(false, false, true);
         drawMenu();
     }
 
@@ -100,13 +100,9 @@ public class Test extends VerticalLayout {
 
         // Plot the project on a Gantt Chart
         GanttChart gc = new GanttChart(project);
-        gc.setClickable(true);
 
         // Add the Gantt Chart to our chart component
         soChart.add(gc);
-
-        // Click event
-        soChart.addClickListener(gc, e -> notify("Event: " + e));
     }
 
     private static void lineChart(SOChart soChart) {
@@ -127,7 +123,7 @@ public class Test extends VerticalLayout {
         // Line chart needs a coordinate system to plot on
         // We need Number-type for both X and Y axes in this case
         XAxis xAxis = new XAxis(DataType.NUMBER);
-        xAxis.setClickable(true);
+        xAxis.setAllowEvents(true);
         YAxis yAxis = new YAxis(DataType.NUMBER);
         RectangularCoordinate rc = new RectangularCoordinate(xAxis, yAxis);
         lineChart.plotOn(rc);
@@ -136,9 +132,9 @@ public class Test extends VerticalLayout {
         soChart.add(lineChart, new Title("Sample Line Chart"));
 
         // Click event
-        soChart.addClickListener(lineChart, e -> notify("Event: " + e));
-        soChart.addClickListener(e -> notify("Empty space: " + e));
-        soChart.addClickListener(xAxis, e -> notify("X-Axis: " + e));
+        soChart.addListener(lineChart, ChartEventType.Click, e -> notify("Event: " + e));
+        soChart.addListener(ChartEventType.Click, e -> notify("Empty space: " + e));
+        soChart.addListener(xAxis, ChartEventType.Click, e -> notify("X-Axis: " + e));
     }
 
     private static void notify(String message) {
@@ -461,17 +457,10 @@ public class Test extends VerticalLayout {
         GraphData.XYNode n2 = new GraphData.XYNode("Node 2", 50, 120);
         GraphData.XYNode n3 = new GraphData.XYNode("Node 3", 150, 150);
         GraphData.XYNode n4 = new GraphData.XYNode("Node 4", 200, 80);
-        n1.connectTo(n2);
+        n1.connectTo(n2).connectTo(n3).connectTo(n4);
         n1.connectTo(n3);
         n1.connectTo(n4);
         n2.connectTo(n1);
-        n2.connectTo(n3);
-        n2.connectTo(n4);
-        n3.connectTo(n1);
-        n3.connectTo(n2);
-        n3.connectTo(n4);
-        n4.connectTo(n1);
-        n4.connectTo(n2);
         n4.connectTo(n3);
         g.addNode(n1, n2, n3, n4);
 

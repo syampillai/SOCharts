@@ -46,11 +46,6 @@ public class XRangeChart<X, Y> implements ComponentGroup {
     private boolean showProgressLabel = false;
     private DataZoom xZoom, yZoom;
 
-    @Override
-    public boolean matchSource(ChartEvent event) {
-        return Clickable.matchSource(event, xAxis, yAxis, chart, chart, xZoom, yZoom);
-    }
-
     /**
      * Add a data value.
      *

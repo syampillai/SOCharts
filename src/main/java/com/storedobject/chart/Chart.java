@@ -43,7 +43,7 @@ import java.util.function.Function;
  *
  * @author Syam
  */
-public class Chart extends AbstractPart implements Component, HasData, HasAnimation, HasEmphasis, Clickable {
+public class Chart extends AbstractPart implements Component, HasData, HasAnimation, HasEmphasis {
 
     List<Axis> axes;
     private ChartType type = ChartType.Line;
@@ -59,7 +59,6 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
     private MarkArea markArea;
     private Animation animation;
     private Emphasis emphasis;
-    private boolean clickable = true;
     private SOChart soChart;
 
     /**
@@ -195,26 +194,6 @@ public class Chart extends AbstractPart implements Component, HasData, HasAnimat
      */
     protected int dataValueIndex() {
         return -1;
-    }
-
-    @Override
-    public void setClickable(boolean clickable) {
-        this.clickable = clickable;
-    }
-
-    @Override
-    public boolean isClickable() {
-        return clickable;
-    }
-
-    @Override
-    public String getClickKeyName() {
-        return "silent";
-    }
-
-    @Override
-    public boolean getClickValue() {
-        return !clickable;
     }
 
     @Override

@@ -946,6 +946,19 @@ public class GraphData<N extends GraphData.Node> {
             this.destinationNode = destinationNode;
         }
 
+        /**
+         * Establishes a connection from the current destination node of this {@code Edge}
+         * to the specified target node by creating or retrieving an edge between them.
+         *
+         * @param target The target {@code Node} to which a connection is to be made.
+         *               May not be null.
+         * @return The {@code Edge} object representing the connection to the target node,
+         *         or {@code null} if the target node is null.
+         */
+        public Edge connectTo(Node target) {
+            return destinationNode.connectTo(target);
+        }
+
         @Override
         public void encodeJSON(StringBuilder sb) {
             sb.append('{');

@@ -22,8 +22,7 @@ export class SOChart extends LitElement {
     constructor() {
         super();
         this.idChart = null;
-        this.clickHandler1 = null;
-        this.clickHandler2 = null;
+        this.events = new Map();
         this.data = [];
         this.allOptions = null;
         this.minw = "5vw";
@@ -81,7 +80,7 @@ export class SOChart extends LitElement {
         if(this.chart == null) {
             return;
         }
-        this.chart.enableClickEvents(false);
+        this._clearEvents();
         this.chart.clear();
     }
 
@@ -99,11 +98,11 @@ export class SOChart extends LitElement {
             return;
         }
         this.destroyChart();
-        this.updateChart(false, this.allOptions, theme, locale, renderer, this.clickHandler1 != null,
+        this.updateChart(false, this.allOptions, theme, locale, renderer,
             this.debugData, this.debugOptions, this.debugEvent);
     }
 
-    updateChart(full, options, theme, locale, renderer, enableClicks, debugData, debugOptions, debugEvent) {
+    updateChart(full, options, theme, locale, renderer, debugData, debugOptions, debugEvent) {
         this.debug(debugData, debugOptions, debugEvent);
         if(full || !this.allOptions) {
             this.allOptions = options;
@@ -123,7 +122,7 @@ export class SOChart extends LitElement {
             console.log(json);
         }
         this.chart.setOption(json);
-        this.enableClickEvents(enableClicks);
+        this.$server.sendEvents(0);
     }
 
     clearData() {
@@ -189,34 +188,66 @@ export class SOChart extends LitElement {
     }
 
     // noinspection JSUnusedGlobalSymbols
-    enableClickEvents(enable) {
+    defineSOEvent(id, type, params) {
+        if(!this.chart) {
+            this.$server.sendEvents(0);
+            return;
+        }
+        const old = this.events.get(id);
+        if(old) {
+            this.undefineSOEvent(id);
+        }
+        let handler;
+        if(id < 0) {
+            handler = e => {
+                if(this.debugEvent) {
+                    console.log(e);
+                }
+                this.$server.onEvent(id, "", 0, "", "", "", "");
+            };
+            this.chart.getZr().on(type, handler);
+        } else {
+            handler = e => {
+                if(this.debugEvent) {
+                    console.log(e);
+                }
+                this.$server.onEvent(id, e.componentType, e.componentIndex, e.componentSubType, e.seriesId,
+                    e.targetType, JSON.stringify(e.value));
+            };
+            this.chart.on(type, JSON.parse(params), handler);
+        }
+        this.events.set(id, { type: type, handler: handler});
+        this.$server.sendEvents(id);
+    }
+
+    // noinspection JSUnusedGlobalSymbols
+    undefineSOEvent(id) {
         if(!this.chart) {
             return;
         }
-        if(enable) {
-            if(!this.clickHandler1) {
-                this.clickHandler1 = e => {
-                    if(this.debugEvent) {
-                        console.log(e);
-                    }
-                    this.$server.onClick(e.componentType, e.componentIndex, e.componentSubType, e.seriesId, e.targetType, JSON.stringify(e.value));
-                };
-                this.chart.on('click', this.clickHandler1);
-                this.clickHandler2 = e => {
-                    if(!e.target) {
-                        this.$server.onClick("", 0, "", "", "", "");
-                    }
-                };
-                this.chart.getZr().on('click', this.clickHandler2);
+        const e = this.events.get(id);
+        if(e) {
+            if(id < 0) {
+                this.chart.getZr().off(e.type, e.handler);
+            } else {
+                this.chart.off(e.type, e.handler);
             }
-        } else {
-            if(this.clickHandler2) {
-                this.chart.off('click', this.clickHandler1);
-                this.clickHandler1 = null;
-                this.chart.getZr().off('click', this.clickHandler2);
-                this.clickHandler2 = null;
-            }
+            this.events.delete(id);
         }
+    }
+
+    _clearEvents() {
+        if(!this.chart) {
+            return;
+        }
+        this.events.forEach((v, k, m) => {
+            if(k < 0) {
+                this.chart.getZr().off(v.type, v.handler);
+            } else {
+                this.chart.off(v.type, v.handler);
+            }
+        })
+        this.events.clear();
     }
 
     _stuff(obj) {
