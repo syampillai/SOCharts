@@ -12,10 +12,15 @@ public class VisualMap implements Component, HasPosition {
 
     private int serial;
     private final long id = ID.newID();
-    private boolean continuous = true, calculable = true, vertical = false;
+	private boolean continuous = true;
+	private boolean calculable = true;
+	private boolean vertical = false;
+	private boolean show = true;
     private Chart chart;
     private Position position = new Position();
-    private Number min, max;
+	private Number min;
+	private Number max;
+	private InRange inRange;
 
     /**
      * Constructor.
@@ -71,11 +76,13 @@ public class VisualMap implements Component, HasPosition {
         if(min != null) {
             ComponentPart.encode(sb, "min", min);
         }
-        if(min != null) {
+		if (max != null) {
             ComponentPart.encode(sb, "max", max);
         }
-        ComponentPart.encode(sb, "orient", vertical ? "vertical" : "horizontal");
-        ComponentPart.encode(sb, null, position);
+		ComponentPart.encode(sb, "orient", vertical ? "vertical" : "horizontal");
+		ComponentPart.encode(sb, null, position);
+		ComponentPart.encode(sb, "show", show);
+		ComponentPart.encode(sb, "inRange", inRange);
     }
 
     /**
@@ -206,4 +213,21 @@ public class VisualMap implements Component, HasPosition {
     public void setMax(Number max) {
         this.max = max;
     }
+
+	public boolean getShow() {
+		return show;
+	}
+
+	public void setShow(boolean show) {
+		this.show = show;
+	}
+
+	public InRange getInRange() {
+		return inRange;
+	}
+
+	public void setInRange(InRange inRange) {
+		this.inRange = inRange;
+	}
+
 }
