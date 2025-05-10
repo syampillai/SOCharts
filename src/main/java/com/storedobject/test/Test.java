@@ -132,9 +132,10 @@ public class Test extends VerticalLayout {
         soChart.add(lineChart, new Title("Sample Line Chart"));
 
         // Click event
-        soChart.addListener(lineChart, ChartEventType.Click, e -> notify("Event: " + e));
-        soChart.addListener(ChartEventType.Click, e -> notify("Empty space: " + e));
-        soChart.addListener(xAxis, ChartEventType.Click, e -> notify("X-Axis: " + e));
+        //soChart.addListener(lineChart, ChartEventType.Click, e -> notify("Event: " + e));
+        //soChart.addListener(ChartEventType.Click, e -> notify("Empty space: " + e));
+        //soChart.addListener(xAxis, ChartEventType.Click, e -> notify("X-Axis: " + e));
+        soChart.addListener(soChart.getDefaultLegend(), ChartEventType.Click, e -> notify("Legend: " + e));
     }
 
     private static void notify(String message) {

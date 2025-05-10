@@ -21,6 +21,7 @@ import com.storedobject.helper.LitComponentWithSize;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.shared.Registration;
 
 import java.util.*;
@@ -146,11 +147,19 @@ public class SOChart extends LitComponentWithSize {
         }
     }
 
+    /**
+     * This method is invoked when SOChart wants to show some errors. The default implementation shows a notification
+     * for 1 minute. However, you can override this method to customize the error handling.
+     * @param message The error message to be shown.
+     */
     @ClientCallable
-    private void onEvent(int id, String componentType, int componentIndex, String componentSubtype, String seriesId,
+    public void onError(String message) {
+        Notification.show(message, 60000, Notification.Position.MIDDLE, true);
+    }
+
+    @ClientCallable
+    private void onMouseEvent(int id, String componentType, int componentIndex, String componentSubtype, String seriesId,
                          String targetType, String value) {
-        System.out.printf("Chart clicked - Id: %d, Component Type: %s, Index: %d, Sub-type: %s, Serial Id: %s, Target Type: %s, Value: %s%n",
-                id, componentType, componentIndex, componentSubtype, seriesId, targetType, value);
         EventHandler eventHandler = eventHandles.get(id);
         if(eventHandler == null) {
             return;
@@ -183,7 +192,7 @@ public class SOChart extends LitComponentWithSize {
     }
 
     /**
-     * Adds an event listener to the chart that triggers when an event occurs on the chart where no chart
+     * Adds an event listener to the chart that triggers when a mouse event occurs on the chart where no chart
      * element exists (empty areas).
      *
      * @param listener the event listener to handle the chart events
@@ -1069,7 +1078,7 @@ public class SOChart extends LitComponentWithSize {
             }
             EventHandler eh = eventHandles.get(minId);
             String parameters = eh.componentPart == null ? "" : eh.componentPart.getEventParameters(eh.type);
-            executeJS("defineSOEvent", eh.id, eh.type.getName(), parameters);
+            executeJS("defineSOEvent", eh.id, eh.type.getName(), eh.type.getCategory(), parameters);
         }
     }
 }

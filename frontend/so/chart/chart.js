@@ -107,7 +107,13 @@ export class SOChart extends LitElement {
         if(full || !this.allOptions) {
             this.allOptions = options;
         }
-        const json = JSON.parse(options);
+        let json;
+        try {
+            json = JSON.parse(options);
+        } catch (e) {
+            this.$server.onError(options + " \nError: " + e.message);
+            return;
+        }
         this._stuff(json);
         if(!this.chart) {
             this.chart = echarts.init(this.shadowRoot.getElementById(this.idChart), theme, {
@@ -153,7 +159,14 @@ export class SOChart extends LitElement {
             d = {};
             this.data[index] = d;
         }
-        d["d" + serial] = JSON.parse(data)["d"];
+        let json;
+        try {
+            json = JSON.parse(data);
+        } catch (e) {
+            this.$server.onError(data + " \nError in data: " + e.message);
+            return;
+        }
+        d["d" + serial] = json["d"];
     }
 
     // noinspection JSUnusedGlobalSymbols
@@ -188,7 +201,7 @@ export class SOChart extends LitElement {
     }
 
     // noinspection JSUnusedGlobalSymbols
-    defineSOEvent(id, type, params) {
+    defineSOEvent(id, type, category, params) {
         if(!this.chart) {
             this.$server.sendEvents(0);
             return;
@@ -200,20 +213,28 @@ export class SOChart extends LitElement {
         let handler;
         if(id < 0) {
             handler = e => {
-                if(this.debugEvent) {
-                    console.log(e);
+                if(!e.target) {
+                    if (this.debugEvent) {
+                        console.log(e);
+                    }
+                    this.$server.onMouseEvent(id, "", 0, "", "", "", "");
                 }
-                this.$server.onEvent(id, "", 0, "", "", "", "");
             };
             this.chart.getZr().on(type, handler);
         } else {
-            handler = e => {
-                if(this.debugEvent) {
-                    console.log(e);
-                }
-                this.$server.onEvent(id, e.componentType, e.componentIndex, e.componentSubType, e.seriesId,
-                    e.targetType, JSON.stringify(e.value));
-            };
+            if(category === 0) {
+                handler = e => {
+                    if (this.debugEvent) {
+                        console.log(e);
+                    }
+                    this.$server.onMouseEvent(id, e.componentType, e.componentIndex, e.componentSubType, e.seriesId,
+                        e.targetType, JSON.stringify(e.value));
+                };
+            } else {
+                this.$server.onError("Event category " + category + " is not supported");
+                this.$server.sendEvents(id);
+                return;
+            }
             this.chart.on(type, JSON.parse(params), handler);
         }
         this.events.set(id, { type: type, handler: handler});

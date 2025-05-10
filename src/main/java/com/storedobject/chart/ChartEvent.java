@@ -62,6 +62,7 @@ public class ChartEvent {
 
     /**
      * Retrieves the additional data associated with the event.
+     * <p>Note: The associated data depends on the type of event and event category.</p>
      *
      * @return The data associated with the event.
      */

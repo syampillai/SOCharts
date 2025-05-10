@@ -256,13 +256,17 @@ public interface ComponentPart extends ComponentProperty {
 
     /**
      * If a part can handle certain types of events (like click, double-click, etc.), it should return
-     * the registration parameters for it. The default implementation returns <code>null</code>,
-     * meaning it can't handle it.
+     * the registration parameters for it. The default implementation returns the id value of the part if it is
+     * available (non-zero), otherwise it returns null.
      *
      * @param ignoredEventType Event type.
      * @return A string in JSON format that echarts can understand.
      */
     default String getEventParameters(ChartEventType ignoredEventType) {
-        return null;
+        long id = getId();
+        if(id == 0) {
+            return null;
+        }
+        return "{\"id\":\"" + id + "\",\"componentType\":\"legend\"}";
     }
 }

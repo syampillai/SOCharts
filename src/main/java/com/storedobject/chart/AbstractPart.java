@@ -54,7 +54,7 @@ public abstract class AbstractPart implements ComponentPart {
     public void encodeJSON(StringBuilder sb) {
         ComponentPart.encode(sb, "name", getName());
         if(hasId() && !(this instanceof Wrapped)) {
-            ComponentPart.encode(sb, "id", getId());
+            ComponentPart.encode(sb, "id", "" + getId());
         }
         if(this instanceof HasPosition h) {
             ComponentPart.encode(sb, null, h.getPosition(false));
