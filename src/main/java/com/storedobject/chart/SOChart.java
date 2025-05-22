@@ -159,12 +159,12 @@ public class SOChart extends LitComponentWithSize {
 
     @ClientCallable
     private void onMouseEvent(int id, String componentType, int componentIndex, String componentSubtype, String seriesId,
-                         String targetType, String value) {
+                              String targetType, String value) {
         EventHandler eventHandler = eventHandles.get(id);
         if(eventHandler == null) {
             return;
         }
-        ChartEvent event = new ChartEvent(this, eventHandler.type, eventHandler.componentPart);
+        Event event = new Event(this, eventHandler.type, eventHandler.userData);
         event.addData("type", partType(componentType));
         event.addData("serial", componentIndex);
         String part = componentSubtype;
@@ -176,30 +176,30 @@ public class SOChart extends LitComponentWithSize {
         eventHandler.listener.onEvent(event);
     }
 
-    /**
-     * Adds an event listener for a specific component part. The part should generate events from echarts.
-     *
-     * @param componentPart The component part that can generate an event in echarts.
-     * @param listener the functional interface that handles the click events
-     * @return a Registration object that can be used to remove the added click listener
-     */
-    public Registration addListener(ComponentPart componentPart, ChartEventType eventType, ChartEventListener listener) {
-        if(componentPart.getEventParameters(eventType) == null) {
-            return null;
+    @ClientCallable
+    private void onLegendEvent(int id) {
+        EventHandler eventHandler = eventHandles.get(id);
+        if(eventHandler == null) {
+            return;
         }
-        EventHandler eh = new EventHandler(listener, eventType, componentPart);
-        return () -> eventHandles.removeHandler(eh);
+        Event event = new Event(this, eventHandler.type, eventHandler.userData);
+        eventHandler.listener.onEvent(event);
     }
 
-    /**
-     * Adds an event listener to the chart that triggers when a mouse event occurs on the chart where no chart
-     * element exists (empty areas).
-     *
-     * @param listener the event listener to handle the chart events
-     * @return a Registration object that can be used to remove the listener
-     */
-    public Registration addListener(ChartEventType eventType, ChartEventListener listener) {
-        EventHandler eh = new EventHandler(listener, eventType, null);
+    public Registration addListener(EventType eventType, EventListener listener) {
+        return addListener(eventType, listener, null, null);
+    }
+
+    public Registration addListener(EventType eventType, EventListener listener, Object userData) {
+        return addListener(eventType, listener, null, userData);
+    }
+
+    public Registration addListener(EventType eventType, EventListener listener, String parameters) {
+        return addListener(eventType, listener, parameters, null);
+    }
+
+    public Registration addListener(EventType eventType, EventListener listener, String parameters, Object userData) {
+        EventHandler eh = new EventHandler(listener, eventType, parameters, userData);
         return () -> eventHandles.removeHandler(eh);
     }
 
@@ -1024,19 +1024,24 @@ public class SOChart extends LitComponentWithSize {
     private final class EventHandler {
 
         private final int id;
-        private final ChartEventListener listener;
-        private final ChartEventType type;
-        private final ComponentPart componentPart;
+        private final EventListener listener;
+        private final EventType type;
+        private final Object userData;
+        private final String parameters;
 
-        private EventHandler(ChartEventListener listener, ChartEventType type, ComponentPart componentPart) {
+        private EventHandler(EventListener listener, EventType type, String parameters, Object userData) {
+            if(type == null) {
+                type = EventType.BlankAreaClick;
+            }
             int i = eventId.incrementAndGet();
-            if(componentPart == null) {
-                i = -i;
+            if(parameters == null || parameters.isEmpty() || type.getCategory() == EventCategory.BlankArea) {
+                parameters = "";
             }
             id = i;
             this.listener = listener;
             this.type = type;
-            this.componentPart = componentPart;
+            this.parameters = parameters;
+            this.userData = userData;
             eventHandles.put(id, this);
         }
 
@@ -1077,8 +1082,7 @@ public class SOChart extends LitComponentWithSize {
                 return;
             }
             EventHandler eh = eventHandles.get(minId);
-            String parameters = eh.componentPart == null ? "" : eh.componentPart.getEventParameters(eh.type);
-            executeJS("defineSOEvent", eh.id, eh.type.getName(), eh.type.getCategory(), parameters);
+            executeJS("defineSOEvent", eh.id, eh.type.getName(), eh.type.getCategory().ordinal(), eh.parameters);
         }
     }
 }

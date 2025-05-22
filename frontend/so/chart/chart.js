@@ -211,7 +211,7 @@ export class SOChart extends LitElement {
             this.undefineSOEvent(id);
         }
         let handler;
-        if(id < 0) {
+        if(category === 0) {
             handler = e => {
                 if(!e.target) {
                     if (this.debugEvent) {
@@ -222,7 +222,7 @@ export class SOChart extends LitElement {
             };
             this.chart.getZr().on(type, handler);
         } else {
-            if(category === 0) {
+            if(category === 1) {
                 handler = e => {
                     if (this.debugEvent) {
                         console.log(e);
@@ -230,12 +230,31 @@ export class SOChart extends LitElement {
                     this.$server.onMouseEvent(id, e.componentType, e.componentIndex, e.componentSubType, e.seriesId,
                         e.targetType, JSON.stringify(e.value));
                 };
+            } else if(category === 2) {
+                handler = e => {
+                    if (this.debugEvent) {
+                        console.log(e);
+                    }
+                    this.$server.onLegendEvent(id);
+                };
             } else {
                 this.$server.onError("Event category " + category + " is not supported");
                 this.$server.sendEvents(id);
                 return;
             }
-            this.chart.on(type, JSON.parse(params), handler);
+            if(params === "") {
+                this.chart.on(type, handler);
+            } else {
+                let json;
+                try {
+                    json = JSON.parse(params);
+                } catch (e) {
+                    this.$server.onError(params + " \nEvent parameter error: " + e.message);
+                    this.$server.sendEvents(id);
+                    return;
+                }
+                this.chart.on(type, json, handler);
+            }
         }
         this.events.set(id, { type: type, handler: handler});
         this.$server.sendEvents(id);

@@ -35,7 +35,7 @@ public class Test extends VerticalLayout {
     public Test() {
         setSizeFull();
         soChart.setSizeFull();
-        soChart.debug(false, false, true);
+        soChart.debug(false, true, true);
         drawMenu();
     }
 
@@ -135,7 +135,7 @@ public class Test extends VerticalLayout {
         //soChart.addListener(lineChart, ChartEventType.Click, e -> notify("Event: " + e));
         //soChart.addListener(ChartEventType.Click, e -> notify("Empty space: " + e));
         //soChart.addListener(xAxis, ChartEventType.Click, e -> notify("X-Axis: " + e));
-        soChart.addListener(soChart.getDefaultLegend(), ChartEventType.Click, e -> notify("Legend: " + e));
+        //soChart.addListener(soChart.getDefaultLegend(), EventType.Legend, e -> notify("Legend: " + e));
     }
 
     private static void notify(String message) {
@@ -237,10 +237,11 @@ public class Test extends VerticalLayout {
         soChart.add(rc1, rc2, rc3, rc4);
 
         // changing order of adding charts to SOChart container is a possible workaround but other charts Xaxis
-        // get distorted especially in the case of dynamic data pust
+        // get distorted especially in the case of dynamic data push
 
         // soChart.add(rc4, rc2, rc3, rc1);
 
+        //soChart.addListener(lineChart, EventType.Click, e -> notify("Legend: " + e));
     }
 
     private static void radarChart(SOChart soChart) {

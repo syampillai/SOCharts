@@ -40,7 +40,7 @@ public abstract class AbstractTask {
     /**
      * Is this a milestone task? (Not applicable to activities).
      *
-     * @return True if duration is zero.
+     * @return True if the duration is zero.
      */
     public boolean isMilestone() {
         return false;
@@ -148,7 +148,7 @@ public abstract class AbstractTask {
     }
 
     /**
-     * Get the font-size used to render the extra information of group (Applicable only if this is a group).
+     * Get the font-size used to render the extra information of a group (Applicable only if this is a group).
      *
      * @return Font-size. Default is 9.
      */
@@ -157,7 +157,7 @@ public abstract class AbstractTask {
     }
 
     /**
-     * Set the font size used to render the extra information of group (Applicable only if this is a group).
+     * Set the font size used to render the extra information of a group (Applicable only if this is a group).
      * <p>Note: You can also set different values for individual groups. See {@link AbstractTask#setFontSize(int)}
      * </p>
      *

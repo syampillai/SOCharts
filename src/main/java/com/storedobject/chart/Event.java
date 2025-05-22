@@ -10,25 +10,24 @@ import java.util.Map;
  *
  * @author Syam
  */
-public class ChartEvent {
+public final class Event {
 
     private final SOChart soChart;
-    private final ChartEventType type;
-    private final ComponentPart componentPart;
+    private final EventType type;
+    private final Object userData;
     private Map<String, Object> data;
 
     /**
-     * Constructs a new ChartEvent with the specified type and part ID.
-     * <p>Note: Component part will be null when the event happens in a blank area where no part exists.</p>
+     * Constructor.
      *
-     * @param soChart The {@code SOChart} instance associated with this event.
-     * @param type The type of the chart event. This determines the kind of event that occurred.
-     * @param componentPart The part of the chart associated with this event. This can be a chart.
+     * @param soChart The {@code SOChart} instance associated with the event.
+     * @param type The type of the event as a {@code ChartEventType}.
+     * @param userData The user-specific data associated with the event.
      */
-    public ChartEvent(SOChart soChart, ChartEventType type, ComponentPart componentPart) {
+    public Event(SOChart soChart, EventType type, Object userData) {
         this.soChart = soChart;
         this.type = type;
-        this.componentPart = componentPart;
+        this.userData = userData;
     }
 
     /**
@@ -45,19 +44,8 @@ public class ChartEvent {
      *
      * @return The type of the chart event as a {@code ChartEventType}.
      */
-    public ChartEventType getType() {
+    public EventType getType() {
         return type;
-    }
-
-    /**
-     * Retrieves the component part of the chart associated with this event.
-     * <p>Note: Component part will be null when the event happens in a blank area where no part exists.</p>
-     *
-     * @return The {@code ComponentPart} representing the specific part of the chart
-     *         linked to this chart event.
-     */
-    public ComponentPart getComponentPart() {
-        return componentPart;
     }
 
     /**
@@ -86,6 +74,24 @@ public class ChartEvent {
 
     @Override
     public String toString() {
-        return "Event(" + type + ", " + componentPart + ", " + data + ")";
+        return "Event(" + type + ", " + data + ")";
+    }
+
+    /**
+     * Sets the additional data associated with the event.
+     *
+     * @param data The data to be associated with the event.
+     */
+    public void setData(Map<String, Object> data) {
+        this.data = data;
+    }
+
+    /**
+     * Retrieves the user-specific data associated with the event.
+     *
+     * @return The user-specific data as an {@code Object}.
+     */
+    public Object getUserData() {
+        return userData;
     }
 }
