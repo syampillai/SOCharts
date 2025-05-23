@@ -28,6 +28,10 @@ public enum PointSymbolType {
      */
     CIRCLE,
     /**
+     * Empty circle.
+     */
+    EMPTY_CIRCLE("emptyCircle"),
+    /**
      * Rectangle.
      */
     RECTANGLE("rect"),
