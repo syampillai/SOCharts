@@ -710,7 +710,12 @@ public class SOChart extends LitComponentWithSize {
         if(count < 0) {
             throw new ChartException("Invalid data from " + data.className() + ": " + d);
         }
+        Integer oldCount = dataLengthMap.get(data.getSerial());
         dataLengthMap.put(data.getSerial(), count);
+        if(oldCount != null && count != oldCount) {
+            Integer oldIndex = datasetIndexMap.get(oldCount);
+            datasetIndexMap.put(count, oldIndex);
+        }
         executeJS(command + "Data", data.getSerial(), "{\"d\":" + d + "}", datasetIndex(data));
     }
 
