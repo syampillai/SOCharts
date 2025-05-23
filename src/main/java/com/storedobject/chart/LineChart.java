@@ -62,7 +62,7 @@ public class LineChart extends XYChart {
             sb.append(",\"step\":").append(stepped);
             stepped = null;
         }
-        if(pointSymbol != null) {
+        if(pointSymbol != null && pointSymbol.getType() != PointSymbolType.NONE) {
             pointSymbol.encodeJSON(sb);
         }
         ComponentPart.encode(sb,"connectNulls", connectNulls);
