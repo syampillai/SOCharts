@@ -135,7 +135,8 @@ public class Test extends VerticalLayout {
         //soChart.addListener(lineChart, ChartEventType.Click, e -> notify("Event: " + e));
         //soChart.addListener(ChartEventType.Click, e -> notify("Empty space: " + e));
         //soChart.addListener(xAxis, ChartEventType.Click, e -> notify("X-Axis: " + e));
-        //soChart.addListener(soChart.getDefaultLegend(), EventType.Legend, e -> notify("Legend: " + e));
+        soChart.addListener(EventType.Click, e -> notify("Clicked: " + e), lineChart);
+        soChart.addListener(EventType.Legend, e -> notify("Legend: " + e));
     }
 
     private static void notify(String message) {
@@ -241,7 +242,9 @@ public class Test extends VerticalLayout {
 
         // soChart.add(rc4, rc2, rc3, rc1);
 
-        //soChart.addListener(lineChart, EventType.Click, e -> notify("Legend: " + e));
+        soChart.addListener(EventType.Legend, e -> notify("Legend: " + e));
+        soChart.addListener(EventType.Click, e -> notify("Clicked: " + e), lineChart);
+        soChart.addListener(EventType.Click, e -> notify("Clicked: " + e), barChart2, 4);
     }
 
     private static void radarChart(SOChart soChart) {
@@ -466,7 +469,9 @@ public class Test extends VerticalLayout {
         n4.connectTo(n3);
         g.addNode(n1, n2, n3, n4);
 
-        soChart.add(new GraphChart(g));
+        GraphChart gc = new GraphChart(g);
+        soChart.add(gc);
+        soChart.addListener(EventType.Click, e -> notify("Clicked: " + e), gc, "edge");
     }
 
     private static void xyGraphChart(SOChart soChart) {
@@ -547,6 +552,8 @@ public class Test extends VerticalLayout {
 
         // Add to the chart display area
         soChart.add(chart);
+
+        soChart.addListener(EventType.Click, e -> notify("Click: " + e), chart);
     }
 
     private BoxplotData.Boxplot boxplotData(Random r) {

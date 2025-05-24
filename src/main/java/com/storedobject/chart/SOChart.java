@@ -159,7 +159,7 @@ public class SOChart extends LitComponentWithSize {
 
     @ClientCallable
     private void onMouseEvent(int id, String componentType, int componentIndex, String componentSubtype, String seriesId,
-                              String targetType, String value) {
+                              String seriesName, String targetType, String value, String dataType) {
         EventHandler eventHandler = eventHandles.get(id);
         if(eventHandler == null) {
             return;
@@ -173,31 +173,149 @@ public class SOChart extends LitComponentWithSize {
         }
         event.addData("part", part);
         event.addData("value", value);
+        if(seriesId != null && !seriesId.isEmpty()) {
+            event.addData("chartId", seriesId);
+        }
+        if(seriesName != null && !seriesName.isEmpty()) {
+            event.addData("chartName", seriesName);
+        }
+        if(dataType != null && !dataType.isEmpty()) {
+            event.addData("dataType", dataType);
+        }
         eventHandler.listener.onEvent(event);
     }
 
     @ClientCallable
-    private void onLegendEvent(int id) {
+    private void onLegendEvent(int id, String legendName, String legendSelection) {
         EventHandler eventHandler = eventHandles.get(id);
         if(eventHandler == null) {
             return;
         }
         Event event = new Event(this, eventHandler.type, eventHandler.userData);
+        event.addData("legendName", legendName);
+        event.addData("legendSelection", legendSelection);
         eventHandler.listener.onEvent(event);
     }
 
-    public Registration addListener(EventType eventType, EventListener listener) {
-        return addListener(eventType, listener, null, null);
+    /**
+     * Adds a listener for a specific event type to the given chart.
+     * This method allows monitoring of events by attaching a listener to the specified chart.
+     *
+     * @param eventType the type of event to listen for
+     * @param listener the listener to handle the event
+     * @param chart the chart instance to which the event listener is being added
+     * @return a Registration object that can be used to unregister the listener
+     */
+    public Registration addListener(EventType eventType, EventListener listener, Chart chart) {
+        return addListener(eventType, listener, chart, -1, null);
     }
 
+    /**
+     * Adds an event listener to the specified chart for the given event type.
+     *
+     * @param eventType the type of event to listen for
+     * @param listener the event listener to be added
+     * @param chart the chart to which the listener is attached
+     * @param dataType additional data type information needed for the listener
+     * @return a Registration object that can be used to manage the listener
+     */
+    public Registration addListener(EventType eventType, EventListener listener, Chart chart, String dataType) {
+        return addListener(eventType, listener, chart, -1, dataType);
+    }
+
+    /**
+     * Adds a listener for the specified event type to the given chart.
+     * The listener can be tied to a specific data index for finer control.
+     *
+     * @param eventType the type of event to listen for
+     * @param listener the event listener to be invoked when the event occurs
+     * @param chart the chart to which the listener is being attached
+     * @param dataIndex the index of the data the listener should target, or -1 for no specific index
+     * @return a Registration object that can be used to unregister the listener
+     */
+    public Registration addListener(EventType eventType, EventListener listener, Chart chart, int dataIndex) {
+        return addListener(eventType, listener, chart, dataIndex, null);
+    }
+
+    /**
+     * Adds an event listener to a specified event type on the given chart, with additional
+     * options for specifying data index and data type.
+     *
+     * @param eventType the type of event to listen for
+     * @param listener the event listener to be added
+     * @param chart the chart instance for which the listener is being added
+     * @param dataIndex the index of the data point in the series; use -1 if not applicable
+     * @param dataType an optional string specifying the type of data; can be null or empty (when the chart has more
+     *                 than one type of associated data, this could be specified to identify the data such as "edge",
+     *                 "node" etc, in {@link GraphChart}.
+     * @return a Registration object representing the registration of the listener, which can
+     *         be used to remove the listener later
+     */
+    public Registration addListener(EventType eventType, EventListener listener, Chart chart, int dataIndex,
+                                    String dataType) {
+        StringBuilder p = new StringBuilder();
+        if(chart != null) {
+            p.append("{\"seriesId\":\"").append(chart.getId()).append('"');
+            if(dataIndex >= 0) {
+                p.append(",\"dataIndex\":").append(dataIndex);
+            }
+            if(dataType != null && !dataType.isEmpty()) {
+                p.append(",\"dataType\":\"").append(dataType).append("\"");
+            }
+            p.append("}");
+        }
+        return addListener(eventType, listener, p.isEmpty() ? null : p.toString(), chart);
+    }
+
+    /**
+     * Adds a listener to the specified event type. The listener will be triggered
+     * whenever the specified event occurs.
+     *
+     * @param eventType the type of the event for which the listener should be registered
+     * @param listener the listener to be executed when the event occurs
+     * @return a Registration instance that can be used to unregister the listener
+     */
+    public Registration addListener(EventType eventType, EventListener listener) {
+        return addListener(eventType, listener, (String) null, null);
+    }
+
+    /**
+     * Adds a listener for a specified event type. The listener will be notified when events of the given type occur.
+     *
+     * @param eventType the type of event to listen for
+     * @param listener the listener to handle the event
+     * @param userData optional user data to associate with the event listener, it can be accessed later by the
+     *                 listener via {@link Event#getUserData()}
+     * @return a Registration object that can be used to deregister the listener
+     */
     public Registration addListener(EventType eventType, EventListener listener, Object userData) {
         return addListener(eventType, listener, null, userData);
     }
 
+    /**
+     * Registers an event listener for a specified event type with optional parameters.
+     *
+     * @param eventType the type of the event the listener is to be registered for
+     * @param listener the listener that will handle the event
+     * @param parameters optional parameters associated with the event listener, if present, it should be a valid
+     *                   JSON string supported by echarts.
+     * @return a {@code Registration} object that can be used to remove the event listener
+     */
     public Registration addListener(EventType eventType, EventListener listener, String parameters) {
         return addListener(eventType, listener, parameters, null);
     }
 
+    /**
+     * Adds a listener for a specific event type, allowing custom parameters and optional user data to be passed.
+     *
+     * @param eventType the type of event to listen for
+     * @param listener the listener that will handle the event
+     * @param parameters optional parameters associated with the event listener, if present, it should be a valid
+     *                   JSON string supported by echarts.
+     * @param userData optional user data to associate with the event listener, it can be accessed later by the
+     *                 listener via {@link Event#getUserData()}
+     * @return a Registration object that can be used to remove the listener
+     */
     public Registration addListener(EventType eventType, EventListener listener, String parameters, Object userData) {
         EventHandler eh = new EventHandler(listener, eventType, parameters, userData);
         return () -> eventHandles.removeHandler(eh);

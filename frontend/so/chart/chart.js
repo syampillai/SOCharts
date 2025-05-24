@@ -217,7 +217,7 @@ export class SOChart extends LitElement {
                     if (this.debugEvent) {
                         console.log(e);
                     }
-                    this.$server.onMouseEvent(id, "", 0, "", "", "", "");
+                    this.$server.onMouseEvent(id, "", 0, "", "", "", "", "", "");
                 }
             };
             this.chart.getZr().on(type, handler);
@@ -228,14 +228,14 @@ export class SOChart extends LitElement {
                         console.log(e);
                     }
                     this.$server.onMouseEvent(id, e.componentType, e.componentIndex, e.componentSubType, e.seriesId,
-                        e.targetType, JSON.stringify(e.value));
+                        e.seriesName, e.targetType, JSON.stringify(e.data), e.dataType);
                 };
             } else if(category === 2) {
                 handler = e => {
                     if (this.debugEvent) {
                         console.log(e);
                     }
-                    this.$server.onLegendEvent(id);
+                    this.$server.onLegendEvent(id, e.name, JSON.stringify(e.selected));
                 };
             } else {
                 this.$server.onError("Event category " + category + " is not supported");

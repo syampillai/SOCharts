@@ -74,7 +74,11 @@ public final class Event {
 
     @Override
     public String toString() {
-        return "Event(" + type + ", " + data + ")";
+        String e = type + ", " + data;
+        if(userData != null) {
+            e += ", " + userData;
+        }
+        return "Event(" + e + ")";
     }
 
     /**
