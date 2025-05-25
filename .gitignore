@@ -39,3 +39,4 @@ build/
 /frontend/generated/
 /zipTarget/
 /src/main/bundles/
+/node_modules/
