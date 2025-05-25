@@ -159,13 +159,17 @@ public class SOChart extends LitComponentWithSize {
 
     @ClientCallable
     private void onMouseEvent(int id, String componentType, int componentIndex, String componentSubtype, String seriesId,
-                              String seriesName, String targetType, String value, String dataType) {
+                              String seriesName, String targetType, String value, String dataType, String seriesType,
+                              String color) {
         EventHandler eventHandler = eventHandles.get(id);
         if(eventHandler == null) {
             return;
         }
         Event event = new Event(this, eventHandler.type, eventHandler.userData);
-        event.addData("type", partType(componentType));
+        if(componentType != null && !componentType.isEmpty()) {
+            event.addData("typeName", componentType.equals("series") ? "chart" : componentType);
+            event.addData("type", partType(componentType));
+        }
         event.addData("serial", componentIndex);
         String part = componentSubtype;
         if(part == null || part.isEmpty()) {
@@ -182,6 +186,12 @@ public class SOChart extends LitComponentWithSize {
         if(dataType != null && !dataType.isEmpty()) {
             event.addData("dataType", dataType);
         }
+        if(seriesType != null && !seriesType.isEmpty()) {
+            event.addData("chartType", seriesType);
+        }
+        if(color != null && !color.isEmpty()) {
+            event.addData("color", color);
+        }
         eventHandler.listener.onEvent(event);
     }
 
@@ -195,6 +205,28 @@ public class SOChart extends LitComponentWithSize {
         event.addData("legendName", legendName);
         event.addData("legendSelection", legendSelection);
         eventHandler.listener.onEvent(event);
+    }
+
+    /**
+     * Dispatch an action to the chart.
+     * @param parameters Parameters to be passed to the action. It must be a valid JSON string supported by echarts's
+     *                   dispatchAction method.
+     */
+    public void dispatchAction(String parameters) {
+        executeJS("dispatchAction", parameters);
+    }
+
+    /**
+     * Sets the visibility of a chart by sending the appropriate action. This has the same effect of clicking on the
+     * legend to hide/show the chart. However, this method is useful when you want to set the visibility of a chart
+     * programmatically.
+     *
+     * @param visible a boolean indicating whether the chart should be visible (true) or hidden (false)
+     * @param chart the chart whose visibility is to be set
+     */
+    public void setVisible(boolean visible, Chart chart) {
+        dispatchAction("{\"type\":\"legend" + (visible ? "" : "Un") + "Select\",\"name\":\""
+                + chart.getName() + "\"}");
     }
 
     /**

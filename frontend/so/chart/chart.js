@@ -217,7 +217,7 @@ export class SOChart extends LitElement {
                     if (this.debugEvent) {
                         console.log(e);
                     }
-                    this.$server.onMouseEvent(id, "", 0, "", "", "", "", "", "");
+                    this.$server.onMouseEvent(id, "", 0, "", "", "", "", "", "", "", "");
                 }
             };
             this.chart.getZr().on(type, handler);
@@ -228,7 +228,7 @@ export class SOChart extends LitElement {
                         console.log(e);
                     }
                     this.$server.onMouseEvent(id, e.componentType, e.componentIndex, e.componentSubType, e.seriesId,
-                        e.seriesName, e.targetType, JSON.stringify(e.data), e.dataType);
+                        e.seriesName, e.targetType, JSON.stringify(e.data), e.dataType, e.seriesType, e.color);
                 };
             } else if(category === 2) {
                 handler = e => {
@@ -273,6 +273,21 @@ export class SOChart extends LitElement {
                 this.chart.off(e.type, e.handler);
             }
             this.events.delete(id);
+        }
+    }
+
+    // noinspection JSUnusedGlobalSymbols
+    dispatchAction(params) {
+        if(!this.chart) {
+            return;
+        }
+        let json;
+        try {
+            json = JSON.parse(params);
+            console.log(json);
+            this.chart.dispatchAction(json);
+        } catch (e) {
+            this.$server.onError(params + " \nAction parameter error: " + e.message);
         }
     }
 

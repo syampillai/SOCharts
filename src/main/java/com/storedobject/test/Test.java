@@ -135,9 +135,14 @@ public class Test extends VerticalLayout {
         //soChart.addListener(lineChart, ChartEventType.Click, e -> notify("Event: " + e));
         //soChart.addListener(ChartEventType.Click, e -> notify("Empty space: " + e));
         //soChart.addListener(xAxis, ChartEventType.Click, e -> notify("X-Axis: " + e));
-        soChart.addListener(EventType.Click, e -> notify("Clicked: " + e), lineChart);
-        soChart.addListener(EventType.Legend, e -> notify("Legend: " + e));
+        soChart.addListener(EventType.BlankAreaClick, e -> {
+            v = !v;
+            System.err.println("Visible: " + v);
+            soChart.setVisible(v, lineChart);
+        });
     }
+
+    private static boolean v = true;
 
     private static void notify(String message) {
         Notification.show(message);
@@ -342,6 +347,8 @@ public class Test extends VerticalLayout {
 
         // Add to the chart display area with a simple title
         soChart.add(lineChart, new Title("Sample Line Chart"));
+
+        soChart.addListener(EventType.Click, e -> notify("Clicked: " + e), lineChart);
     }
 
     private class ChartPush {
