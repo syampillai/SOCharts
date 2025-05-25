@@ -12,16 +12,16 @@ import java.util.stream.Stream;
  *
  * @author Syam
  */
-public class SankeyData extends AbstractData<SankeyChart.Node> implements SankeyDataProvider {
+public class SankeyData extends AbstractData<SankeyData.Node> implements SankeyDataProvider {
 
-    private final List<SankeyChart.Edge> edges = new ArrayList<>();
+    private final List<SankeyData.Edge> edges = new ArrayList<>();
 
     /**
      * Constructor.
      *
      * @param nodes Nodes to be added.
      */
-    public SankeyData(SankeyChart.Node... nodes) {
+    public SankeyData(SankeyData.Node... nodes) {
         super(DataType.OBJECT, nodes);
     }
 
@@ -31,8 +31,8 @@ public class SankeyData extends AbstractData<SankeyChart.Node> implements Sankey
      * @param edge {@link Edge} to be added. If the {@link Edge} contains {@link Node}s that are not part of this, it
      *                         will be automatically added.
      */
-    public void addEdge(SankeyChart.Edge edge) {
-        SankeyChart.Node from = edge.getFrom(), to = edge.getTo();
+    public void addEdge(SankeyData.Edge edge) {
+        SankeyData.Node from = edge.getFrom(), to = edge.getTo();
         if(from == null || to == null) {
             edges.add(edge);
             return;
@@ -47,12 +47,12 @@ public class SankeyData extends AbstractData<SankeyChart.Node> implements Sankey
     }
 
     @Override
-    public Stream<SankeyChart.Node> getNodes() {
+    public Stream<SankeyData.Node> getNodes() {
         return stream();
     }
 
     @Override
-    public Stream<SankeyChart.Edge> getEdges() {
+    public Stream<SankeyData.Edge> getEdges() {
         return edges.stream();
     }
 
@@ -69,7 +69,7 @@ public class SankeyData extends AbstractData<SankeyChart.Node> implements Sankey
                 }
             }
         }
-        for(SankeyChart.Edge e: edges) {
+        for(SankeyData.Edge e: edges) {
             e.validate();
         }
         if(edges.isEmpty()) {
@@ -81,9 +81,9 @@ public class SankeyData extends AbstractData<SankeyChart.Node> implements Sankey
     }
 
     private boolean hasCircularReference() {
-        Set<SankeyChart.Node> visitedNodes = new HashSet<>();
-        for (SankeyChart.Edge edge : edges) {
-            SankeyChart.Node fromNode = edge.getFrom();
+        Set<SankeyData.Node> visitedNodes = new HashSet<>();
+        for (SankeyData.Edge edge : edges) {
+            SankeyData.Node fromNode = edge.getFrom();
             if (!visitedNodes.contains(fromNode)) {
                 if (hasCycle(fromNode, visitedNodes, new HashSet<>())) {
                     return true;
@@ -93,12 +93,12 @@ public class SankeyData extends AbstractData<SankeyChart.Node> implements Sankey
         return false;
     }
 
-    private boolean hasCycle(SankeyChart.Node node, Set<SankeyChart.Node> visited, Set<SankeyChart.Node> path) {
+    private boolean hasCycle(SankeyData.Node node, Set<SankeyData.Node> visited, Set<SankeyData.Node> path) {
         visited.add(node);
         path.add(node);
-        for (SankeyChart.Edge edge : edges) {
+        for (SankeyData.Edge edge : edges) {
             if (edge.getFrom() == node) {
-                SankeyChart.Node toNode = edge.getTo();
+                SankeyData.Node toNode = edge.getTo();
                 if (!visited.contains(toNode)) {
                     if (hasCycle(toNode, visited, path)) {
                         return true;
@@ -110,5 +110,187 @@ public class SankeyData extends AbstractData<SankeyChart.Node> implements Sankey
         }
         path.remove(node);
         return false;
+    }
+
+
+    /**
+     * Sankey data node class.
+     *
+     * @author Syam
+     */
+    public static class Node extends ComposedPart {
+
+        private final String name;
+        private Number value;
+        private int depth = -1;
+
+        /**
+         * Constructor.
+         *
+         * @param name Name of the node.
+         */
+        public Node(String name) {
+            super(false, false, false, false, false, true, true, true);
+            this.name = name == null ? "NULL" : name;
+        }
+
+        @Override
+        protected boolean hasId() {
+            return false;
+        }
+
+        /**
+         * Get the name of the node.
+         *
+         * @return Name of the node.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Set the value of the node.
+         *
+         * @param value The value of the node, which determines the height of the node in horizontal orientation or
+         *              width in the vertical orientation.
+         */
+        public void setValue(Number value) {
+            this.value = value;
+        }
+
+        /**
+         * Set the depth of the node.
+         *
+         * @param depth The layer of the node, value starts from 0.
+         */
+        public void setDepth(int depth) {
+            this.depth = depth;
+        }
+
+        @Override
+        public void encodeJSON(StringBuilder sb) {
+            super.encodeJSON(sb);
+            ComponentPart.encode(sb, "name", getName());
+            if(depth >= 0) {
+                ComponentPart.encode(sb, "depth", depth);
+            }
+            if(value != null) {
+                ComponentPart.encode(sb, "value", value);
+            }
+        }
+
+        @Override
+        protected Class<? extends com.storedobject.chart.Label> getLabelClass() {
+            return Chart.Label.class;
+        }
+    }
+
+    /**
+     * Class that defines an edge between 2 Sankey nodes.
+     *
+     * @author Syam
+     */
+    public static class Edge extends ComposedPart {
+
+        private final SankeyData.Node from, to;
+        private Number value;
+        private LineStyle lineStyle;
+
+        /**
+         * Constructor.
+         *
+         * @param from Starting node.
+         * @param to Ending node.
+         * @param value The value of edge, which decides the width of edge..
+         */
+        public Edge(SankeyData.Node from, SankeyData.Node to, Number value) {
+            super(false, false, false, false, true, true, true, false);
+            this.from = from;
+            this.to = to;
+            this.value = value;
+        }
+
+        @Override
+        protected boolean hasId() {
+            return false;
+        }
+
+        /**
+         * Get the starting node of the edge.
+         *
+         * @return Starting node.
+         */
+        public SankeyData.Node getFrom() {
+            return from;
+        }
+
+
+        /**
+         * Get the ending node of the edge.
+         *
+         * @return Ending node.
+         */
+        public SankeyData.Node getTo() {
+            return to;
+        }
+
+        @Override
+        public void validate() throws ChartException {
+            if(from == null || to == null) {
+                throw new ChartException("Invalid edge");
+            }
+        }
+
+        /**
+         * Set the value of the edge.
+         *
+         * @param value The value of edge, which decides the width of edge..
+         */
+        public void setValue(Number value) {
+            this.value = value;
+        }
+
+        @Override
+        public void encodeJSON(StringBuilder sb) {
+            super.encodeJSON(sb);
+            ComponentPart.encode(sb, "source", from.getName());
+            ComponentPart.encode(sb, "target", to.getName());
+            ComponentPart.encode(sb, "value", value);
+            if(lineStyle != null) {
+                ComponentPart.encode(sb, "lineStyle", lineStyle);
+            }
+        }
+
+        @Override
+        protected Class<? extends com.storedobject.chart.Label> getLabelClass() {
+            return Chart.Label.class;
+        }
+
+        @Override
+        protected String getLabelTag() {
+            return "edgeLabel";
+        }
+
+        /**
+         * Set the line style.
+         *
+         * @param lineStyle Line style.
+         */
+        public final void setLineStyle(LineStyle lineStyle) {
+            this.lineStyle = lineStyle;
+        }
+
+        /**
+         * Get line style.
+         *
+         * @param create Pass <code>true</code> if it needs to be created if not exists.
+         * @return Line style.
+         */
+        public final LineStyle getLineStyle(boolean create) {
+            if(lineStyle == null && create) {
+                lineStyle = new LineStyle();
+            }
+            return lineStyle;
+        }
     }
 }

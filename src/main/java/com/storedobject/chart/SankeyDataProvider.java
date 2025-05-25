@@ -14,12 +14,12 @@ public interface SankeyDataProvider extends ComponentPart {
      *
      * @return Nodes as a stream.
      */
-    Stream<SankeyChart.Node> getNodes();
+    Stream<SankeyData.Node> getNodes();
 
     /**
      * Get the edges. The stream should not contain edges with circular references.
      *
      * @return Edges as a stream.
      */
-    Stream<SankeyChart.Edge> getEdges();
+    Stream<SankeyData.Edge> getEdges();
 }

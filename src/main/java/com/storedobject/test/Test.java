@@ -60,6 +60,7 @@ public class Test extends VerticalLayout {
         add(new Button("Heatmap Chart", e -> build(() -> heatmapChart(soChart))));
         add(new Button("Bubble Chart", e -> build(() -> bubbleChart(soChart))));
         add(new Button("Boxplot Chart", e -> build(() -> boxplotChart(soChart))));
+        add(new Button("Sankey Chart", e -> build(() -> sankeyChart(soChart))));
     }
 
     private void build(Runnable builder) {
@@ -582,5 +583,31 @@ public class Test extends VerticalLayout {
             q3 = r.nextDouble(1000);
         } while (!(q3 > median) || !(q3 < max));
         return new BoxplotData.Boxplot(min, q1, median, q3, max);
+    }
+
+    private void sankeyChart(SOChart soChart) {
+        SankeyData.Node a = new SankeyData.Node("A"),
+                b = new SankeyData.Node("B"),
+                c = new SankeyData.Node("C"),
+                a1 = new SankeyData.Node("A1"),
+                a2 = new SankeyData.Node("A2"),
+                b1 = new SankeyData.Node("B1");
+        SankeyData sd = new SankeyData();
+        sd.addEdge(new SankeyData.Edge(a, a1, 5));
+        sd.addEdge(new SankeyData.Edge(a, a2, 3));
+        sd.addEdge(new SankeyData.Edge(b, b1, 8));
+        sd.addEdge(new SankeyData.Edge(a, b1, 3));
+        sd.addEdge(new SankeyData.Edge(b1, a1, 1));
+        sd.addEdge(new SankeyData.Edge(b1, c, 2));
+        b1.getItemStyle(true).getBorder(true).setColor(new Color("black"));
+        SankeyChart sc = new SankeyChart(sd);
+        Label label = sc.getLabel(true);
+        label.setRotation(90);
+        label.getTextBorder(true).setWidth(5);
+        label.getBorder(true).setWidth(5);
+        label.getBorder(true).setColor(new Color("red"));
+        ItemStyle is = sc.getItemStyle(true);
+        is.getBorder(true).setColor(new Color("blue"));
+        soChart.add(sc);
     }
 }
