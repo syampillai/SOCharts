@@ -67,6 +67,7 @@ public class Test extends VerticalLayout {
     private void build(Runnable builder) {
         removeAll();
         soChart.removeAll();
+        soChart.enableDefaultLegend();
         add(new Button("Back to Menu", e -> drawMenu()));
         add(soChart);
         try {

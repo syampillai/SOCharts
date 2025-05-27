@@ -410,6 +410,19 @@ public class SOChart extends LitComponentWithSize {
         tooltip = null;
     }
 
+
+    /**
+     * Enables the default tooltip for the associated component.
+     *
+     * This method initializes the tooltip instance if it is currently null,
+     * ensuring that a tooltip is available for use.
+     */
+    public void enableDefaultTooltip() {
+        if(tooltip == null) {
+            tooltip = new Tooltip();
+        }
+    }
+
     /**
      * Get the default tooltip. You can customize it.
      *
@@ -425,6 +438,16 @@ public class SOChart extends LitComponentWithSize {
      */
     public void disableDefaultLegend() {
         legend = null;
+    }
+
+    /**
+     * Enables the default legend for the chart.
+     * If the legend is not already initialized, this method creates a new instance of the legend.
+     */
+    public void enableDefaultLegend() {
+        if(legend == null) {
+            legend = new Legend();
+        }
     }
 
     /**

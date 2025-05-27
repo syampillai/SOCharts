@@ -36,12 +36,6 @@ public abstract class VisiblePart extends AbstractPart implements VisiblePropert
     }
 
     @Override
-    public void encodeJSON(StringBuilder sb) {
-        super.encodeJSON(sb);
-        ComponentPart.encode(sb, "show", show);
-    }
-
-    @Override
     public void validate() throws ChartException {
     }
 }
