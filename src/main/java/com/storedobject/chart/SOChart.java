@@ -413,7 +413,6 @@ public class SOChart extends LitComponentWithSize {
 
     /**
      * Enables the default tooltip for the associated component.
-     *
      * This method initializes the tooltip instance if it is currently null,
      * ensuring that a tooltip is available for use.
      */
