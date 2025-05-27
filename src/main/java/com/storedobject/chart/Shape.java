@@ -11,7 +11,7 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public abstract class Shape extends AbstractPart implements Component, HasPosition {
+public abstract class Shape extends AbstractPart implements Component, HasPosition, VisibleProperty {
 
     private static final Color DEFAULT_COLOR = new Color("black");
     private Position position;
@@ -70,7 +70,7 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
                 oo = o[i];
                 s.append(i == 0 ? '[' : ',').append(oo == null ? "null" : ComponentPart.escape(oo));
             }
-            if(s.length() == 0) {
+            if(s.isEmpty()) {
                 return;
             }
             value = s.append(']').toString();
@@ -123,18 +123,14 @@ public abstract class Shape extends AbstractPart implements Component, HasPositi
     public void validate() throws ChartException {
     }
 
-    /**
-     * Show this shape.
-     */
-    public void show() {
-        show = true;
+    @Override
+    public void setVisible(boolean visible) {
+        show = visible;
     }
 
-    /**
-     * Hide this shape.
-     */
-    public void hide() {
-        show = false;
+    @Override
+    public boolean isVisible() {
+        return show;
     }
 
     /**

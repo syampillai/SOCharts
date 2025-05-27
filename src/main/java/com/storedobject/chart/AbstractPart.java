@@ -77,6 +77,9 @@ public abstract class AbstractPart implements ComponentPart {
         if(this instanceof HasItemStyle h) {
             ComponentPart.encode(sb, "itemStyle", h.getItemStyle(false));
         }
+        if(this instanceof VisibleProperty h) {
+            ComponentPart.encode(sb, "show", h.isVisible());
+        }
         if(z >= 0) {
             ComponentPart.encode(sb, "z", z);
         }

@@ -21,22 +21,18 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public abstract class VisiblePart extends AbstractPart {
+public abstract class VisiblePart extends AbstractPart implements VisibleProperty {
 
     boolean show = true;
 
-    /**
-     * Show this part.
-     */
-    public void show() {
-        show = true;
+    @Override
+    public void setVisible(boolean visible) {
+        show = visible;
     }
 
-    /**
-     * Hide this part.
-     */
-    public void hide() {
-        show = false;
+    @Override
+    public boolean isVisible() {
+        return show;
     }
 
     @Override

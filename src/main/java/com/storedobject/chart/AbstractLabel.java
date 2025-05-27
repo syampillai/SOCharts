@@ -5,23 +5,19 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public abstract class AbstractLabel extends TextStyle {
+public abstract class AbstractLabel extends TextStyle implements VisibleProperty {
 
     private boolean show = true;
     private int gap = Integer.MIN_VALUE;
 
-    /**
-     * Show labels.
-     */
-    public void show() {
-        show = true;
+    @Override
+    public void setVisible(boolean visible) {
+        show = visible;
     }
 
-    /**
-     * Hide labels.
-     */
-    public void hide() {
-        show = false;
+    @Override
+    public boolean isVisible() {
+        return show;
     }
 
     @Override

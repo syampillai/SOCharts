@@ -21,7 +21,7 @@ package com.storedobject.chart;
  *
  * @author Syam
  */
-public class PointSymbol implements ComponentProperty {
+public class PointSymbol implements ComponentProperty, VisibleProperty {
 
     private PointSymbolType type;
     private boolean show = true;
@@ -68,18 +68,14 @@ public class PointSymbol implements ComponentProperty {
         }
     }
 
-    /**
-     * Makes the point symbol visible on the chart.
-     */
-    public void show() {
-        show = true;
+    @Override
+    public void setVisible(boolean visible) {
+        show = visible;
     }
 
-    /**
-     * Hides the point symbol by setting its visibility to false.
-     */
-    public void hide() {
-        show = false;
+    @Override
+    public boolean isVisible() {
+        return show;
     }
 
     /**

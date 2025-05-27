@@ -6,7 +6,7 @@ package com.storedobject.chart;
  * @author Syam
  */
 public class ComposedPart extends AbstractPart
-        implements HasPosition, HasPadding, HasPolarProperty, HasAnimation, HasEmphasis, HasLabel, HasItemStyle {
+        implements HasPosition, HasPadding, HasPolarProperty, HasAnimation, HasEmphasis, HasLabel, HasItemStyle, VisibleProperty {
 
     private final boolean hasVisibility, hasPosition, hasPadding, hasPolarProperty, hasAnimation, hasEmphasis, hasLabel,
             hasItemStyle;
@@ -43,18 +43,14 @@ public class ComposedPart extends AbstractPart
         this.hasItemStyle = hasItemStyle;
     }
 
-    /**
-     * Show this part. This call ignored if the component doesn't have visibility property.
-     */
-    public void show() {
-        show = true;
+    @Override
+    public void setVisible(boolean visible) {
+        show = visible;
     }
 
-    /**
-     * Hide this part. This call ignored if the component doesn't have visibility property.
-     */
-    public void hide() {
-        show = false;
+    @Override
+    public boolean isVisible() {
+        return show;
     }
 
     @Override

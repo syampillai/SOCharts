@@ -111,22 +111,18 @@ public interface TreeDataProvider extends ComponentPart {
      *
      * @author Syam
      */
-    class Label extends TextStyle {
+    class Label extends TextStyle implements VisibleProperty {
 
         private boolean show = true;
 
-        /**
-         * Show labels.
-         */
-        public void show() {
-            show = true;
+        @Override
+        public void setVisible(boolean visible) {
+            show = visible;
         }
 
-        /**
-         * Hide labels.
-         */
-        public void hide() {
-            show = false;
+        @Override
+        public boolean isVisible() {
+            return show;
         }
 
         @Override

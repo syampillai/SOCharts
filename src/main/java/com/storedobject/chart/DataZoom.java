@@ -17,13 +17,13 @@
 package com.storedobject.chart;
 
 /**
- * Represents "data zoom" component. Data zoom components allow the end-users
+ * Represents the "data zoom" component. Data zoom components allow the end-users
  * to zoom in and to zoom out charts using mouse and/or touch devices. This component ignores
  * the "width" and the "height" properties that are set via its {@link Position}.
  *
  * @author Syam
  */
-public class DataZoom extends AbstractDataZoom implements HasPosition {
+public class DataZoom extends AbstractDataZoom implements HasPosition, VisibleProperty {
 
     private boolean show = true;
     private Position position;
@@ -44,7 +44,6 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
     @Override
     public void encodeJSON(StringBuilder sb) {
         super.encodeJSON(sb);
-        sb.append(",\"show\":").append(show);
         sb.append(",\"handleSize\":\"100%\"");
         ComponentPart.encode(sb, null, position);
         if(background != null) {
@@ -62,18 +61,14 @@ public class DataZoom extends AbstractDataZoom implements HasPosition {
         }
     }
 
-    /**
-     * Show this.
-     */
-    public void show() {
-        show = true;
+    @Override
+    public void setVisible(boolean visible) {
+        show = visible;
     }
 
-    /**
-     * Hide this.
-     */
-    public void hide() {
-        show = false;
+    @Override
+    public boolean isVisible() {
+        return show;
     }
 
     @Override
