@@ -230,6 +230,16 @@ public class SOChart extends LitComponentWithSize {
     }
 
     /**
+     * Toggles the visibility of a chart by sending the appropriate action..
+     *
+     * @param chart the chart whose visibility is to be toggles
+     */
+    public void toggleVisible(Chart chart) {
+        dispatchAction("{\"type\":\"legendToggleSelect\",\"name\":\""
+                + chart.getName() + "\"}");
+    }
+
+    /**
      * Adds a listener for a specific event type to the given chart.
      * This method allows monitoring of events by attaching a listener to the specified chart.
      *

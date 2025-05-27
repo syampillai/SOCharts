@@ -12,7 +12,7 @@
 
     <groupId>org.vaadin.addons.so</groupId>
     <artifactId>so-charts</artifactId>
-    <version>5.0.1</version>
+    <version>5.0.2</version>
     <name>SO Charts</name>
     <description>Vaadin LitElement wrapper for ECharts</description>
 

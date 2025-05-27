@@ -8,9 +8,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
 import java.time.LocalDateTime;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Route("")
 public class Test extends VerticalLayout {
@@ -49,6 +48,8 @@ public class Test extends VerticalLayout {
         removeAll();
         add(new Button("Gantt Chart", e -> build(() -> ganttChart(soChart))));
         add(new Button("Line Chart", e -> build(() -> lineChart(soChart))));
+        add(new Button("Scatter Chart", e -> build(() -> scatterChart(soChart))));
+        add(new Button("Custom Scatter Chart", e -> build(() -> customScatterChart(soChart))));
         add(new Button("Line & Bar Chart", e -> build(() -> lineAndBar(soChart))));
         add(new Button("Radar Chart", e -> build(() -> radarChart(soChart))));
         add(new Button("Nightingale Rose Chart", e -> build(() -> nightingaleChart(soChart))));
@@ -136,14 +137,99 @@ public class Test extends VerticalLayout {
         //soChart.addListener(lineChart, ChartEventType.Click, e -> notify("Event: " + e));
         //soChart.addListener(ChartEventType.Click, e -> notify("Empty space: " + e));
         //soChart.addListener(xAxis, ChartEventType.Click, e -> notify("X-Axis: " + e));
-        soChart.addListener(EventType.BlankAreaClick, e -> {
-            v = !v;
-            System.err.println("Visible: " + v);
-            soChart.setVisible(v, lineChart);
-        });
+        soChart.addListener(EventType.BlankAreaClick, e -> soChart.toggleVisible(lineChart));
     }
 
-    private static boolean v = true;
+    private static void scatterChart(SOChart soChart) {
+        // Generating some random values for a LineChart
+        Random random = new Random();
+        Data xValues = new Data(), yValues = new Data();
+        for (int x = 0; x < 40; x++) {
+            xValues.add(x);
+            yValues.add(random.nextDouble());
+        }
+        xValues.setName("X Values");
+        yValues.setName("Random Values");
+
+        // Line chart is initialized with the generated XY values
+        ScatterChart scatterChart = new ScatterChart(xValues, yValues);
+        scatterChart.setName("40 Random Values");
+
+        // Line chart needs a coordinate system to plot on
+        // We need Number-type for both X and Y axes in this case
+        XAxis xAxis = new XAxis(DataType.NUMBER);
+        xAxis.setAllowEvents(true);
+        YAxis yAxis = new YAxis(DataType.NUMBER);
+        RectangularCoordinate rc = new RectangularCoordinate(xAxis, yAxis);
+        scatterChart.plotOn(rc);
+
+        // Add to the chart display area with a simple title
+        soChart.add(scatterChart, new Title("Simple Scatter Chart"));
+
+        // Click event
+        //soChart.addListener(scatterChart, ChartEventType.Click, e -> notify("Event: " + e));
+        //soChart.addListener(ChartEventType.Click, e -> notify("Empty space: " + e));
+        //soChart.addListener(xAxis, ChartEventType.Click, e -> notify("X-Axis: " + e));
+        soChart.addListener(EventType.BlankAreaClick, e -> soChart.toggleVisible(scatterChart));
+    }
+
+    private static void customScatterChart(SOChart soChart) {
+        // Generating some random values for a LineChart
+        CustomScatterData customScatterData = new CustomScatterData();
+
+        // Line chart is initialized with the generated XY values
+        ScatterChart scatterChart = new ScatterChart() {
+            @Override
+            protected AbstractDataProvider<?> dataToEmbed() {
+                return customScatterData;
+            }
+        };
+        scatterChart.setName("40 Random Values");
+
+        // Line chart needs a coordinate system to plot on
+        // We need Number-type for both X and Y axes in this case
+        XAxis xAxis = new XAxis(DataType.NUMBER);
+        YAxis yAxis = new YAxis(DataType.NUMBER);
+        RectangularCoordinate rc = new RectangularCoordinate(xAxis, yAxis);
+        scatterChart.plotOn(rc);
+
+        // Add to the chart display area with a simple title
+        soChart.add(scatterChart, new Title("Custom Scatter Chart"));
+
+        // Click event
+        //soChart.addListener(scatterChart, ChartEventType.Click, e -> notify("Event: " + e));
+        //soChart.addListener(ChartEventType.Click, e -> notify("Empty space: " + e));
+        //soChart.addListener(xAxis, ChartEventType.Click, e -> notify("X-Axis: " + e));
+        soChart.addListener(EventType.RightClick, e -> soChart.toggleVisible(scatterChart));
+    }
+
+    private record ScatterDataValue(String name, Number x, Number y, PointSymbol pointSymbol) {}
+
+    private static class CustomScatterData extends BasicDataProvider<ScatterDataValue> {
+
+        private final List<ScatterDataValue> data = new ArrayList<>();
+
+        public CustomScatterData() {
+            Random random = new Random();
+            for (int i = 0; i < 40; i++) {
+                data.add(new ScatterDataValue("Item " + i, random.nextInt(100), random.nextInt(100),
+                        new PointSymbol(PointSymbolType.values()[i % 5])));
+            }
+        }
+
+        @Override
+        public Stream<ScatterDataValue> stream() {
+            return data.stream();
+        }
+
+        @Override
+        public void encode(StringBuilder sb, ScatterDataValue value) {
+            sb.append("{\"name\":\"").append(value.name()).append("\",\"value\":[")
+                    .append(value.x()).append(",").append(value.y()).append("]");
+            value.pointSymbol().encodeJSON(sb);
+            sb.append("}");
+        }
+    }
 
     private static void notify(String message) {
         Notification.show(message);
@@ -508,7 +594,7 @@ public class Test extends VerticalLayout {
 
         // Create the chart.
         HeatmapChart chart = new HeatmapChart(days, slots);
-        chart.getLabel(true).show(); // Want to display the value as labels
+        chart.getLabel(true).show(); // Want to display the x as labels
 
         // Add some data-points
         chart.addData(0, 0, 27); // Sunday morning

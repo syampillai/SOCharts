@@ -8,7 +8,7 @@ Include this in the dependencies section of your POM file:
   <dependency>
     <groupId>org.vaadin.addons.so</groupId>
     <artifactId>so-charts</artifactId>
-    <version>5.0.1</version>
+    <version>5.0.2</version>
   </dependency>
 ```
 Also, include this in your repositories section:

@@ -27,6 +27,16 @@ public enum EventType {
      */
     MouseOver("mouseover", EventCategory.Mouse),
 
+    /**
+     * Represents a right-click event type that can occur on a chart.
+     * This event is triggered typically when the "context menu" action is initiated,
+     * often through a right-click gesture using a mouse.
+     */
+    RightClick("contextmenu", EventCategory.Mouse),
+
+    /**
+     * Represents a "legend select changed" event type that can occur on a chart.
+     */
     Legend("legendselectchanged", EventCategory.Legend),
     ;
 

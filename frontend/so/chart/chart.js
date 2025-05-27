@@ -63,6 +63,11 @@ export class SOChart extends LitElement {
         this.destroyChart();
     }
 
+    firstUpdated() {
+        this.shadowRoot.getElementById(this.idChart)
+            .addEventListener('contextmenu', (e) => e.preventDefault());
+    }
+
     updated(changedProps) {
         if(this.chart && !changedProps.has("idChart")) {
             this.chart.resize();
@@ -131,6 +136,7 @@ export class SOChart extends LitElement {
         this.$server.sendEvents(0);
     }
 
+    // noinspection JSUnusedGlobalSymbols
     clearData() {
         this.data = [];
     }
@@ -218,6 +224,7 @@ export class SOChart extends LitElement {
                         console.log(e);
                     }
                     this.$server.onMouseEvent(id, "", 0, "", "", "", "", "", "", "", "");
+                    return false;
                 }
             };
             this.chart.getZr().on(type, handler);
