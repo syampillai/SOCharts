@@ -8,17 +8,10 @@ Include this in the dependencies section of your POM file:
   <dependency>
     <groupId>org.vaadin.addons.so</groupId>
     <artifactId>so-charts</artifactId>
-    <version>5.0.3</version>
+    <version>5.0.4</version>
   </dependency>
 ```
 Also, include this in your repositories section:
 ```xml
-<repositories>
-    <repository>
-        <id>so-maven</id>
-        <url>https://storedobject.com/maven</url>
-    </repository>
-</repositories>
-```
 
 Please have a look at the examples at [EXAMPLES](https://storedobject.com/examples/?login=AUTO).

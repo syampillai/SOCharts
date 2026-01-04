@@ -6,18 +6,18 @@
     <parent>
         <groupId>com.storedobject</groupId>
         <artifactId>so-vaadinpom</artifactId>
-        <version>24.7.5</version>
+        <version>24.9.8</version>
         <relativePath/>
     </parent>
 
     <groupId>org.vaadin.addons.so</groupId>
     <artifactId>so-charts</artifactId>
-    <version>5.0.3</version>
+    <version>5.0.4</version>
     <name>SO Charts</name>
     <description>Vaadin LitElement wrapper for ECharts</description>
 
     <properties>
-        <so-helper-version>5.0.1</so-helper-version>
+        <so-helper-version>5.0.2</so-helper-version>
     </properties>
 
     <licenses>
@@ -41,18 +41,11 @@
         </developer>
     </developers>
 
-    <repositories>
-        <repository>
-            <id>so-maven</id>
-            <url>https://storedobject.com/maven</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.vaadin.addons.so</groupId>
             <artifactId>so-helper</artifactId>
-            <version>5.0.0</version>
+            <version>${so-helper-version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
