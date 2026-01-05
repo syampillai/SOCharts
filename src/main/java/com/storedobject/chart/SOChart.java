@@ -56,9 +56,9 @@ import java.util.stream.Collectors;
  *
  * @author Syam
  */
-@NpmPackage(value = "echarts", version = "5.6.0")
+@NpmPackage(value = "echarts", version = "6.0.0")
 @Tag("so-chart")
-@JsModule("./so/chart/chart.js")
+@JsModule("./chart.js")
 public class SOChart extends LitComponentWithSize {
 
     final static ComponentEncoder[] encoders = {

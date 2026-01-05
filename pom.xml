@@ -6,18 +6,18 @@
     <parent>
         <groupId>com.storedobject</groupId>
         <artifactId>so-vaadinpom</artifactId>
-        <version>24.9.8</version>
+        <version>25.0.2</version>
         <relativePath/>
     </parent>
 
     <groupId>org.vaadin.addons.so</groupId>
     <artifactId>so-charts</artifactId>
-    <version>5.0.4</version>
+    <version>6.0.0</version>
     <name>SO Charts</name>
     <description>Vaadin LitElement wrapper for ECharts</description>
 
     <properties>
-        <so-helper-version>5.0.2</so-helper-version>
+        <so-helper-version>6.0.0</so-helper-version>
     </properties>
 
     <licenses>
