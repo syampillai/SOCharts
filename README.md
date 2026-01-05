@@ -11,7 +11,5 @@ Include this in the dependencies section of your POM file:
     <version>6.0.0</version>
   </dependency>
 ```
-Also, include this in your repositories section:
-```xml
 
 Please have a look at the examples at [EXAMPLES](https://storedobject.com/examples/?login=AUTO).
