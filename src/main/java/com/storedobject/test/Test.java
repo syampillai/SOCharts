@@ -3,14 +3,17 @@ package com.storedobject.test;
 import com.storedobject.chart.*;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.Lumo;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
 
+@StyleSheet(Lumo.STYLESHEET)
 @Route("")
 public class Test extends VerticalLayout {
 
